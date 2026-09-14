@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>地道螺蛳粉 • 在线自助点餐</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #e02424;
+      --primary-hover: #c81e1e;
+      --primary-light: #fef2f2;
+      --primary-border: #fecaca;
+      --accent: #f59e0b;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --bg-page: #f9fafb;
+      --bg-card: #ffffff;
+      --border-color: #e5e7eb;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans SC', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 110px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #b91c1c, #dc2626);
+      color: white;
+      padding: 20px 18px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 4px 15px rgba(185, 28, 28, 0.25);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-open {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    .header-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Category Nav */
+    .cat-nav-wrapper {
+      background: var(--bg-card);
+      position: sticky;
+      top: 75px;
+      z-index: 25;
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    .cat-nav {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding: 10px 14px;
+      gap: 8px;
+      scrollbar-width: none;
+    }
+    .cat-nav::-webkit-scrollbar { display: none; }
+
+    .cat-btn {
+      padding: 8px 16px;
+      border-radius: 30px;
+      border: 1px solid #e5e7eb;
+      background: #f3f4f6;
+      color: var(--text-main);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cat-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(224, 36, 36, 0.25);
+    }
+
+    /* Container */
+    .main-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #374151;
+      margin: 16px 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Product Grid / Cards */
+    .product-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease;
+    }
+
+    .product-card:active {
+      transform: scale(0.99);
+    }
+
+    .prod-info {
+      flex: 1;
+      padding-right: 14px;
+    }
+
+    .prod-name {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 3px;
+    }
+
+    .prod-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .prod-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .prod-btn {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      border-radius: 20px;
+      padding: 7px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .prod-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Modifier Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 24px 24px 0 0;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      border-radius: 24px 24px 0 0;
+      z-index: 2;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .close-btn {
+      background: #f3f4f6;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4b5563;
+    }
+
+    .modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .mod-group {
+      margin-bottom: 20px;
+    }
+
+    .mod-group-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .mod-badge {
+      font-size: 11.5px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: #fee2e2;
+      color: #b91c1c;
+      font-weight: 600;
+    }
+
+    .radio-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .radio-card {
+      border: 1.5px solid #e5e7eb;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .radio-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .addon-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid #f3f4f6;
+      border-radius: var(--radius-sm);
+      margin-bottom: 7px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .addon-item:hover {
+      background: #f9fafb;
+    }
+
+    .addon-item.selected {
+      border-color: var(--primary-border);
+      background: var(--primary-light);
+    }
+
+    .addon-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .addon-price {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .notes-input {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13.5px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+    }
+
+    .notes-input:focus {
+      border-color: var(--primary);
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      z-index: 2;
+    }
+
+    .footer-total-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer-total-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .confirm-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(224, 36, 36, 0.3);
+      transition: all 0.2s;
+    }
+
+    .confirm-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Floating Cart Bar */
+    .cart-bar-wrapper {
+      position: fixed;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      padding: 0 16px;
+      z-index: 40;
+      display: flex;
+      justify-content: center;
+    }
+
+    .cart-bar {
+      background: #1f2937;
+      color: white;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 40px;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .cart-bar:active {
+      transform: scale(0.98);
+    }
+
+    .cart-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .cart-badge-icon {
+      position: relative;
+      font-size: 22px;
+    }
+
+    .cart-count-badge {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      border: 2px solid #1f2937;
+    }
+
+    .cart-price-sum {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .cart-checkout-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Cart Drawer */
+    .cart-drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 110;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .cart-drawer-overlay.open {
+      display: flex;
+    }
+
+    .cart-drawer {
+      background: var(--bg-card);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 24px 24px 0 0;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    .drawer-item {
+      padding: 12px 0;
+      border-bottom: 1px dashed #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .drawer-item-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .drawer-item-sub {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .drawer-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-row {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+
+    .form-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .dining-type-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .dining-btn {
+      padding: 8px 6px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #f9fafb;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .dining-btn.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .whatsapp-send-btn {
+      background: #25d366;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.35);
+      transition: background 0.2s;
+    }
+
+    .whatsapp-send-btn:hover {
+      background: #1eb956;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-top">
+      <div class="brand-title">
+        <span>🍜</span>
+        <span>地道螺蛳粉 • 自助点餐</span>
+      </div>
+      <div class="badge-open">🟢 营业中</div>
+    </div>
+    <div class="header-desc">
+      <span>📍 现点现做 • 秘制酸笋鲜汤</span>
+      <span>💬 WhatsApp 一键下单</span>
+    </div>
+  </header>
+
+  <!-- Category Nav -->
+  <div class="cat-nav-wrapper">
+    <div class="cat-nav" id="catNav"></div>
+  </div>
+
+  <!-- Product List -->
+  <div class="main-container" id="menuContainer"></div>
+
+  <!-- Floating Cart Bar -->
+  <div class="cart-bar-wrapper" id="cartBarWrapper" style="display: none;">
+    <div class="cart-bar" onclick="openCartDrawer()">
+      <div class="cart-left">
+        <div class="cart-badge-icon">
+          🛒
+          <div class="cart-count-badge" id="cartCountBadge">0</div>
+        </div>
+        <div>
+          <div style="font-size: 11px; opacity: 0.8;">预估总额</div>
+          <div class="cart-price-sum" id="cartTotalSum">RM 0.00</div>
+        </div>
+      </div>
+      <button class="cart-checkout-btn">
+        查看订单 ›
+      </button>
+    </div>
+  </div>
+
+  <!-- Modifier / Add-on Modal -->
+  <div class="modal-overlay" id="modModalOverlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal-box" id="modModalBox">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modalItemTitle">商品名称</div>
+          <div class="modal-subtitle" id="modalItemBasePrice">RM 0.00</div>
+        </div>
+        <button class="close-btn" onclick="closeModModal()">✕</button>
+      </div>
+
+      <div class="modal-body" id="modalOptionsBody"></div>
+
+      <div class="modal-footer">
+        <div>
+          <div class="footer-total-label">当前小计</div>
+          <div class="footer-total-val" id="modalCalculatedTotal">RM 0.00</div>
+        </div>
+        <button class="confirm-btn" onclick="confirmAddToCart()">加入购物车</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cartDrawerOverlay" onclick="closeDrawerOnOverlay(event)">
+    <div class="cart-drawer">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">已选餐点清单</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="drawerItemCount">共 0 份商品</div>
+        </div>
+        <button class="close-btn" onclick="closeCartDrawer()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="drawerItemsList"></div>
+
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-color);">
+          <div class="form-row">
+            <label class="form-label">取餐方式 (Order Type) *</label>
+            <div class="dining-type-selector" style="grid-template-columns: repeat(2, 1fr);">
+              <div class="dining-btn active" id="btnPickup" onclick="setDiningType('自取', this)">🛍️ 到店自取 (Pickup)</div>
+              <div class="dining-btn" id="btnDelivery" onclick="setDiningType('外送', this)">🛵 外直送餐 (Delivery)</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">顾客姓名 (Name) *</label>
+            <input type="text" id="custName" class="form-input" placeholder="例如: 陈先生 / Zhi Li">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">联络电话 (WhatsApp) *</label>
+            <input type="tel" id="custPhone" class="form-input" placeholder="例如: 012-3456789">
+          </div>
+
+          <div class="form-row" id="pickupTimeRow">
+            <label class="form-label" id="diningDetailLabel">预计到店自取时间 *</label>
+            <input type="text" id="custDiningDetail" class="form-input" placeholder="例如: 12:30 PM / 30分钟后来拿">
+          </div>
+          <div class="form-row">
+            <label class="form-label">整单特殊备注 (Optional)</label>
+            <input type="text" id="orderNotes" class="form-input" placeholder="例如: 汤和粉分开装、餐具x2等">
+          </div>
+
+          <div class="form-row" style="background: #fef2f2; padding: 10px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <label style="font-size: 13px; font-weight: 600; color: #991b1b; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input type="checkbox" id="takeawayBoxCheck" checked onchange="toggleTakeawayBox(this)" style="width: 16px; height: 16px;">
+              外带打包盒 (防漏密封盒 RM 1.00 / 份)
+            </label>
+            <span style="font-size: 13px; font-weight: 700; color: #991b1b;" id="takeawayBoxPrice">已计入</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+          <span style="font-size: 14px; font-weight: 600; color: #4b5563;">订单总计:</span>
+          <span style="font-size: 24px; font-weight: 800; color: var(--primary);" id="drawerFinalTotal">RM 0.00</span>
+        </div>
+        <button class="whatsapp-send-btn" onclick="sendOrderToWhatsApp()">
+          <span>💬 通过 WhatsApp 发送订单</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 店铺 WhatsApp 接收号码 (请改为您店铺实际手机号，带国家代码 60，无加号空格)
+    let STORE_WHATSAPP_NUMBER = "60123456789"; 
+
+    // POS 菜单与加料库数据
+    const MENU = [{"id": "S1", "cat": "汤螺蛳粉", "name": "S1 原味螺蛳粉 Original Luosifen", "price": 12.8, "mods": ["spicy", "addons"], "desc": "地道经典原汁原味螺蛳汤粉"}, {"id": "S2", "cat": "汤螺蛳粉", "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "配香煎荷包蛋"}, {"id": "S3", "cat": "汤螺蛳粉", "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "招牌必点超大吸汤炸蛋"}, {"id": "S4", "cat": "汤螺蛳粉", "name": "S4 香肠螺蛳粉 TW Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "配焦香台湾香肠"}, {"id": "S5", "cat": "汤螺蛳粉", "name": "S5 腊肠螺蛳粉 CN Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "传统风味腊肠"}, {"id": "S6", "cat": "汤螺蛳粉", "name": "S6 凤爪螺蛳粉 Chicken Feet Luosifen", "price": 16.8, "mods": ["spicy", "addons"], "desc": "软糯入味虎皮凤爪"}, {"id": "S7", "cat": "汤螺蛳粉", "name": "S7 鲜肉螺蛳粉 XianRou Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "鲜嫩滑口猪肉片"}, {"id": "S8", "cat": "汤螺蛳粉", "name": "S8 锅烧螺蛳粉 GuoShao Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "桂林传统秘制锅烧脆肉"}, {"id": "S9", "cat": "汤螺蛳粉", "name": "S9 叉烧螺蛳粉 ChaShao Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "蜜汁香滑叉烧"}, {"id": "S10", "cat": "汤螺蛳粉", "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "秘制卤香醇厚大肠"}, {"id": "S11", "cat": "汤螺蛳粉", "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup", "price": 12.8, "mods": ["spicy", "addons"], "desc": "经典清甜桂林高汤米粉"}, {"id": "S12", "cat": "汤螺蛳粉", "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen", "price": 21.8, "mods": ["spicy", "addons"], "desc": "软烂脱骨大猪脚"}, {"id": "S13", "cat": "汤螺蛳粉", "name": "S13 牛腩螺蛳粉 Beef Brisket Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "浓香酥烂大块牛腩"}, {"id": "D1", "cat": "招牌干捞", "name": "D1 炸蛋干捞粉 Deep Fried Egg Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "香浓干拌搭酥脆大炸蛋"}, {"id": "D2", "cat": "招牌干捞", "name": "D2 螺蛳干捞粉 Dry Luosifen", "price": 13.8, "mods": ["spicy", "addons"], "desc": "经典特制酱汁干捞粉"}, {"id": "D3", "cat": "招牌干捞", "name": "D3 煎蛋干捞粉 Fried Egg Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配现煎荷包蛋"}, {"id": "D4", "cat": "招牌干捞", "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配台湾香肠"}, {"id": "D5", "cat": "招牌干捞", "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配卤肥肠"}, {"id": "D6", "cat": "招牌干捞", "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配嫩鲜肉"}, {"id": "D7", "cat": "招牌干捞", "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配酥脆锅烧"}, {"id": "D8", "cat": "招牌干捞", "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配叉烧肉"}, {"id": "D9", "cat": "招牌干捞", "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "干拌配酥烂牛腩"}, {"id": "B1", "cat": "炒粉炒饭", "name": "B1 炒螺蛳粉 Fried Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "大火镬气翻炒螺蛳粉"}, {"id": "B2", "cat": "炒粉炒饭", "name": "B2 炒米粉 Fried Mee Hoon", "price": 12.8, "mods": ["spicy", "addons"], "desc": "镬气十足香炒米粉"}, {"id": "B3", "cat": "炒粉炒饭", "name": "B3 炒饭 Fried Rice", "price": 12.8, "mods": ["spicy", "addons"], "desc": "粒粒分明黄金炒饭"}, {"id": "C1", "cat": "手工水饺云吞", "name": "C1 手工水饺 Homemade Dumplings", "price": 12.8, "mods": ["dumpling_style", "addons"], "desc": "皮薄馅大手工水饺 (可选煮汤/酥炸)"}, {"id": "C2", "cat": "手工水饺云吞", "name": "C2 手工云吞 Homemade Wantan", "price": 12.8, "mods": ["wantan_style", "addons"], "desc": "鲜肉饱满纯手工云吞 (可选煮汤/酥炸)"}, {"id": "C3", "cat": "特色小吃", "name": "C3 红糖糍粑 Brown Sugar Glutinous Rice Cake", "price": 8.8, "mods": [], "desc": "外酥里糯香甜红糖"}, {"id": "C4", "cat": "特色小吃", "name": "C4 脆皮香蕉 Crispy Banana", "price": 8.8, "mods": [], "desc": "金黄酥脆香甜可口"}, {"id": "C5", "cat": "特色小吃", "name": "C5 香芋地瓜丸 Yam Ball", "price": 7.8, "mods": [], "desc": "双重香浓软糯丸子"}, {"id": "C6", "cat": "特色小吃", "name": "C6 南瓜饼 Pumpkin Cake", "price": 7.8, "mods": [], "desc": "外皮酥脆香糯南瓜"}, {"id": "C7", "cat": "特色小吃", "name": "C7 沙拉卷 Salad Roll", "price": 4.8, "mods": [], "desc": "清爽酥脆沙拉卷"}, {"id": "C8", "cat": "特色小吃", "name": "C8 炸饺 Deep fried Homemade Dumplings", "price": 6.8, "mods": [], "desc": "香脆酥炸手工饺"}, {"id": "C9", "cat": "特色小吃", "name": "C9 油条虾滑 Doughnut With Shrimp Paste", "price": 7.8, "mods": [], "desc": "酥脆老油条酿鲜美虾滑"}, {"id": "C10", "cat": "特色小吃", "name": "C10 虾枣 Prawn Rolls", "price": 7.8, "mods": [], "desc": "传统潮州风味脆皮虾枣"}, {"id": "C11", "cat": "特色小吃", "name": "C11 炸云吞 Fried Wonton", "price": 7.8, "mods": [], "desc": "咔嚓酥脆鲜肉小云吞"}, {"id": "F01", "cat": "饮品甜品", "name": "F01 Justea", "price": 3.5, "mods": [], "desc": "清爽瓶装茶饮"}, {"id": "F02", "cat": "饮品甜品", "name": "F02 矿泉水 Mineral Water", "price": 2.0, "mods": [], "desc": "瓶装饮用水"}, {"id": "F03", "cat": "饮品甜品", "name": "F03 冰红茶 Iced Black Tea", "price": 4.0, "mods": [], "desc": "经典清爽柠檬红茶"}, {"id": "F04", "cat": "饮品甜品", "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut", "price": 4.0, "mods": [], "desc": "清凉降火甘蔗马蹄水"}, {"id": "F05", "cat": "饮品甜品", "name": "F05 王老吉 Wong Lo Kat", "price": 4.0, "mods": [], "desc": "经典清凉凉茶"}, {"id": "F06", "cat": "饮品甜品", "name": "F06 100 Plus", "price": 3.5, "mods": [], "desc": "电解质气泡水"}, {"id": "F07", "cat": "饮品甜品", "name": "F07 冰糖雪梨 Rock Sugar Pear", "price": 4.0, "mods": [], "desc": "润肺清甜雪梨汁"}, {"id": "F08", "cat": "饮品甜品", "name": "F08 蜜桃乌龙茶 Peach Oolong", "price": 4.0, "mods": [], "desc": "果香扑鼻冷泡茶"}, {"id": "F09", "cat": "饮品甜品", "name": "F09 元气森林气泡水 Genki Forest", "price": 5.5, "mods": [], "desc": "0糖0脂0卡气泡水"}, {"id": "F10", "cat": "饮品甜品", "name": "F10 可口可乐 Coca-Cola", "price": 4.0, "mods": [], "desc": "畅爽经典可乐"}, {"id": "F11", "cat": "饮品甜品", "name": "F11 红牛 Red Bull", "price": 5.5, "mods": [], "desc": "提神功能饮料"}, {"id": "F12", "cat": "饮品甜品", "name": "F12 豆奶 Soya Milk", "price": 5.0, "mods": [], "desc": "浓醇香滑豆奶"}, {"id": "F13", "cat": "饮品甜品", "name": "F13 祖传八宝凉茶 Herbal Tea", "price": 5.0, "mods": [], "desc": "清热解毒秘制凉茶"}, {"id": "F14", "cat": "饮品甜品", "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum", "price": 5.0, "mods": [], "desc": "甘甜舒缓清润菊花"}, {"id": "F15", "cat": "饮品甜品", "name": "F15 山楂酸梅汤 Plum Soup", "price": 5.0, "mods": [], "desc": "酸甜生津解腻必备"}, {"id": "F16", "cat": "饮品甜品", "name": "F16 香兰洛神花 Pandan Roselle", "price": 5.0, "mods": [], "desc": "南洋特色酸爽芳香"}, {"id": "F17", "cat": "饮品甜品", "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice", "price": 6.0, "mods": [], "desc": "现榨天然纯正甘蔗原汁"}, {"id": "F18", "cat": "饮品甜品", "name": "F18 爱玉冰 Ice Jelly", "price": 5.0, "mods": [], "desc": "冰凉爽滑爱玉甜品"}, {"id": "F19", "cat": "饮品甜品", "name": "F19 酸柑酸梅 Calamansi Sour Plum", "price": 5.0, "mods": [], "desc": "酸爽开胃金桔酸梅"}, {"id": "F20", "cat": "饮品甜品", "name": "F20 葡萄爱玉冰 Grape Ice Jelly", "price": 6.0, "mods": [], "desc": "浓郁葡萄风味果冻"}, {"id": "F21", "cat": "饮品甜品", "name": "F21 苹果味爱玉冰 Apple Ice Jelly", "price": 6.0, "mods": [], "desc": "清爽苹果爱玉冻"}, {"id": "F22", "cat": "饮品甜品", "name": "F22 阿萨姆原味奶茶 Assam Milk Tea", "price": 5.5, "mods": [], "desc": "醇厚香浓阿萨姆红茶奶茶"}];
+    const MODIFIERS = {"spicy": {"title": "🌶️ 选择辣度 (必选)", "type": "single", "required": true, "options": [{"name": "不辣 Non-Spicy", "price": 0.0}, {"name": "微辣 Mild (推荐)", "price": 0.0, "default": true}, {"name": "中辣 Medium (正宗)", "price": 0.0}, {"name": "大辣 Hot (过瘾)", "price": 0.0}]}, "wantan_style": {"title": "🍲 云吞做法 (必选)", "type": "single", "required": true, "options": [{"name": "经典原汤 (Soup)", "price": 0.0, "default": true}, {"name": "香脆酥炸 (Fried)", "price": 0.0}]}, "dumpling_style": {"title": "🥟 水饺做法 (必选)", "type": "single", "required": true, "options": [{"name": "经典原汤 (Soup)", "price": 0.0, "default": true}, {"name": "香脆酥炸 (Fried)", "price": 0.0}]}, "addons": {"title": "🥢 加料与配菜 (可多选)", "type": "multiple", "groups": [{"group_name": "经典小料配菜", "items": [{"name": "C12 加粉 Extra Noodles", "price": 2.0}, {"name": "C13 木耳 Black Fungus", "price": 2.0}, {"name": "C14 炸腐竹 Fried Beancurd Skin", "price": 0.0}, {"name": "C15 花生 Peanuts", "price": 2.0}, {"name": "C16 酸笋 Pickled Bamboo Shoots", "price": 2.0}, {"name": "C17 酸豆角 Pickled String Beans", "price": 2.0}]}, {"group_name": "招牌蛋品 & 经典小食", "items": [{"name": "E9 炸蛋 Deep-Fried Egg", "price": 3.0}, {"name": "E01 台湾香肠 TW Sausage", "price": 3.0}, {"name": "E02 煎蛋 Fried Egg", "price": 2.0}, {"name": "E03 卤蛋 Braised Egg", "price": 2.0}, {"name": "E04 豆卜 Tau Pok", "price": 2.0}, {"name": "E05 鹌鹑蛋 Quail Eggs", "price": 3.0}, {"name": "E10 凤爪 Chicken Feet", "price": 3.0}]}, {"group_name": "豪华荤肉加料", "items": [{"name": "E06 鲜肉 Xian Rou", "price": 8.0}, {"name": "E07 叉烧 Cha Shao", "price": 8.0}, {"name": "E08 锅烧 Guo Shao", "price": 8.0}, {"name": "E12 肥肠 Fei Chuang", "price": 8.0}, {"name": "E11 牛腩 Beef Brisket", "price": 9.0}, {"name": "E13 猪脚 Pig's Trotter", "price": 10.8}, {"name": "C18 卤大肠头 Braised Intestine Head", "price": 12.0}]}]}};
+
+    let cart = [];
+    let currentItem = null;
+    let selectedSpicy = "微辣 Mild (推荐)";
+    let selectedStyle = "经典原汤 (Soup)";
+    let selectedAddons = [];
+    let diningType = "自取";
+    let takeawayBoxEnabled = true; // 外带/外送默认需要打包
+
+    function init() {
+      renderCategories();
+      renderMenu();
+    }
+
+    function renderCategories() {
+      const cats = ["全部", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
+      const nav = document.getElementById("catNav");
+      nav.innerHTML = cats.map((cat, idx) => `
+        <button class="cat-btn ${idx === 0 ? 'active' : ''}" onclick="filterCategory('${cat}', this)">
+          ${cat}
+        </button>
+      `).join('');
+    }
+
+    function filterCategory(cat, btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderMenu(cat);
+    }
+
+    function renderMenu(filterCat = "全部") {
+      const container = document.getElementById("menuContainer");
+      const cats = filterCat === "全部" 
+        ? ["汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"]
+        : [filterCat];
+
+      let html = "";
+      cats.forEach(cat => {
+        const items = MENU.filter(p => p.cat === cat);
+        if (items.length === 0) return;
+        html += `<div class="section-title">📌 ${cat}</div><div class="product-grid">`;
+        items.forEach(p => {
+          const hasMods = p.mods && p.mods.length > 0;
+          html += `
+            <div class="product-card">
+              <div class="prod-info">
+                <div class="prod-name">${p.name}</div>
+                <div class="prod-desc">${p.desc || ''}</div>
+                <div class="prod-price">RM ${p.price.toFixed(2)}</div>
+              </div>
+              <button class="prod-btn" onclick="openProductModal('${p.id}')">
+                ${hasMods ? '选配料/加料 +' : '加入 +'}
+              </button>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function openProductModal(productId) {
+      currentItem = MENU.find(p => p.id === productId);
+      if (!currentItem) return;
+
+      if (!currentItem.mods || currentItem.mods.length === 0) {
+        addToCartDirect(currentItem);
+        return;
+      }
+
+      selectedSpicy = "微辣 Mild (推荐)";
+      selectedStyle = "经典原汤 (Soup)";
+      selectedAddons = [];
+
+      document.getElementById("modalItemTitle").innerText = currentItem.name;
+      document.getElementById("modalItemBasePrice").innerText = `基础价: RM ${currentItem.price.toFixed(2)}`;
+
+      let bodyHtml = "";
+
+      if (currentItem.mods.includes("spicy")) {
+        const sp = MODIFIERS.spicy;
+        bodyHtml += `
+          <div class="mod-group">
+            <div class="mod-group-title">
+              <span>${sp.title}</span>
+              <span class="mod-badge">必选单选</span>
+            </div>
+            <div class="radio-grid">
+              ${sp.options.map(opt => `
+                <div class="radio-card ${opt.name === selectedSpicy ? 'selected' : ''}" onclick="selectSpicy('${opt.name}', this)">
+                  <span>${opt.name}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (currentItem.mods.includes("wantan_style") || currentItem.mods.includes("dumpling_style")) {
+        const modKey = currentItem.mods.includes("wantan_style") ? "wantan_style" : "dumpling_style";
+        const st = MODIFIERS[modKey];
+        bodyHtml += `
+          <div class="mod-group">
+            <div class="mod-group-title">
+              <span>${st.title}</span>
+              <span class="mod-badge">必选单选</span>
+            </div>
+            <div class="radio-grid">
+              ${st.options.map(opt => `
+                <div class="radio-card ${opt.name === selectedStyle ? 'selected' : ''}" onclick="selectStyle('${opt.name}', this)">
+                  <span>${opt.name}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (currentItem.mods.includes("addons")) {
+        const ad = MODIFIERS.addons;
+        bodyHtml += `
+          <div class="mod-group">
+            <div class="mod-group-title">
+              <span>${ad.title}</span>
+              <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">按需多选</span>
+            </div>
+        `;
+
+        ad.groups.forEach(grp => {
+          bodyHtml += `<div style="font-size: 13px; font-weight: 700; color: #4b5563; margin: 10px 0 6px;">${grp.group_name}</div>`;
+          grp.items.forEach(it => {
+            bodyHtml += `
+              <div class="addon-item" onclick="toggleAddon('${it.name}', ${it.price}, this)">
+                <div class="addon-info">
+                  <span class="addon-check">⬜</span>
+                  <span>${it.name}</span>
+                </div>
+                <span class="addon-price">+RM ${it.price.toFixed(2)}</span>
+              </div>
+            `;
+          });
+        });
+        bodyHtml += `</div>`;
+      }
+
+      bodyHtml += `
+        <div class="mod-group">
+          <div class="mod-group-title">特殊要求 / 口味备注</div>
+          <textarea id="modalItemNotes" class="notes-input" rows="2" placeholder="例如: 少酸笋、不要葱花、多放青菜等"></textarea>
+        </div>
+      `;
+
+      document.getElementById("modalOptionsBody").innerHTML = bodyHtml;
+      updateModalTotal();
+      document.getElementById("modModalOverlay").classList.add("open");
+    }
+
+    function selectSpicy(name, el) {
+      selectedSpicy = name;
+      el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectStyle(name, el) {
+      selectedStyle = name;
+      el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function toggleAddon(name, price, el) {
+      const idx = selectedAddons.findIndex(a => a.name === name);
+      const checkEl = el.querySelector('.addon-check');
+      if (idx > -1) {
+        selectedAddons.splice(idx, 1);
+        el.classList.remove('selected');
+        checkEl.innerText = "⬜";
+      } else {
+        selectedAddons.push({ name, price });
+        el.classList.add('selected');
+        checkEl.innerText = "✅";
+      }
+      updateModalTotal();
+    }
+
+    function updateModalTotal() {
+      if (!currentItem) return;
+      let total = currentItem.price;
+      selectedAddons.forEach(a => total += a.price);
+      document.getElementById("modalCalculatedTotal").innerText = `RM ${total.toFixed(2)}`;
+    }
+
+    function closeModModal() {
+      document.getElementById("modModalOverlay").classList.remove("open");
+      currentItem = null;
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target.id === "modModalOverlay") closeModModal();
+    }
+
+    function confirmAddToCart() {
+      if (!currentItem) return;
+      const notes = document.getElementById("modalItemNotes") ? document.getElementById("modalItemNotes").value.trim() : "";
+      
+      let unitPrice = currentItem.price;
+      selectedAddons.forEach(a => unitPrice += a.price);
+
+      cart.push({
+        id: currentItem.id,
+        name: currentItem.name,
+        basePrice: currentItem.price,
+        unitPrice: unitPrice,
+        spicy: currentItem.mods.includes("spicy") ? selectedSpicy : null,
+        style: (currentItem.mods.includes("wantan_style") || currentItem.mods.includes("dumpling_style")) ? selectedStyle : null,
+        addons: [...selectedAddons],
+        notes: notes,
+        qty: 1
+      });
+
+      closeModModal();
+      renderCartBar();
+    }
+
+    function addToCartDirect(p) {
+      cart.push({
+        id: p.id,
+        name: p.name,
+        basePrice: p.price,
+        unitPrice: p.price,
+        spicy: null,
+        style: null,
+        addons: [],
+        notes: "",
+        qty: 1
+      });
+      renderCartBar();
+    }
+
+    function renderCartBar() {
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      let totalSum = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+      if (takeawayBoxEnabled) {
+        totalSum += 1.0;
+      }
+
+      const bar = document.getElementById("cartBarWrapper");
+      if (totalCount > 0) {
+        bar.style.display = "flex";
+        document.getElementById("cartCountBadge").innerText = totalCount;
+        document.getElementById("cartTotalSum").innerText = `RM ${totalSum.toFixed(2)}`;
+      } else {
+        bar.style.display = "none";
+      }
+    }
+
+    function openCartDrawer() {
+      renderDrawer();
+      document.getElementById("cartDrawerOverlay").classList.add("open");
+    }
+
+    function closeCartDrawer() {
+      document.getElementById("cartDrawerOverlay").classList.remove("open");
+    }
+
+    function closeDrawerOnOverlay(e) {
+      if (e.target.id === "cartDrawerOverlay") closeCartDrawer();
+    }
+
+    function renderDrawer() {
+      const listEl = document.getElementById("drawerItemsList");
+      const countEl = document.getElementById("drawerItemCount");
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      countEl.innerText = `共 ${totalCount} 份商品`;
+
+      if (cart.length === 0) {
+        listEl.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);">购物车是空的</div>`;
+        closeCartDrawer();
+        renderCartBar();
+        return;
+      }
+
+      let html = "";
+      cart.forEach((item, idx) => {
+        let modDesc = [];
+        if (item.spicy) modDesc.push(`辣度: ${item.spicy}`);
+        if (item.style) modDesc.push(`做法: ${item.style}`);
+        if (item.addons && item.addons.length > 0) {
+          modDesc.push(`加料: ` + item.addons.map(a => `${a.name} (+RM${a.price.toFixed(2)})`).join(', '));
+        }
+        if (item.notes) modDesc.push(`备注: ${item.notes}`);
+
+        html += `
+          <div class="drawer-item">
+            <div style="flex: 1; padding-right: 12px;">
+              <div class="drawer-item-title">${item.name}</div>
+              <div class="drawer-item-sub">${modDesc.join('<br>')}</div>
+              <div style="font-size: 14px; font-weight: 700; color: var(--primary); margin-top: 4px;">
+                RM ${(item.unitPrice * item.qty).toFixed(2)}
+              </div>
+            </div>
+            <div class="drawer-item-qty">
+              <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
+              <span style="font-weight: 700; min-width: 20px; text-align: center;">${item.qty}</span>
+              <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
+            </div>
+          </div>
+        `;
+      });
+
+      listEl.innerHTML = html;
+
+      let totalSum = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+      if (takeawayBoxEnabled) {
+        totalSum += 1.0;
+        document.getElementById("takeawayBoxPrice").innerText = "+RM 1.00";
+      } else {
+        document.getElementById("takeawayBoxPrice").innerText = "+RM 0.00";
+      }
+      document.getElementById("drawerFinalTotal").innerText = `RM ${totalSum.toFixed(2)}`;
+    }
+
+    function updateQty(idx, change) {
+      cart[idx].qty += change;
+      if (cart[idx].qty <= 0) {
+        cart.splice(idx, 1);
+      }
+      renderDrawer();
+      renderCartBar();
+    }
+
+    function setDiningType(type, el) {
+      diningType = type;
+      document.querySelectorAll('.dining-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      
+      const detailLabel = document.getElementById("diningDetailLabel");
+      const detailInput = document.getElementById("custDiningDetail");
+      if (type === '自取') {
+        detailLabel.innerText = "预计到店自取时间 *";
+        detailInput.placeholder = "例如: 12:30 PM / 大约20分钟后来拿";
+      } else {
+        detailLabel.innerText = "外送完整地址与预计送达时间 *";
+        detailInput.placeholder = "例如: UTAR Westlake Homes Block C / 12:45 PM";
+      }
+    }
+
+    function toggleTakeawayBox(checkbox) {
+      takeawayBoxEnabled = checkbox.checked;
+      renderDrawer();
+      renderCartBar();
+    }
+
+    function sendOrderToWhatsApp() {
+      if (cart.length === 0) {
+        alert("购物车为空，请先选择餐点！");
+        return;
+      }
+
+      const name = document.getElementById("custName").value.trim();
+      const phone = document.getElementById("custPhone").value.trim();
+      const diningDetail = document.getElementById("custDiningDetail").value.trim();
+      const orderNotes = document.getElementById("orderNotes").value.trim();
+
+      if (!name) {
+        alert("请填写顾客姓名！");
+        document.getElementById("custName").focus();
+        return;
+      }
+
+      if (!phone) {
+        alert("请填写联络电话！");
+        document.getElementById("custPhone").focus();
+        return;
+      }
+
+      if (!diningDetail) {
+        alert(diningType === '自取' ? "请填写预计自取时间！" : "请填写外送地址与时间！");
+        document.getElementById("custDiningDetail").focus();
+        return;
+      }
+
+      // 统计主食份数用于计算打包盒
+      const mainDishCount = cart.filter(it => it.id.startsWith('S') || it.id.startsWith('D') || it.id.startsWith('B') || it.id.startsWith('C')).reduce((sum, item) => sum + item.qty, 0);
+      const packagingCost = takeawayBoxEnabled ? (mainDishCount * 1.0) : 0;
+      
+      let itemsSum = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+      let totalSum = itemsSum + packagingCost;
+
+      const typeEmoji = diningType === '自取' ? '🛍️' : '🛵';
+      let msg = `🍜 *【螺蛳粉 • 线上${diningType}订单】*\n`;
+      msg += `=============================\n`;
+      msg += `📋 *类型*: ${typeEmoji} *${diningType} (Takeaway / Delivery)*\n`;
+      msg += `👤 *顾客*: ${name}\n`;
+      msg += `📞 *电话*: ${phone}\n`;
+      if (diningType === '自取') {
+        msg += `⏰ *自取时间*: ${diningDetail}\n`;
+      } else {
+        msg += `📍 *送餐地址与时间*: ${diningDetail}\n`;
+      }
+      if (orderNotes) {
+        msg += `📝 *整单要求*: ${orderNotes}\n`;
+      }
+      msg += `=============================\n`;
+      msg += `🥢 *【餐点清单】*\n\n`;
+      
+      cart.forEach((it, i) => {
+        msg += `*${i+1}. ${it.name}* x${it.qty}\n`;
+        if (it.spicy) msg += `   ▫️ 辣度: ${it.spicy}\n`;
+        if (it.style) msg += `   ▫️ 做法: ${it.style}\n`;
+        if (it.addons && it.addons.length > 0) {
+          it.addons.forEach(ad => {
+            msg += `   ▫️ +加料: ${ad.name} (+RM${ad.price.toFixed(2)})\n`;
+          });
+        }
+        if (it.notes) msg += `   ▫️ 单品备注: ${it.notes}\n`;
+        msg += `   💵 小计: RM ${(it.unitPrice * it.qty).toFixed(2)}\n\n`;
+      });
+
+      if (takeawayBoxEnabled && mainDishCount > 0) {
+        msg += `📦 *外带餐盒*: ${mainDishCount}份 (+RM ${packagingCost.toFixed(2)})\n\n`;
+      }
+
+      msg += `=============================\n`;
+      msg += `💰 *【应付总额: RM ${totalSum.toFixed(2)}】*\n`;
+      msg += `=============================\n`;
+      msg += `请店员核对单子并发送 DuitNow QR 码收款，谢谢！`;
+
+      const encodedMsg = encodeURIComponent(msg);
+      const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodedMsg}`;
+
+      window.open(waUrl, "_blank");
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
+
