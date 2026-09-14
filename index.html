@@ -634,6 +634,35 @@
     .whatsapp-send-btn:hover {
       background: #1eb956;
     }
+  
+    /* Quick Time Chips */
+    .time-chips-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .time-chip {
+      padding: 7px 4px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #f9fafb;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #374151;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .time-chip.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
   </style>
 </head>
 <body>
@@ -736,9 +765,21 @@
             <input type="tel" id="custPhone" class="form-input" placeholder="例如: 012-3456789">
           </div>
 
-          <div class="form-row" id="pickupTimeRow">
-            <label class="form-label" id="diningDetailLabel">预计到店自取时间 *</label>
-            <input type="text" id="custDiningDetail" class="form-input" placeholder="例如: 12:30 PM / 30分钟后来拿">
+          <!-- 自取快捷选项 -->
+          <div class="form-row" id="pickupTimeOptionsRow">
+            <label class="form-label">预计多久到店自取 *</label>
+            <div class="time-chips-grid">
+              <div class="time-chip active" onclick="selectTimeChip('15分钟后 (尽快)', this)">⚡ 15分钟后</div>
+              <div class="time-chip" onclick="selectTimeChip('30分钟后', this)">⏱️ 30分钟后</div>
+              <div class="time-chip" onclick="selectTimeChip('45分钟后', this)">🕐 45分钟后</div>
+            </div>
+            <input type="text" id="custDiningDetail" class="form-input" placeholder="或在此自填具体时间 (例如: 12:45 PM)">
+          </div>
+
+          <!-- 外送专属栏位 -->
+          <div class="form-row" id="deliveryAddressRow" style="display: none;">
+            <label class="form-label">送餐详细地址与送达时间 *</label>
+            <input type="text" id="custDeliveryAddress" class="form-input" placeholder="例如: UTAR Westlake Homes Block C / 12:45 PM">
           </div>
           <div class="form-row">
             <label class="form-label">整单特殊备注 (Optional)</label>
@@ -769,7 +810,7 @@
 
   <script>
     // 店铺 WhatsApp 接收号码 (请改为您店铺实际手机号，带国家代码 60，无加号空格)
-    let STORE_WHATSAPP_NUMBER = "60123456789"; 
+    let STORE_WHATSAPP_NUMBER = "601111273466"; 
 
     // POS 菜单与加料库数据
     const MENU = [{"id": "S1", "cat": "汤螺蛳粉", "name": "S1 原味螺蛳粉 Original Luosifen", "price": 12.8, "mods": ["spicy", "addons"], "desc": "地道经典原汁原味螺蛳汤粉"}, {"id": "S2", "cat": "汤螺蛳粉", "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "配香煎荷包蛋"}, {"id": "S3", "cat": "汤螺蛳粉", "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "招牌必点超大吸汤炸蛋"}, {"id": "S4", "cat": "汤螺蛳粉", "name": "S4 香肠螺蛳粉 TW Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "配焦香台湾香肠"}, {"id": "S5", "cat": "汤螺蛳粉", "name": "S5 腊肠螺蛳粉 CN Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "传统风味腊肠"}, {"id": "S6", "cat": "汤螺蛳粉", "name": "S6 凤爪螺蛳粉 Chicken Feet Luosifen", "price": 16.8, "mods": ["spicy", "addons"], "desc": "软糯入味虎皮凤爪"}, {"id": "S7", "cat": "汤螺蛳粉", "name": "S7 鲜肉螺蛳粉 XianRou Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "鲜嫩滑口猪肉片"}, {"id": "S8", "cat": "汤螺蛳粉", "name": "S8 锅烧螺蛳粉 GuoShao Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "桂林传统秘制锅烧脆肉"}, {"id": "S9", "cat": "汤螺蛳粉", "name": "S9 叉烧螺蛳粉 ChaShao Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "蜜汁香滑叉烧"}, {"id": "S10", "cat": "汤螺蛳粉", "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "秘制卤香醇厚大肠"}, {"id": "S11", "cat": "汤螺蛳粉", "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup", "price": 12.8, "mods": ["spicy", "addons"], "desc": "经典清甜桂林高汤米粉"}, {"id": "S12", "cat": "汤螺蛳粉", "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen", "price": 21.8, "mods": ["spicy", "addons"], "desc": "软烂脱骨大猪脚"}, {"id": "S13", "cat": "汤螺蛳粉", "name": "S13 牛腩螺蛳粉 Beef Brisket Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "浓香酥烂大块牛腩"}, {"id": "D1", "cat": "招牌干捞", "name": "D1 炸蛋干捞粉 Deep Fried Egg Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "香浓干拌搭酥脆大炸蛋"}, {"id": "D2", "cat": "招牌干捞", "name": "D2 螺蛳干捞粉 Dry Luosifen", "price": 13.8, "mods": ["spicy", "addons"], "desc": "经典特制酱汁干捞粉"}, {"id": "D3", "cat": "招牌干捞", "name": "D3 煎蛋干捞粉 Fried Egg Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配现煎荷包蛋"}, {"id": "D4", "cat": "招牌干捞", "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配台湾香肠"}, {"id": "D5", "cat": "招牌干捞", "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配卤肥肠"}, {"id": "D6", "cat": "招牌干捞", "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配嫩鲜肉"}, {"id": "D7", "cat": "招牌干捞", "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配酥脆锅烧"}, {"id": "D8", "cat": "招牌干捞", "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen", "price": 17.8, "mods": ["spicy", "addons"], "desc": "干拌配叉烧肉"}, {"id": "D9", "cat": "招牌干捞", "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen", "price": 18.8, "mods": ["spicy", "addons"], "desc": "干拌配酥烂牛腩"}, {"id": "B1", "cat": "炒粉炒饭", "name": "B1 炒螺蛳粉 Fried Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "大火镬气翻炒螺蛳粉"}, {"id": "B2", "cat": "炒粉炒饭", "name": "B2 炒米粉 Fried Mee Hoon", "price": 12.8, "mods": ["spicy", "addons"], "desc": "镬气十足香炒米粉"}, {"id": "B3", "cat": "炒粉炒饭", "name": "B3 炒饭 Fried Rice", "price": 12.8, "mods": ["spicy", "addons"], "desc": "粒粒分明黄金炒饭"}, {"id": "C1", "cat": "手工水饺云吞", "name": "C1 手工水饺 Homemade Dumplings", "price": 12.8, "mods": ["dumpling_style", "addons"], "desc": "皮薄馅大手工水饺 (可选煮汤/酥炸)"}, {"id": "C2", "cat": "手工水饺云吞", "name": "C2 手工云吞 Homemade Wantan", "price": 12.8, "mods": ["wantan_style", "addons"], "desc": "鲜肉饱满纯手工云吞 (可选煮汤/酥炸)"}, {"id": "C3", "cat": "特色小吃", "name": "C3 红糖糍粑 Brown Sugar Glutinous Rice Cake", "price": 8.8, "mods": [], "desc": "外酥里糯香甜红糖"}, {"id": "C4", "cat": "特色小吃", "name": "C4 脆皮香蕉 Crispy Banana", "price": 8.8, "mods": [], "desc": "金黄酥脆香甜可口"}, {"id": "C5", "cat": "特色小吃", "name": "C5 香芋地瓜丸 Yam Ball", "price": 7.8, "mods": [], "desc": "双重香浓软糯丸子"}, {"id": "C6", "cat": "特色小吃", "name": "C6 南瓜饼 Pumpkin Cake", "price": 7.8, "mods": [], "desc": "外皮酥脆香糯南瓜"}, {"id": "C7", "cat": "特色小吃", "name": "C7 沙拉卷 Salad Roll", "price": 4.8, "mods": [], "desc": "清爽酥脆沙拉卷"}, {"id": "C8", "cat": "特色小吃", "name": "C8 炸饺 Deep fried Homemade Dumplings", "price": 6.8, "mods": [], "desc": "香脆酥炸手工饺"}, {"id": "C9", "cat": "特色小吃", "name": "C9 油条虾滑 Doughnut With Shrimp Paste", "price": 7.8, "mods": [], "desc": "酥脆老油条酿鲜美虾滑"}, {"id": "C10", "cat": "特色小吃", "name": "C10 虾枣 Prawn Rolls", "price": 7.8, "mods": [], "desc": "传统潮州风味脆皮虾枣"}, {"id": "C11", "cat": "特色小吃", "name": "C11 炸云吞 Fried Wonton", "price": 7.8, "mods": [], "desc": "咔嚓酥脆鲜肉小云吞"}, {"id": "F01", "cat": "饮品甜品", "name": "F01 Justea", "price": 3.5, "mods": [], "desc": "清爽瓶装茶饮"}, {"id": "F02", "cat": "饮品甜品", "name": "F02 矿泉水 Mineral Water", "price": 2.0, "mods": [], "desc": "瓶装饮用水"}, {"id": "F03", "cat": "饮品甜品", "name": "F03 冰红茶 Iced Black Tea", "price": 4.0, "mods": [], "desc": "经典清爽柠檬红茶"}, {"id": "F04", "cat": "饮品甜品", "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut", "price": 4.0, "mods": [], "desc": "清凉降火甘蔗马蹄水"}, {"id": "F05", "cat": "饮品甜品", "name": "F05 王老吉 Wong Lo Kat", "price": 4.0, "mods": [], "desc": "经典清凉凉茶"}, {"id": "F06", "cat": "饮品甜品", "name": "F06 100 Plus", "price": 3.5, "mods": [], "desc": "电解质气泡水"}, {"id": "F07", "cat": "饮品甜品", "name": "F07 冰糖雪梨 Rock Sugar Pear", "price": 4.0, "mods": [], "desc": "润肺清甜雪梨汁"}, {"id": "F08", "cat": "饮品甜品", "name": "F08 蜜桃乌龙茶 Peach Oolong", "price": 4.0, "mods": [], "desc": "果香扑鼻冷泡茶"}, {"id": "F09", "cat": "饮品甜品", "name": "F09 元气森林气泡水 Genki Forest", "price": 5.5, "mods": [], "desc": "0糖0脂0卡气泡水"}, {"id": "F10", "cat": "饮品甜品", "name": "F10 可口可乐 Coca-Cola", "price": 4.0, "mods": [], "desc": "畅爽经典可乐"}, {"id": "F11", "cat": "饮品甜品", "name": "F11 红牛 Red Bull", "price": 5.5, "mods": [], "desc": "提神功能饮料"}, {"id": "F12", "cat": "饮品甜品", "name": "F12 豆奶 Soya Milk", "price": 5.0, "mods": [], "desc": "浓醇香滑豆奶"}, {"id": "F13", "cat": "饮品甜品", "name": "F13 祖传八宝凉茶 Herbal Tea", "price": 5.0, "mods": [], "desc": "清热解毒秘制凉茶"}, {"id": "F14", "cat": "饮品甜品", "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum", "price": 5.0, "mods": [], "desc": "甘甜舒缓清润菊花"}, {"id": "F15", "cat": "饮品甜品", "name": "F15 山楂酸梅汤 Plum Soup", "price": 5.0, "mods": [], "desc": "酸甜生津解腻必备"}, {"id": "F16", "cat": "饮品甜品", "name": "F16 香兰洛神花 Pandan Roselle", "price": 5.0, "mods": [], "desc": "南洋特色酸爽芳香"}, {"id": "F17", "cat": "饮品甜品", "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice", "price": 6.0, "mods": [], "desc": "现榨天然纯正甘蔗原汁"}, {"id": "F18", "cat": "饮品甜品", "name": "F18 爱玉冰 Ice Jelly", "price": 5.0, "mods": [], "desc": "冰凉爽滑爱玉甜品"}, {"id": "F19", "cat": "饮品甜品", "name": "F19 酸柑酸梅 Calamansi Sour Plum", "price": 5.0, "mods": [], "desc": "酸爽开胃金桔酸梅"}, {"id": "F20", "cat": "饮品甜品", "name": "F20 葡萄爱玉冰 Grape Ice Jelly", "price": 6.0, "mods": [], "desc": "浓郁葡萄风味果冻"}, {"id": "F21", "cat": "饮品甜品", "name": "F21 苹果味爱玉冰 Apple Ice Jelly", "price": 6.0, "mods": [], "desc": "清爽苹果爱玉冻"}, {"id": "F22", "cat": "饮品甜品", "name": "F22 阿萨姆原味奶茶 Assam Milk Tea", "price": 5.5, "mods": [], "desc": "醇厚香浓阿萨姆红茶奶茶"}];
@@ -1104,19 +1145,31 @@
       renderCartBar();
     }
 
+    let selectedQuickTime = "15分钟后 (尽快)";
+
+    function selectTimeChip(timeVal, el) {
+      selectedQuickTime = timeVal;
+      document.querySelectorAll('.time-chip').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
+      // 如果点击了快捷标签，把输入框清空或填入对应值
+      const inputEl = document.getElementById("custDiningDetail");
+      if (inputEl) inputEl.value = "";
+    }
+
     function setDiningType(type, el) {
       diningType = type;
       document.querySelectorAll('.dining-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
       
-      const detailLabel = document.getElementById("diningDetailLabel");
-      const detailInput = document.getElementById("custDiningDetail");
+      const pickupRow = document.getElementById("pickupTimeOptionsRow");
+      const deliveryRow = document.getElementById("deliveryAddressRow");
+
       if (type === '自取') {
-        detailLabel.innerText = "预计到店自取时间 *";
-        detailInput.placeholder = "例如: 12:30 PM / 大约20分钟后来拿";
+        pickupRow.style.display = "block";
+        deliveryRow.style.display = "none";
       } else {
-        detailLabel.innerText = "外送完整地址与预计送达时间 *";
-        detailInput.placeholder = "例如: UTAR Westlake Homes Block C / 12:45 PM";
+        pickupRow.style.display = "none";
+        deliveryRow.style.display = "block";
       }
     }
 
@@ -1134,7 +1187,8 @@
 
       const name = document.getElementById("custName").value.trim();
       const phone = document.getElementById("custPhone").value.trim();
-      const diningDetail = document.getElementById("custDiningDetail").value.trim();
+      const customDetail = document.getElementById("custDiningDetail").value.trim();
+      const deliveryAddress = document.getElementById("custDeliveryAddress") ? document.getElementById("custDeliveryAddress").value.trim() : "";
       const orderNotes = document.getElementById("orderNotes").value.trim();
 
       if (!name) {
@@ -1149,10 +1203,16 @@
         return;
       }
 
-      if (!diningDetail) {
-        alert(diningType === '自取' ? "请填写预计自取时间！" : "请填写外送地址与时间！");
-        document.getElementById("custDiningDetail").focus();
-        return;
+      let diningTimeText = "";
+      if (diningType === '自取') {
+        diningTimeText = customDetail ? customDetail : selectedQuickTime;
+      } else {
+        if (!deliveryAddress) {
+          alert("请填写外送完整地址与预计送达时间！");
+          document.getElementById("custDeliveryAddress").focus();
+          return;
+        }
+        diningTimeText = deliveryAddress;
       }
 
       // 统计主食份数用于计算打包盒
@@ -1169,9 +1229,9 @@
       msg += `👤 *顾客*: ${name}\n`;
       msg += `📞 *电话*: ${phone}\n`;
       if (diningType === '自取') {
-        msg += `⏰ *自取时间*: ${diningDetail}\n`;
+        msg += `⏰ *到店自取时间*: ${diningTimeText}\n`;
       } else {
-        msg += `📍 *送餐地址与时间*: ${diningDetail}\n`;
+        msg += `📍 *外送地址与时间*: ${diningTimeText}\n`;
       }
       if (orderNotes) {
         msg += `📝 *整单要求*: ${orderNotes}\n`;
