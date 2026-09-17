@@ -44,5 +44,6 @@ luosifen-order/
 
 ## 🚀 部署与访问
 
-- **GitHub 仓库**: [zhilikam-design/luosifen-order](https://github.com/zhilikam-design/luosifen-order)
-- 支持开启 **GitHub Pages** 直接上线成为公开点餐链接，顾客扫桌上二维码或点击微信/WhatsApp 链接即可直接开始点餐。
+- **GitHub 仓库**: [zhilikam-design/laiwanluosifen-order](https://github.com/zhilikam-design/laiwanluosifen-order)
+- **默认 GitHub Pages 访问链接**: [https://zhilikam-design.github.io/laiwanluosifen-order/](https://zhilikam-design.github.io/laiwanluosifen-order/)
+- 支持绑定**自定义独立域名**（如 `order.laiwanluosifen.com`），顾客扫码点餐更专业、无第三方痕迹。

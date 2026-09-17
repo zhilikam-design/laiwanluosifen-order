@@ -32,7 +32,7 @@ def get_github_pat():
 def get_remote_push_url():
     pat = get_github_pat()
     if pat:
-        return f"https://x-access-token:{pat}@github.com/zhilikam-design/luosifen-order.git"
+        return f"https://x-access-token:{pat}@github.com/zhilikam-design/laiwanluosifen-order.git"
     return "origin"
 
 def fetch_pos_products():
