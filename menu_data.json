@@ -87,7 +87,7 @@
     "id": "S7",
     "cat": "汤螺蛳粉",
     "name": "S7 鲜肉螺蛳粉 XianRou Luosifen",
-    "price": 18.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -101,7 +101,7 @@
     "id": "S8",
     "cat": "汤螺蛳粉",
     "name": "S8 锅烧螺蛳粉 GuoShao Luosifen",
-    "price": 18.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -115,7 +115,7 @@
     "id": "S9",
     "cat": "汤螺蛳粉",
     "name": "S9 叉烧螺蛳粉 ChaShao Luosifen",
-    "price": 18.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -129,7 +129,7 @@
     "id": "S10",
     "cat": "汤螺蛳粉",
     "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen",
-    "price": 18.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -157,7 +157,7 @@
     "id": "S12",
     "cat": "汤螺蛳粉",
     "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen",
-    "price": 21.8,
+    "price": 15.99,
     "mods": [
       "spicy",
       "addons"
@@ -227,7 +227,7 @@
     "id": "D4",
     "cat": "招牌干捞",
     "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen",
-    "price": 14.8,
+    "price": 15.8,
     "mods": [
       "spicy",
       "addons"
@@ -241,7 +241,7 @@
     "id": "D5",
     "cat": "招牌干捞",
     "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen",
-    "price": 17.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -255,7 +255,7 @@
     "id": "D6",
     "cat": "招牌干捞",
     "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen",
-    "price": 17.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -269,7 +269,7 @@
     "id": "D7",
     "cat": "招牌干捞",
     "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen",
-    "price": 17.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -283,7 +283,7 @@
     "id": "D8",
     "cat": "招牌干捞",
     "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen",
-    "price": 17.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
@@ -297,7 +297,7 @@
     "id": "D9",
     "cat": "招牌干捞",
     "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen",
-    "price": 18.8,
+    "price": 19.8,
     "mods": [
       "spicy",
       "addons"
