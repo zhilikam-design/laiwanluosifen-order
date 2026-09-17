@@ -903,7 +903,7 @@
         <div class="store-tagline">原汁鲜螺熬汤 • 灵魂酸笋配大炸蛋</div>
         <div class="store-meta-tags">
           <span class="meta-tag">⭐ 4.9 分 (500+ 好评)</span>
-          <span class="meta-tag">📍 金宝 / 现点现熬</span>
+          <span class="meta-tag">📍 新山 Austin Heights / 现点现熬</span>
           <span class="meta-tag" style="background: rgba(225, 29, 72, 0.08); color: #e11d48; border: 1px solid rgba(225, 29, 72, 0.2); font-weight: 700;">🧾 结账抽 10% Tax</span>
         </div>
       </div>
@@ -917,7 +917,7 @@
       </button>
       <button class="mode-btn" id="btnModeDelivery" onclick="setOrderMode('外送')">
         <span>🛵 外直送餐</span>
-        <small>约 30 - 45 分钟</small>
+        <small>运费稍后店员核算</small>
       </button>
     </div>
   </div>
@@ -1007,8 +1007,14 @@
 
           <!-- 外送专属地址栏 (仅外送时出现) -->
           <div class="form-group-wrap" id="fieldDeliveryAddressWrap" style="display: none;">
-            <label class="form-group-label">送餐详细地址 *</label>
-            <input type="text" id="orderDeliveryAddress" class="form-ctrl-input" placeholder="例如: Westlake Homes Block C 房号 / 某某住宅区地址">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label class="form-group-label" style="margin-bottom: 0;">送餐详细地址 *</label>
+              <span style="font-size: 11px; color: #e11d48; font-weight: 700;">🛵 运费店员稍后另计</span>
+            </div>
+            <input type="text" id="orderDeliveryAddress" class="form-ctrl-input" placeholder="例如: Austin Heights 门牌 / 某某住宅区详细地址">
+            <div style="font-size: 11.5px; color: #b91c1c; background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 7px 10px; margin-top: 6px; line-height: 1.45;">
+              📢 <strong>外送运费说明</strong>：当前金额仅为餐点费用。由于各区距离不同，外送运费将在店员接单后根据送餐地址（Lalamove / 专人派送）核算，并在 WhatsApp 告知确认。
+            </div>
           </div>
 
           <!-- 时间选择 (自取/外送动态切换) -->
@@ -1048,11 +1054,15 @@
             <span id="drawerTaxLabel">税费 / 服务费 (10% Tax):</span>
             <span id="drawerTaxText">+RM 0.00</span>
           </div>
+          <div style="display: none; justify-content: space-between; font-size: 12.5px; color: #b91c1c; border-top: 1px dashed #e2e8f0; padding-top: 5px;" id="drawerDeliveryFeeRow">
+            <span>🛵 外送运费:</span>
+            <span style="font-weight: 700;">稍后由店员核算另计</span>
+          </div>
         </div>
 
         <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
           <div>
-            <div style="font-size: 14.5px; font-weight: 800; color: #1e293b;">应付总计 (含税):</div>
+            <div style="font-size: 14.5px; font-weight: 800; color: #1e293b;" id="drawerFinalTotalLabel">应付总计 (含税):</div>
             <div style="font-size: 11px; color: #94a3b8;" id="drawerTaxNoticeText">包含 10% 门店税费/服务费</div>
           </div>
           <span style="font-size: 26px; font-weight: 800; color: var(--primary);" id="drawerFinalTotalText">RM 0.00</span>
@@ -1300,16 +1310,26 @@
 
     function setOrderMode(mode) {
       currentOrderMode = mode;
+      const deliveryRow = document.getElementById("drawerDeliveryFeeRow");
+      const totalLabel = document.getElementById("drawerFinalTotalLabel");
+      const noticeText = document.getElementById("drawerTaxNoticeText");
+
       if (mode === '自取') {
         document.getElementById("btnModePickup").classList.add("active");
         document.getElementById("btnModeDelivery").classList.remove("active");
         document.getElementById("fieldDeliveryAddressWrap").style.display = "none";
         document.getElementById("fieldTimeSectionLabel").innerText = "预计多久到店自取 *";
+        if (deliveryRow) deliveryRow.style.display = "none";
+        if (totalLabel) totalLabel.innerText = "应付总计 (含税):";
+        if (noticeText) noticeText.innerText = "包含 10% 门店税费/服务费";
       } else {
         document.getElementById("btnModeDelivery").classList.add("active");
         document.getElementById("btnModePickup").classList.remove("active");
         document.getElementById("fieldDeliveryAddressWrap").style.display = "block";
         document.getElementById("fieldTimeSectionLabel").innerText = "预计送达时间 *";
+        if (deliveryRow) deliveryRow.style.display = "flex";
+        if (totalLabel) totalLabel.innerText = "餐点总计 (含税/运费另计):";
+        if (noticeText) noticeText.innerText = "已含 10% 税费 | 🛵 运费店员稍后核算";
       }
       renderTimeChips();
     }
@@ -1673,6 +1693,19 @@
       const taxLabel = document.getElementById("drawerTaxLabel");
       if (taxLabel) taxLabel.innerText = TAX_LABEL;
 
+      const deliveryRow = document.getElementById("drawerDeliveryFeeRow");
+      if (deliveryRow) {
+        deliveryRow.style.display = currentOrderMode === '外送' ? 'flex' : 'none';
+      }
+      const totalLabel = document.getElementById("drawerFinalTotalLabel");
+      if (totalLabel) {
+        totalLabel.innerText = currentOrderMode === '外送' ? "餐点总计 (含税/运费另计):" : "应付总计 (含税):";
+      }
+      const noticeText = document.getElementById("drawerTaxNoticeText");
+      if (noticeText) {
+        noticeText.innerText = currentOrderMode === '外送' ? "已含 10% 税费 | 🛵 运费店员稍后核算" : "包含 10% 门店税费/服务费";
+      }
+
       document.getElementById("drawerFinalTotalText").innerText = `RM ${totals.grandTotal.toFixed(2)}`;
     }
 
@@ -1727,7 +1760,7 @@
       const totals = calculateOrderTotals();
 
       let lines = [];
-      lines.push(`*【螺蛳粉 • 线上${currentOrderMode}订单】*`);
+      lines.push(`*【新山 Austin Heights 螺蛳粉 • 线上${currentOrderMode}订单】*`);
       lines.push(`---------------------------------`);
       lines.push(`*订单类型:* [${currentOrderMode}]`);
       lines.push(`*顾客姓名:* ${name}`);
@@ -1772,10 +1805,18 @@
         lines.push(`- 外带餐盒: ${totals.mainDishCount}份 (+RM ${totals.packagingCost.toFixed(2)})`);
       }
       lines.push(`- ${TAX_LABEL}: +RM ${totals.taxAmount.toFixed(2)}`);
-      lines.push(`---------------------------------`);
-      lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】* (已含税)`);
-      lines.push(`---------------------------------`);
-      lines.push(`请店员核对订单并提供 DuitNow QR 码收款，谢谢！`);
+      if (currentOrderMode === '外送') {
+        lines.push(`- 外送运费: 🛵 稍后由店员根据送餐距离核算另计`);
+        lines.push(`---------------------------------`);
+        lines.push(`*【餐点总额: RM ${totals.grandTotal.toFixed(2)}】* (已含税，外送运费待店员确认)`);
+        lines.push(`---------------------------------`);
+        lines.push(`请店员核对餐点、计算外送运费并提供 DuitNow QR 码收款，谢谢！`);
+      } else {
+        lines.push(`---------------------------------`);
+        lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】* (已含税)`);
+        lines.push(`---------------------------------`);
+        lines.push(`请店员核对订单并提供 DuitNow QR 码收款，谢谢！`);
+      }
 
       const fullText = lines.join('\n');
       const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(fullText)}`;
