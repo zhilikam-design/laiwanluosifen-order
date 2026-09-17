@@ -1,0 +1,721 @@
+[
+  {
+    "id": "S1",
+    "cat": "汤螺蛳粉",
+    "name": "S1 原味螺蛳粉 Original Luosifen",
+    "price": 12.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "地道经典原汁原味螺蛳汤粉",
+    "img": "images/S1.jpeg",
+    "badge": "🌟 经典老柳州",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000937396.jpeg"
+  },
+  {
+    "id": "S2",
+    "cat": "汤螺蛳粉",
+    "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen",
+    "price": 14.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "配香煎荷包蛋",
+    "img": "images/S2.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001003128.jpeg"
+  },
+  {
+    "id": "S3",
+    "cat": "汤螺蛳粉",
+    "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen",
+    "price": 15.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "招牌必点超大吸汤炸蛋",
+    "img": "images/S3.jpeg",
+    "badge": "🔥 进店必点",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001046295.jpeg"
+  },
+  {
+    "id": "S4",
+    "cat": "汤螺蛳粉",
+    "name": "S4 香肠螺蛳粉 TW Sausage Luosifen",
+    "price": 15.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "配焦香台湾香肠",
+    "img": "images/S4.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001114368.jpeg"
+  },
+  {
+    "id": "S5",
+    "cat": "汤螺蛳粉",
+    "name": "S5 腊肠螺蛳粉 CN Sausage Luosifen",
+    "price": 15.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "传统风味腊肠",
+    "img": "images/S5.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001149447.jpeg"
+  },
+  {
+    "id": "S6",
+    "cat": "汤螺蛳粉",
+    "name": "S6 凤爪螺蛳粉 Chicken Feet Luosifen",
+    "price": 16.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "软糯入味虎皮凤爪",
+    "img": "images/S6.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001220137.jpeg"
+  },
+  {
+    "id": "S7",
+    "cat": "汤螺蛳粉",
+    "name": "S7 鲜肉螺蛳粉 XianRou Luosifen",
+    "price": 18.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "鲜嫩滑口猪肉片",
+    "img": "images/S7.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105230761.jpeg"
+  },
+  {
+    "id": "S8",
+    "cat": "汤螺蛳粉",
+    "name": "S8 锅烧螺蛳粉 GuoShao Luosifen",
+    "price": 18.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "桂林传统秘制锅烧脆肉",
+    "img": "images/S8.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105247434.jpeg"
+  },
+  {
+    "id": "S9",
+    "cat": "汤螺蛳粉",
+    "name": "S9 叉烧螺蛳粉 ChaShao Luosifen",
+    "price": 18.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "蜜汁香滑叉烧",
+    "img": "images/S9.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105301738.jpeg"
+  },
+  {
+    "id": "S10",
+    "cat": "汤螺蛳粉",
+    "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen",
+    "price": 18.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "秘制卤香醇厚大肠",
+    "img": "images/S10.jpeg",
+    "badge": "👍 秘制卤肥肠",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105337237.jpeg"
+  },
+  {
+    "id": "S11",
+    "cat": "汤螺蛳粉",
+    "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup",
+    "price": 12.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "经典清甜桂林高汤米粉",
+    "img": "images/S11.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000800397.jpeg"
+  },
+  {
+    "id": "S12",
+    "cat": "汤螺蛳粉",
+    "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen",
+    "price": 21.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "软烂脱骨大猪脚",
+    "img": "images/S12.jpeg",
+    "badge": "🥩 大份脱骨猪脚",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260629120252697.jpeg"
+  },
+  {
+    "id": "S13",
+    "cat": "汤螺蛳粉",
+    "name": "S13 牛腩螺蛳粉 Beef Brisket Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "浓香酥烂大块牛腩",
+    "img": "images/S13.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000913580.jpeg"
+  },
+  {
+    "id": "D1",
+    "cat": "招牌干捞",
+    "name": "D1 炸蛋干捞粉 Deep Fried Egg Dry Luosifen",
+    "price": 15.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "香浓干拌搭酥脆大炸蛋",
+    "img": "images/D1.jpeg",
+    "badge": "👑 干捞榜首",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235726216.jpeg"
+  },
+  {
+    "id": "D2",
+    "cat": "招牌干捞",
+    "name": "D2 螺蛳干捞粉 Dry Luosifen",
+    "price": 13.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "经典特制酱汁干捞粉",
+    "img": "images/D2.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235747575.jpeg"
+  },
+  {
+    "id": "D3",
+    "cat": "招牌干捞",
+    "name": "D3 煎蛋干捞粉 Fried Egg Dry Luosifen",
+    "price": 14.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "干拌配现煎荷包蛋",
+    "img": "images/D3.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235829718.jpeg"
+  },
+  {
+    "id": "D4",
+    "cat": "招牌干捞",
+    "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen",
+    "price": 14.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "干拌配台湾香肠",
+    "img": "images/D4.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250427205150320.jpeg"
+  },
+  {
+    "id": "D5",
+    "cat": "招牌干捞",
+    "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen",
+    "price": 17.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "干拌配卤肥肠",
+    "img": "images/D5.jpeg",
+    "badge": "👍 秘制卤肥肠",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105022734.jpeg"
+  },
+  {
+    "id": "D6",
+    "cat": "招牌干捞",
+    "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen",
+    "price": 17.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "干拌配嫩鲜肉",
+    "img": "images/D6.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105042608.jpeg"
+  },
+  {
+    "id": "D7",
+    "cat": "招牌干捞",
+    "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen",
+    "price": 17.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "干拌配酥脆锅烧",
+    "img": "images/D7.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105108671.jpeg"
+  },
+  {
+    "id": "D8",
+    "cat": "招牌干捞",
+    "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen",
+    "price": 17.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "干拌配叉烧肉",
+    "img": "images/D8.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105126127.jpeg"
+  },
+  {
+    "id": "D9",
+    "cat": "招牌干捞",
+    "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen",
+    "price": 18.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "干拌配酥烂牛腩",
+    "img": "images/D9.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105145288.jpeg"
+  },
+  {
+    "id": "B1",
+    "cat": "炒粉炒饭",
+    "name": "B1 炒螺蛳粉 Fried Luosifen",
+    "price": 15.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "大火镬气翻炒螺蛳粉",
+    "img": "images/B1.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234917290.jpeg"
+  },
+  {
+    "id": "B2",
+    "cat": "炒粉炒饭",
+    "name": "B2 炒米粉 Fried Mee Hoon",
+    "price": 12.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "镬气十足香炒米粉",
+    "img": "images/B2.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234937563.jpeg"
+  },
+  {
+    "id": "B3",
+    "cat": "炒粉炒饭",
+    "name": "B3 炒饭 Fried Rice",
+    "price": 12.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "粒粒分明黄金炒饭",
+    "img": "images/B3.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235002683.jpeg"
+  },
+  {
+    "id": "C1",
+    "cat": "手工水饺云吞",
+    "name": "C1 手工水饺 Homemade Dumplings",
+    "price": 12.8,
+    "mods": [
+      "dumpling_style",
+      "addons"
+    ],
+    "desc": "皮薄馅大手工水饺 (可选煮汤/酥炸)",
+    "img": "images/C1.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211728448.jpeg"
+  },
+  {
+    "id": "C2",
+    "cat": "手工水饺云吞",
+    "name": "C2 手工云吞 Homemade Wantan",
+    "price": 12.8,
+    "mods": [
+      "wantan_style",
+      "addons"
+    ],
+    "desc": "鲜肉饱满纯手工云吞 (可选煮汤/酥炸)",
+    "img": "images/C2.jpeg",
+    "badge": "🥟 现包鲜肉云吞",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211750110.jpeg"
+  },
+  {
+    "id": "C3",
+    "cat": "特色小吃",
+    "name": "C3 红糖糍粑 Brown Sugar Glutinous Rice Cake",
+    "price": 8.8,
+    "mods": [],
+    "desc": "外酥里糯香甜红糖",
+    "img": "images/C3.jpeg",
+    "badge": "✨ 甜糯解辣",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235239192.jpeg"
+  },
+  {
+    "id": "C4",
+    "cat": "特色小吃",
+    "name": "C4 脆皮香蕉 Crispy Banana",
+    "price": 8.8,
+    "mods": [],
+    "desc": "金黄酥脆香甜可口",
+    "img": "images/C4.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235320176.jpeg"
+  },
+  {
+    "id": "C5",
+    "cat": "特色小吃",
+    "name": "C5 香芋地瓜丸 Yam Ball",
+    "price": 7.8,
+    "mods": [],
+    "desc": "双重香浓软糯丸子",
+    "img": "images/C5.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235343569.jpeg"
+  },
+  {
+    "id": "C6",
+    "cat": "特色小吃",
+    "name": "C6 南瓜饼 Pumpkin Cake",
+    "price": 7.8,
+    "mods": [],
+    "desc": "外皮酥脆香糯南瓜",
+    "img": "images/C6.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235409765.jpeg"
+  },
+  {
+    "id": "C7",
+    "cat": "特色小吃",
+    "name": "C7 沙拉卷 Salad Roll",
+    "price": 4.8,
+    "mods": [],
+    "desc": "清爽酥脆沙拉卷",
+    "img": "images/C7.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235430457.jpeg"
+  },
+  {
+    "id": "C8",
+    "cat": "特色小吃",
+    "name": "C8 炸饺 Deep fried Homemade Dumplings",
+    "price": 6.8,
+    "mods": [],
+    "desc": "香脆酥炸手工饺",
+    "img": "images/C8.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235536786.jpeg"
+  },
+  {
+    "id": "C9",
+    "cat": "特色小吃",
+    "name": "C9 油条虾滑 Doughnut With Shrimp Paste",
+    "price": 7.8,
+    "mods": [],
+    "desc": "酥脆老油条酿鲜美虾滑",
+    "img": "images/C9.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235620336.jpeg"
+  },
+  {
+    "id": "C10",
+    "cat": "特色小吃",
+    "name": "C10 虾枣 Prawn Rolls",
+    "price": 7.8,
+    "mods": [],
+    "desc": "传统潮州风味脆皮虾枣",
+    "img": "images/C10.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235028729.jpeg"
+  },
+  {
+    "id": "C11",
+    "cat": "特色小吃",
+    "name": "C11 炸云吞 Fried Wonton",
+    "price": 7.8,
+    "mods": [],
+    "desc": "咔嚓酥脆鲜肉小云吞",
+    "img": "images/C11.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001502231.jpeg"
+  },
+  {
+    "id": "F01",
+    "cat": "饮品甜品",
+    "name": "F01 Justea",
+    "price": 3.5,
+    "mods": [],
+    "desc": "清爽瓶装茶饮",
+    "img": "images/F01.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113252740.jpeg"
+  },
+  {
+    "id": "F02",
+    "cat": "饮品甜品",
+    "name": "F02 矿泉水 Mineral Water",
+    "price": 2.0,
+    "mods": [],
+    "desc": "瓶装饮用水",
+    "img": "images/F02.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113303692.jpeg"
+  },
+  {
+    "id": "F03",
+    "cat": "饮品甜品",
+    "name": "F03 冰红茶 Iced Black Tea",
+    "price": 4.0,
+    "mods": [],
+    "desc": "经典清爽柠檬红茶",
+    "img": "images/F03.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113314206.jpeg"
+  },
+  {
+    "id": "F04",
+    "cat": "饮品甜品",
+    "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut",
+    "price": 4.0,
+    "mods": [],
+    "desc": "清凉降火甘蔗马蹄水",
+    "img": "images/F04.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113328766.jpeg"
+  },
+  {
+    "id": "F05",
+    "cat": "饮品甜品",
+    "name": "F05 王老吉 Wong Lo Kat",
+    "price": 4.0,
+    "mods": [],
+    "desc": "经典清凉凉茶",
+    "img": "images/F05.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113900432.jpeg"
+  },
+  {
+    "id": "F06",
+    "cat": "饮品甜品",
+    "name": "F06 100 Plus",
+    "price": 3.5,
+    "mods": [],
+    "desc": "电解质气泡水",
+    "img": "images/F06.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113356428.jpeg"
+  },
+  {
+    "id": "F07",
+    "cat": "饮品甜品",
+    "name": "F07 冰糖雪梨 Rock Sugar Pear",
+    "price": 4.0,
+    "mods": [],
+    "desc": "润肺清甜雪梨汁",
+    "img": "images/F07.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113406373.jpeg"
+  },
+  {
+    "id": "F08",
+    "cat": "饮品甜品",
+    "name": "F08 蜜桃乌龙茶 Peach Oolong",
+    "price": 4.0,
+    "mods": [],
+    "desc": "果香扑鼻冷泡茶",
+    "img": "images/F08.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113418227.jpeg"
+  },
+  {
+    "id": "F09",
+    "cat": "饮品甜品",
+    "name": "F09 元气森林气泡水 Genki Forest",
+    "price": 5.5,
+    "mods": [],
+    "desc": "0糖0脂0卡气泡水",
+    "img": "images/F09.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113429424.jpeg"
+  },
+  {
+    "id": "F10",
+    "cat": "饮品甜品",
+    "name": "F10 可口可乐 Coca-Cola",
+    "price": 4.0,
+    "mods": [],
+    "desc": "畅爽经典可乐",
+    "img": "images/F10.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113439750.jpeg"
+  },
+  {
+    "id": "F11",
+    "cat": "饮品甜品",
+    "name": "F11 红牛 Red Bull",
+    "price": 5.5,
+    "mods": [],
+    "desc": "提神功能饮料",
+    "img": "images/F11.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113912681.jpeg"
+  },
+  {
+    "id": "F12",
+    "cat": "饮品甜品",
+    "name": "F12 豆奶 Soya Milk",
+    "price": 5.0,
+    "mods": [],
+    "desc": "浓醇香滑豆奶",
+    "img": "images/F12.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113509390.jpeg"
+  },
+  {
+    "id": "F13",
+    "cat": "饮品甜品",
+    "name": "F13 祖传八宝凉茶 Herbal Tea",
+    "price": 5.0,
+    "mods": [],
+    "desc": "清热解毒秘制凉茶",
+    "img": "images/F13.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113522549.jpeg"
+  },
+  {
+    "id": "F14",
+    "cat": "饮品甜品",
+    "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum",
+    "price": 5.0,
+    "mods": [],
+    "desc": "甘甜舒缓清润菊花",
+    "img": "images/F14.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113535574.jpeg"
+  },
+  {
+    "id": "F15",
+    "cat": "饮品甜品",
+    "name": "F15 山楂酸梅汤 Plum Soup",
+    "price": 5.0,
+    "mods": [],
+    "desc": "酸甜生津解腻必备",
+    "img": "images/F15.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113547634.jpeg"
+  },
+  {
+    "id": "F16",
+    "cat": "饮品甜品",
+    "name": "F16 香兰洛神花 Pandan Roselle",
+    "price": 5.0,
+    "mods": [],
+    "desc": "南洋特色酸爽芳香",
+    "img": "images/F16.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113602287.jpeg"
+  },
+  {
+    "id": "F17",
+    "cat": "饮品甜品",
+    "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice",
+    "price": 6.0,
+    "mods": [],
+    "desc": "现榨天然纯正甘蔗原汁",
+    "img": "images/F17.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113612574.jpeg"
+  },
+  {
+    "id": "F18",
+    "cat": "饮品甜品",
+    "name": "F18 爱玉冰 Ice Jelly",
+    "price": 5.0,
+    "mods": [],
+    "desc": "冰凉爽滑爱玉甜品",
+    "img": "images/F18.jpeg",
+    "badge": "🧊 清爽解腻",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113740506.jpeg"
+  },
+  {
+    "id": "F19",
+    "cat": "饮品甜品",
+    "name": "F19 酸柑酸梅 Calamansi Sour Plum",
+    "price": 5.0,
+    "mods": [],
+    "desc": "酸爽开胃金桔酸梅",
+    "img": "images/F19.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113908455.jpeg"
+  },
+  {
+    "id": "F20",
+    "cat": "饮品甜品",
+    "name": "F20 葡萄爱玉冰 Grape Ice Jelly",
+    "price": 6.0,
+    "mods": [],
+    "desc": "浓郁葡萄风味果冻",
+    "img": "images/F20.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114242371.jpeg"
+  },
+  {
+    "id": "F21",
+    "cat": "饮品甜品",
+    "name": "F21 苹果味爱玉冰 Apple Ice Jelly",
+    "price": 6.0,
+    "mods": [],
+    "desc": "清爽苹果爱玉冻",
+    "img": "images/F21.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114218382.jpeg"
+  },
+  {
+    "id": "F22",
+    "cat": "饮品甜品",
+    "name": "F22 阿萨姆原味奶茶 Assam Milk Tea",
+    "price": 5.5,
+    "mods": [],
+    "desc": "醇厚香浓阿萨姆红茶奶茶",
+    "img": "images/F22.jpeg",
+    "badge": "",
+    "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260310205156502.jpeg"
+  }
+]
