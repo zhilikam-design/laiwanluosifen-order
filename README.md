@@ -26,9 +26,9 @@
 ```text
 luosifen-order/
 ├── index.html        # 点餐前端主程序（包含完整现代 UI、菜单交互、规格计算与 WhatsApp 生成器）
+├── finance.html      # 🍜 智能记账与财务工作台（无格子 SaaS 界面、POS数据融合、Google Sheet 双向同步与 P&L 导出）
 ├── menu_data.json    # 从 Optimy POS 导出的 58 道标准化商品与价格数据
 ├── preview.png       # 点餐系统移动端高保真预览图
-├── deploy_order.bat  # Windows 一键自动推送到 GitHub 脚本
 └── images/           # 58 道餐品高清实物大图 (JPG/JPEG)
     ├── S1.jpeg       # S1 原味螺蛳粉
     ├── S2.jpeg       # S2 煎蛋螺蛳粉
@@ -45,5 +45,6 @@ luosifen-order/
 ## 🚀 部署与访问
 
 - **GitHub 仓库**: [zhilikam-design/laiwanluosifen-order](https://github.com/zhilikam-design/laiwanluosifen-order)
-- **默认 GitHub Pages 访问链接**: [https://zhilikam-design.github.io/laiwanluosifen-order/](https://zhilikam-design.github.io/laiwanluosifen-order/)
+- **顾客点餐前端**: [https://zhilikam-design.github.io/laiwanluosifen-order/](https://zhilikam-design.github.io/laiwanluosifen-order/)
+- **店长财务工作台**: [https://zhilikam-design.github.io/laiwanluosifen-order/finance.html](https://zhilikam-design.github.io/laiwanluosifen-order/finance.html)
 - 支持绑定**自定义独立域名**（如 `order.laiwanluosifen.com`），顾客扫码点餐更专业、无第三方痕迹。

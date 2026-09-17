@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>来碗 · 螺蛳粉门店智能财务与经营复盘系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #0b0f19;
+      color: #f3f4f6;
+    }
+    .mono { font-family: 'Fira Code', monospace; }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-hover:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: #1f2937;
+      color: #34d399;
+      border-bottom: 2px solid #10b981;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .no-print { display: none !important; }
+      .glass-card { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- 品牌标识与门店 -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-xl shadow-lg shadow-emerald-900/40">
+          🍜
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-base sm:text-lg tracking-tight text-white flex items-center gap-1.5">
+              来碗 · 经营记账与财务工作台
+            </h1>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
+              新山 Austin Heights
+            </span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-400">
+            <span>Optimy POS + Google Sheet 实时连通</span>
+            <span class="text-slate-600">•</span>
+            <span id="header-time" class="mono text-slate-400">2026-09-17</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧控制区 -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <button onclick="openSettingsModal()" class="hidden md:flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-700 transition" title="查看 Google Sheet 联通详情">
+          <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="sync-status-text" class="text-slate-300">Google Sheet 已连通</span>
+          <i data-lucide="sheet" class="w-3.5 h-3.5 text-emerald-400"></i>
+        </button>
+
+        <button onclick="refreshDataFromCloud()" id="btn-sync-refresh" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" id="icon-refresh" class="w-3.5 h-3.5 text-slate-300"></i>
+          <span class="hidden sm:inline">同步最新</span>
+        </button>
+
+        <button onclick="openExpenseModal()" class="text-xs px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium shadow-md shadow-emerald-900/30 transition flex items-center gap-1.5">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>记一笔</span>
+        </button>
+
+        <a href="index.html" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-800/50 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition flex items-center gap-1" title="切换至点餐菜单前台">
+          <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
+          <span class="hidden lg:inline">点餐前台</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 选项卡导航 -->
+    <div class="border-t border-slate-800/80 bg-slate-950/60 overflow-x-auto no-scrollbar">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-2 py-1 text-xs sm:text-sm">
+        <button onclick="switchTab('overview')" id="tab-btn-overview" class="tab-btn active px-3.5 py-2 font-medium rounded-lg text-slate-300 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-400"></i>
+          <span>经营总览大盘</span>
+        </button>
+        <button onclick="switchTab('expenses')" id="tab-btn-expenses" class="tab-btn px-3.5 py-2 font-medium rounded-lg text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="wallet" class="w-4 h-4 text-rose-400"></i>
+          <span>运营与日常杂支</span>
+          <span id="badge-expense-count" class="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-900/50 text-rose-300 border border-rose-800">6</span>
+        </button>
+        <button onclick="switchTab('revenue')" id="tab-btn-revenue" class="tab-btn px-3.5 py-2 font-medium rounded-lg text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="banknote" class="w-4 h-4 text-emerald-400"></i>
+          <span>每日柜台流水</span>
+          <span id="badge-revenue-count" class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-900/50 text-emerald-300 border border-emerald-800">5</span>
+        </button>
+        <button onclick="switchTab('suppliers')" id="tab-btn-suppliers" class="tab-btn px-3.5 py-2 font-medium rounded-lg text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="truck" class="w-4 h-4 text-amber-400"></i>
+          <span>供应商往来账</span>
+          <span id="badge-supplier-count" class="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-900/50 text-amber-300 border border-amber-800">5</span>
+        </button>
+        <button onclick="switchTab('delivery')" id="tab-btn-delivery" class="tab-btn px-3.5 py-2 font-medium rounded-lg text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="bike" class="w-4 h-4 text-sky-400"></i>
+          <span>外卖扣点分析</span>
+        </button>
+        <button onclick="switchTab('dishes')" id="tab-btn-dishes" class="tab-btn px-3.5 py-2 font-medium rounded-lg text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i>
+          <span>POS 菜品毛利排行榜</span>
+        </button>
+        <button onclick="switchTab('pnl')" id="tab-btn-pnl" class="tab-btn px-3.5 py-2 font-medium rounded-lg text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+          <span>损益表 (P&L) 导出</span>
+        </button>
+        <button onclick="switchTab('settings')" id="tab-btn-settings" class="tab-btn px-3.5 py-2 font-medium rounded-lg text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="cloud-cog" class="w-4 h-4 text-cyan-400"></i>
+          <span>Google Sheet 设置</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主体容器 -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- TAB 1: 经营总览大盘 (OVERVIEW) -->
+    <div id="tab-content-overview" class="space-y-6">
+      
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>2026年 9月 门店综合经营盘点</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-normal">
+              预估进行中
+            </span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            全店总营收 = 柜台实收 (现金/扫码) + 外卖月打款到手净额 | 数据直通 Google Sheet「月度损益看板」
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-slate-400">切换月份:</label>
+          <select id="month-selector" onchange="changeMonth(this.value)" class="bg-slate-800 text-xs border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500">
+            <option value="2026-09" selected>2026年 9月 (当月进行中)</option>
+            <option value="2026-08">2026年 8月 (实结)</option>
+            <option value="2026-07">2026年 7月 (实结)</option>
+          </select>
+          <button onclick="openExpenseModal()" class="text-xs bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 px-3 py-1.5 rounded-lg flex items-center gap-1 transition">
+            <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+            <span>记开销</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 5 大核心财务 KPI 指标卡片 -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+            <span>全店总营业额</span>
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <i data-lucide="trending-up" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-xl sm:text-2xl font-extrabold text-white mono" id="kpi-total-revenue">
+            RM 34,994.00
+          </div>
+          <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+            <span>柜台: <span class="text-slate-200 mono" id="kpi-counter-rev">RM 22,430</span></span>
+            <span>外卖: <span class="text-slate-200 mono" id="kpi-delivery-rev">RM 12,564</span></span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+        </div>
+
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+            <span>原材料采购总额</span>
+            <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+              <i data-lucide="package" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-xl sm:text-2xl font-extrabold text-amber-400 mono" id="kpi-cogs">
+            RM 11,200.00
+          </div>
+          <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+            <span>食材成本率:</span>
+            <span class="text-amber-300 font-semibold mono" id="kpi-cogs-pct">32.0%</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500"></div>
+        </div>
+
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+            <span>运营日常杂支</span>
+            <div class="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
+              <i data-lucide="building-2" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-xl sm:text-2xl font-extrabold text-rose-400 mono" id="kpi-opex">
+            RM 14,500.00
+          </div>
+          <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+            <span>租金+薪资+水电</span>
+            <span class="text-slate-400 text-[10px]">占比 41.4%</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-rose-500"></div>
+        </div>
+
+        <div class="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+            <span>当月预估净利润</span>
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-xl sm:text-2xl font-extrabold text-emerald-400 mono" id="kpi-net-profit">
+            RM 9,294.00
+          </div>
+          <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+            <span>净利润率:</span>
+            <span class="text-emerald-300 font-semibold mono" id="kpi-net-profit-pct">26.6%</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
+        </div>
+
+        <div class="col-span-2 lg:col-span-1 glass-card glass-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+            <span>每日保本平衡线</span>
+            <div class="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+              <i data-lucide="scale" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-xl sm:text-2xl font-extrabold text-indigo-300 mono" id="kpi-breakeven">
+            RM 856 /天
+          </div>
+          <div class="text-[11px] text-slate-400 mt-2 flex items-center justify-between">
+            <span>每日需售出:</span>
+            <span class="text-indigo-200 font-semibold mono" id="kpi-breakeven-bowls">约 54 碗粉</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500"></div>
+        </div>
+      </div>
+
+      <!-- 2 大动态图表 -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass-card rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-400"></i>
+                <span>月度营收、总成本与净利润趋势</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">覆盖 2026年 1月至 9月 POS 真实销售与财务推演</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
+              单位: RM
+            </span>
+          </div>
+          <div class="h-64 sm:h-72 w-full">
+            <canvas id="monthlyTrendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2 mb-1">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-cyan-400"></i>
+              <span>9月份支出与成本结构</span>
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">食材、房租、薪资及公用开销占比分布</p>
+          </div>
+          <div class="h-52 w-full flex items-center justify-center">
+            <canvas id="expenseStructureChart"></canvas>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 mt-3 pt-3 border-t border-slate-800">
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> 原料: RM 11,200</div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 租金: RM 3,500</div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span> 薪资: RM 6,500</div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span> 水电煤气: RM 2,200</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 月度损益看板表格 -->
+      <div class="glass-card rounded-2xl p-5 overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+              <i data-lucide="table" class="w-4 h-4 text-emerald-400"></i>
+              <span>门店月度综合损益看板 (Google Sheet「月度损益看板」)</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">全店总营收 = 柜台现金扫码 + 外卖平台扣点后实际到账</p>
+          </div>
+          <button onclick="switchTab('pnl')" class="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+            <span>查看完整正规财务损益表</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-800/80 text-slate-300 uppercase text-[11px] tracking-wider border-b border-slate-700">
+              <tr>
+                <th class="py-3 px-4">月份</th>
+                <th class="py-3 px-4">柜台营收 (现金+扫码)</th>
+                <th class="py-3 px-4">外卖平台到手打款</th>
+                <th class="py-3 px-4 text-emerald-300 font-semibold">全店总营业额</th>
+                <th class="py-3 px-4 text-amber-300">原材料采购总额</th>
+                <th class="py-3 px-4 text-rose-300">运营杂支总额</th>
+                <th class="py-3 px-4 text-emerald-400 font-bold">预估净利润</th>
+                <th class="py-3 px-4">食材成本率</th>
+              </tr>
+            </thead>
+            <tbody id="overview-pnl-tbody" class="divide-y divide-slate-800/80 text-slate-200 mono">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 2: 运营与日常杂支 (EXPENSES) -->
+    <div id="tab-content-expenses" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="wallet" class="w-5 h-5 text-rose-400"></i>
+            <span>店面运营与日常杂支 (OPEX 台账)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            记录新山 Austin Heights 门市房租、水电煤气、员工薪水、外卖打包耗材与日常零用开销
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <button onclick="applyPresetExpense('rent')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1 transition">
+            <span>🏢 套用月租 RM3500</span>
+          </button>
+          <button onclick="applyPresetExpense('gas')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1 transition">
+            <span>🔥 煤气4桶 RM280</span>
+          </button>
+          <button onclick="openExpenseModal()" class="text-xs bg-rose-600 hover:bg-rose-500 text-white px-3.5 py-1.5 rounded-lg font-medium shadow-md shadow-rose-900/30 flex items-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>记一笔开支</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="glass-card p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400">店铺租金 (Rent)</div>
+          <div class="text-base font-bold text-white mono mt-1" id="sum-rent">RM 3,500.00</div>
+          <div class="text-[10px] text-slate-500">Austin 门市</div>
+        </div>
+        <div class="glass-card p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400">商业电费 (TNB)</div>
+          <div class="text-base font-bold text-amber-300 mono mt-1" id="sum-tnb">RM 920.80</div>
+          <div class="text-[10px] text-slate-500">熬汤保鲜</div>
+        </div>
+        <div class="glass-card p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400">水费 (SAJ)</div>
+          <div class="text-base font-bold text-sky-300 mono mt-1" id="sum-saj">RM 185.40</div>
+          <div class="text-[10px] text-slate-500">门市用水</div>
+        </div>
+        <div class="glass-card p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400">后厨商用煤气</div>
+          <div class="text-base font-bold text-orange-300 mono mt-1" id="sum-gas">RM 280.00</div>
+          <div class="text-[10px] text-slate-500">4桶商用气</div>
+        </div>
+        <div class="glass-card p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400">员工薪资预支</div>
+          <div class="text-base font-bold text-indigo-300 mono mt-1" id="sum-wages">RM 2,200.00</div>
+          <div class="text-[10px] text-slate-500">半月薪水</div>
+        </div>
+        <div class="glass-card p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400">柜台零用金(Petty)</div>
+          <div class="text-base font-bold text-emerald-300 mono mt-1" id="sum-petty">RM 65.50</div>
+          <div class="text-[10px] text-slate-500">杂物采购</div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">费用流水记录</span>
+            <span id="expenses-count-badge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">共 6 笔</span>
+          </div>
+
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="text" id="expense-search" oninput="filterExpenses()" placeholder="搜索项目、经手人、单号..." class="bg-slate-800 text-xs border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-rose-500 w-full sm:w-56">
+            <select id="expense-cat-filter" onchange="filterExpenses()" class="bg-slate-800 text-xs border border-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none">
+              <option value="ALL">全部类别</option>
+              <option value="店铺租金">店铺租金</option>
+              <option value="水费">水费</option>
+              <option value="电费">电费</option>
+              <option value="煤气费">煤气费</option>
+              <option value="员工薪资与福利">员工薪资</option>
+              <option value="柜台零用金(Petty Cash)">零用金</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-800/80 text-slate-300 uppercase text-[11px] tracking-wider border-b border-slate-700">
+              <tr>
+                <th class="py-3 px-4">支出日期</th>
+                <th class="py-3 px-4">费用类别</th>
+                <th class="py-3 px-4">项目明细</th>
+                <th class="py-3 px-4 text-rose-300 font-semibold">金额 (RM)</th>
+                <th class="py-3 px-4">支付方式</th>
+                <th class="py-3 px-4">凭证/单号</th>
+                <th class="py-3 px-4">经手人</th>
+                <th class="py-3 px-4">备注说明</th>
+              </tr>
+            </thead>
+            <tbody id="expenses-tbody" class="divide-y divide-slate-800 text-slate-200">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: 每日柜台流水 (REVENUE) -->
+    <div id="tab-content-revenue" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="banknote" class="w-5 h-5 text-emerald-400"></i>
+            <span>每日柜台流水实收 (Cash + DuitNow)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            店内 POS 结账现金与无现金到账流水汇总，数据双向同步至 Google Sheet「每日营收流水」
+          </p>
+        </div>
+
+        <button onclick="openRevenueModal()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg font-medium shadow-md shadow-emerald-900/30 flex items-center gap-1.5 transition">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>录入今日营收</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="glass-card p-4 rounded-2xl border border-slate-800">
+          <div class="text-xs text-slate-400">本月柜台总营收 (RM)</div>
+          <div class="text-2xl font-extrabold text-emerald-400 mono mt-1" id="rev-total-sum">RM 12,640.50</div>
+          <div class="text-xs text-slate-500 mt-1">已统计 5 天流水</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border border-slate-800">
+          <div class="text-xs text-slate-400">柜台现金实收 (Cash)</div>
+          <div class="text-2xl font-extrabold text-amber-300 mono mt-1" id="rev-cash-sum">RM 3,380.00</div>
+          <div class="text-xs text-slate-500 mt-1">占比 26.7%</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border border-slate-800">
+          <div class="text-xs text-slate-400">无现金扫码/刷卡 (DuitNow/Card)</div>
+          <div class="text-2xl font-extrabold text-sky-400 mono mt-1" id="rev-card-sum">RM 9,260.50</div>
+          <div class="text-xs text-slate-500 mt-1">占比 73.3% (主流)</div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-800/80 text-slate-300 uppercase text-[11px] tracking-wider border-b border-slate-700">
+              <tr>
+                <th class="py-3 px-4">营业日期</th>
+                <th class="py-3 px-4 text-amber-300">现金实收 (Cash RM)</th>
+                <th class="py-3 px-4 text-sky-300">扫码/刷卡 (DuitNow/Card RM)</th>
+                <th class="py-3 px-4 text-emerald-400 font-bold">当日总营收 (RM)</th>
+                <th class="py-3 px-4">经手员工 / 交班对账备注</th>
+              </tr>
+            </thead>
+            <tbody id="revenue-tbody" class="divide-y divide-slate-800 text-slate-200 mono">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: 供应商往来账 (SUPPLIERS) -->
+    <div id="tab-content-suppliers" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="truck" class="w-5 h-5 text-amber-400"></i>
+            <span>供应商账单与应付账款管理</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            食材生鲜、米粉调料海运、外卖打包碗发票与还款状态跟踪
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="glass-card p-4 rounded-2xl border border-slate-800">
+          <div class="text-xs text-slate-400">进货账单总金额 (RM)</div>
+          <div class="text-2xl font-extrabold text-white mono mt-1" id="supp-total-sum">RM 6,465.00</div>
+          <div class="text-xs text-slate-500 mt-1">共 5 张进货发票</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border border-slate-800">
+          <div class="text-xs text-slate-400">未付款 (待结清金额)</div>
+          <div class="text-2xl font-extrabold text-rose-400 mono mt-1" id="supp-unpaid-sum">RM 4,990.00</div>
+          <div class="text-xs text-rose-300/80 mt-1 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span> 包含柳韵海运与包装耗材
+          </div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border border-slate-800">
+          <div class="text-xs text-slate-400">已结清支出 (已核销)</div>
+          <div class="text-2xl font-extrabold text-emerald-400 mono mt-1" id="supp-paid-sum">RM 1,475.00</div>
+          <div class="text-xs text-emerald-300/80 mt-1 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 南洋生鲜与蔬菜巴刹款
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-800/80 text-slate-300 uppercase text-[11px] tracking-wider border-b border-slate-700">
+              <tr>
+                <th class="py-3 px-4">进货日期</th>
+                <th class="py-3 px-4">供应商名称</th>
+                <th class="py-3 px-4">供货类别</th>
+                <th class="py-3 px-4">DO / 发票单号</th>
+                <th class="py-3 px-4 text-amber-300 font-semibold">账单金额 (RM)</th>
+                <th class="py-3 px-4">付款状态</th>
+                <th class="py-3 px-4">核销收据号</th>
+                <th class="py-3 px-4">主要货品明细</th>
+              </tr>
+            </thead>
+            <tbody id="suppliers-tbody" class="divide-y divide-slate-800 text-slate-200">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: 外卖平台扣点审计 (DELIVERY) -->
+    <div id="tab-content-delivery" class="hidden space-y-6">
+      <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="bike" class="w-5 h-5 text-sky-400"></i>
+          <span>外卖平台月结单核对与抽佣分析</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">
+          深度审计 GrabFood、ShopeeFood、Foodpanda 平台实际抽成比例与商家折扣让利损耗
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-card rounded-2xl p-5 border border-emerald-500/20 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">GF</span>
+              <div>
+                <h3 class="font-bold text-white text-sm">GrabFood</h3>
+                <span class="text-[10px] text-emerald-400">主力平台 (份额 56.8%)</span>
+              </div>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold mono">实扣 31.9%</span>
+          </div>
+          <div class="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-800 mono">
+            <div class="flex justify-between"><span>平台总单额:</span> <span class="text-white">RM 10,500.00</span></div>
+            <div class="flex justify-between text-rose-300"><span>平台抽佣:</span> <span>- RM 3,150.00</span></div>
+            <div class="flex justify-between text-amber-300"><span>商家优惠补贴:</span> <span>- RM 200.00</span></div>
+            <div class="flex justify-between font-bold text-emerald-400 text-sm pt-2 border-t border-slate-800">
+              <span>实际到手打款:</span> <span>RM 7,150.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-pink-500/20 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-xs">FP</span>
+              <div>
+                <h3 class="font-bold text-white text-sm">Foodpanda</h3>
+                <span class="text-[10px] text-pink-400">次级主力 (份额 25.9%)</span>
+              </div>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 font-semibold mono">实扣 33.1%</span>
+          </div>
+          <div class="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-800 mono">
+            <div class="flex justify-between"><span>平台总单额:</span> <span class="text-white">RM 4,800.00</span></div>
+            <div class="flex justify-between text-rose-300"><span>平台抽佣:</span> <span>- RM 1,440.00</span></div>
+            <div class="flex justify-between text-amber-300"><span>商家优惠补贴:</span> <span>- RM 150.00</span></div>
+            <div class="flex justify-between font-bold text-pink-400 text-sm pt-2 border-t border-slate-800">
+              <span>实际到手打款:</span> <span>RM 3,210.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-orange-500/20 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-xs">SF</span>
+              <div>
+                <h3 class="font-bold text-white text-sm">ShopeeFood</h3>
+                <span class="text-[10px] text-orange-400">补充平台 (份额 17.3%)</span>
+              </div>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 font-semibold mono">实扣 31.1%</span>
+          </div>
+          <div class="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-800 mono">
+            <div class="flex justify-between"><span>平台总单额:</span> <span class="text-white">RM 3,200.00</span></div>
+            <div class="flex justify-between text-rose-300"><span>平台抽佣:</span> <span>- RM 896.00</span></div>
+            <div class="flex justify-between text-amber-300"><span>商家优惠补贴:</span> <span>- RM 100.00</span></div>
+            <div class="flex justify-between font-bold text-orange-400 text-sm pt-2 border-t border-slate-800">
+              <span>实际到手打款:</span> <span>RM 2,204.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5">
+        <h3 class="font-bold text-white text-sm sm:text-base mb-3 flex items-center gap-2">
+          <i data-lucide="receipt" class="w-4 h-4 text-sky-400"></i>
+          <span>外卖对账明细列表 (Google Sheet「月度损益看板 · 板块二」)</span>
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-800/80 text-slate-300 uppercase text-[11px] tracking-wider border-b border-slate-700">
+              <tr>
+                <th class="py-3 px-4">所属月份</th>
+                <th class="py-3 px-4">外卖平台</th>
+                <th class="py-3 px-4">平台总流水 (Gross RM)</th>
+                <th class="py-3 px-4 text-rose-300">平台总抽佣 (RM)</th>
+                <th class="py-3 px-4 text-amber-300">商家补贴 (RM)</th>
+                <th class="py-3 px-4 text-emerald-400 font-bold">实际净到手款 (RM)</th>
+                <th class="py-3 px-4">综合抽佣率 (%)</th>
+                <th class="py-3 px-4">月结单 Tax Invoice 备注</th>
+              </tr>
+            </thead>
+            <tbody id="delivery-tbody" class="divide-y divide-slate-800 text-slate-200 mono">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: POS 菜品毛利排行榜 (DISHES) -->
+    <div id="tab-content-dishes" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="flame" class="w-5 h-5 text-orange-400"></i>
+            <span>58 道在售菜品进货成本 (`bprice`) 与毛利率透视</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            精准结合 Optimy POS 系统中的真实进料成本与核定售价，测算每一道菜品的单碗毛利与毛利率
+          </p>
+        </div>
+
+        <input type="text" id="dish-search" oninput="filterDishes()" placeholder="搜索菜品名称或编号 (S1, S3, D1)..." class="bg-slate-800 text-xs border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-orange-500 w-full sm:w-64">
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 overflow-hidden">
+        <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="sticky top-0 bg-slate-900/95 text-slate-300 uppercase text-[11px] tracking-wider border-b border-slate-700 z-10 backdrop-blur-sm">
+              <tr>
+                <th class="py-3 px-4">编号</th>
+                <th class="py-3 px-4">菜品名称与规格</th>
+                <th class="py-3 px-4">分类</th>
+                <th class="py-3 px-4 text-slate-300">核定售价 (RM)</th>
+                <th class="py-3 px-4 text-amber-300">进货/食材成本 (RM)</th>
+                <th class="py-3 px-4 text-emerald-400 font-bold">单份毛利润 (RM)</th>
+                <th class="py-3 px-4 text-cyan-300 font-bold">毛利率 (%)</th>
+                <th class="py-3 px-4">毛利评级</th>
+              </tr>
+            </thead>
+            <tbody id="dishes-tbody" class="divide-y divide-slate-800 text-slate-200">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: 损益表 (P&L) 导出打印 (PNL) -->
+    <div id="tab-content-pnl" class="hidden space-y-6">
+      <div class="no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="file-text" class="w-5 h-5 text-indigo-400"></i>
+            <span>标准餐饮损益报表 (Profit & Loss Statement)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">符合正规会计准则的损益报表，支持一键打印、导出 PDF 及 Excel</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+            <i data-lucide="printer" class="w-4 h-4 text-indigo-400"></i>
+            <span>打印 / 另存为 PDF</span>
+          </button>
+          <button onclick="exportPnLToExcel()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg font-medium shadow-md shadow-emerald-900/30 flex items-center gap-1.5 transition">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>导出 CSV / Excel</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-4xl mx-auto border border-slate-700 shadow-2xl">
+        <div class="text-center pb-6 border-b border-slate-700/80">
+          <div class="text-2xl font-black tracking-tight text-white">来碗 · 柳州地道螺蛳粉 (Austin Heights)</div>
+          <div class="text-base font-semibold text-emerald-400 mt-1">综合营业损益表 (Profit & Loss Statement)</div>
+          <div class="text-xs text-slate-400 mt-1 mono">报表周期: 2026年 9月 1日 至 2026年 9月 30日 (货币: MYR)</div>
+        </div>
+
+        <div class="mt-6 space-y-6 text-sm text-slate-200 mono">
+          <div>
+            <div class="flex justify-between items-center text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-700 pb-2">
+              <span>一、营业收入 (Revenue)</span>
+              <span>金额 (RM)</span>
+            </div>
+            <div class="divide-y divide-slate-800/60 pt-2 text-xs">
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">1. 门店柜台实收 (堂食与自取现金+扫码)</span>
+                <span class="text-white">RM 22,430.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">2. 外卖平台净打款 (GrabFood / ShopeeFood / Foodpanda)</span>
+                <span class="text-white">RM 12,564.00</span>
+              </div>
+              <div class="py-2 flex justify-between font-bold text-sm text-emerald-400 bg-slate-800/40 px-2 rounded-lg">
+                <span>营业收入总计 (Gross Operating Revenue)</span>
+                <span>RM 34,994.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-700 pb-2">
+              <span>二、营业直接成本 (Cost of Goods Sold - COGS)</span>
+              <span>金额 (RM)</span>
+            </div>
+            <div class="divide-y divide-slate-800/60 pt-2 text-xs">
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">1. 生鲜肉类与筒骨进货 (南洋生鲜批发)</span>
+                <span class="text-white">RM 4,250.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">2. 柳州干米粉与专用调料 (柳韵调料海运)</span>
+                <span class="text-white">RM 4,450.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">3. 巴刹生鲜时蔬与鲜木耳配料</span>
+                <span class="text-white">RM 1,200.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">4. 外卖专用打包碗耗材 (运达包装)</span>
+                <span class="text-white">RM 1,300.00</span>
+              </div>
+              <div class="py-2 flex justify-between font-bold text-sm text-amber-400 bg-slate-800/40 px-2 rounded-lg">
+                <span>营业直接成本总计 (Total COGS - 成本率 32.0%)</span>
+                <span>RM 11,200.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700">
+            <div class="flex justify-between items-center font-bold text-base text-emerald-300">
+              <span>三、营业毛利润 (Gross Profit - 毛利率 68.0%)</span>
+              <span class="text-lg">RM 23,794.00</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs uppercase tracking-wider text-slate-400 font-bold border-b border-slate-700 pb-2">
+              <span>四、店铺运营与管理费用 (Operating Expenses - OPEX)</span>
+              <span>金额 (RM)</span>
+            </div>
+            <div class="divide-y divide-slate-800/60 pt-2 text-xs">
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">1. Austin Heights 门市月度租金</span>
+                <span class="text-white">RM 3,500.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">2. 店面员工薪资与兼职支出</span>
+                <span class="text-white">RM 6,500.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">3. TNB 商业电费 (保鲜冷柜与熬汤)</span>
+                <span class="text-white">RM 920.80</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">4. SAJ 商业水费</span>
+                <span class="text-white">RM 185.40</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">5. 后厨商用煤气 (4桶)</span>
+                <span class="text-white">RM 280.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between">
+                <span class="text-slate-300">6. 柜台零用金、清洁用品与维修杂支</span>
+                <span class="text-white">RM 3,113.80</span>
+              </div>
+              <div class="py-2 flex justify-between font-bold text-sm text-rose-400 bg-slate-800/40 px-2 rounded-lg">
+                <span>运营费用总计 (Total OPEX)</span>
+                <span>RM 14,500.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-r from-emerald-900/60 to-teal-900/60 p-4 rounded-xl border border-emerald-500/30">
+            <div class="flex justify-between items-center font-extrabold text-lg text-emerald-300">
+              <span>五、当月预估净利润 (Net Operating Profit)</span>
+              <span class="text-2xl text-emerald-400">RM 9,294.00</span>
+            </div>
+            <div class="flex justify-between text-xs text-emerald-200/80 mt-1">
+              <span>净利润率 (Net Profit Margin):</span>
+              <span class="font-bold">26.6%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-slate-800 text-xs text-slate-500 flex justify-between items-center">
+          <span>来碗餐饮管理系统自动生成 · 经手人: 店主审核</span>
+          <span>打印日期: 2026-09-17</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 8: GOOGLE SHEET 联动设置 (SETTINGS) -->
+    <div id="tab-content-settings" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-6 border border-slate-800">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
+          <i data-lucide="cloud-cog" class="w-5 h-5 text-cyan-400"></i>
+          <span>Google Sheet 双向联动与存储中心</span>
+        </h2>
+        <p class="text-xs text-slate-400 mb-6">
+          当前底层数据源已直接与您的 Google Sheet 绑定，支持实时读取各工作表数据，并可配置 Google Apps Script 免费实现手机端记账直接写入表格！
+        </p>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">已连接的 Google Sheet 地址:</label>
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" class="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-2 w-full mono">
+              <a href="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" target="_blank" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center gap-1.5">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <span>打开表格</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-800">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">
+              Google Apps Script Webhook URL (写入端 - 可选):
+            </label>
+            <p class="text-xs text-slate-400 mb-2">
+              配置后，在网页端点击“记一笔”将自动向您的 Google Sheet 追加新的一行，无需手动打开表格！
+            </p>
+            <div class="flex items-center gap-2">
+              <input type="text" id="webhook-url-input" placeholder="例如: https://script.google.com/macros/s/.../exec" class="bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-2 w-full focus:outline-none focus:border-cyan-500">
+              <button onclick="saveWebhookUrl()" class="text-xs bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-medium whitespace-nowrap transition">
+                保存配置
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-white">Google Apps Script 复制即用代码:</span>
+              <button onclick="copyAppsScriptCode()" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span id="copy-script-text">一键复制代码</span>
+              </button>
+            </div>
+            <pre class="bg-slate-950 p-4 rounded-xl text-[11px] text-slate-300 mono overflow-x-auto border border-slate-800 max-h-48" id="apps-script-code">
+function doPost(e) {
+  try {
+    var json = JSON.parse(e.postData.contents);
+    var sheetName = json.sheetName || '运营与日常杂支';
+    var rowData = json.row;
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) sheet = ss.insertSheet(sheetName);
+    sheet.appendRow(rowData);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Row added' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+            </pre>
+            <p class="text-[11px] text-slate-500 mt-2">
+              📌 使用方法：打开您的 Google Sheet -> 点击顶部菜单「扩展程序 (Extensions)」->「Apps 脚本」-> 粘贴上方代码并点击「部署」为「网页应用」，权限选「任何人」即可获得 Webhook URL！
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: 记一笔开销 -->
+  <div id="expense-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl p-6 w-full max-w-lg border border-slate-700 shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="receipt" class="w-4 h-4 text-rose-400"></i>
+          <span>记一笔日常杂支开销</span>
+        </h3>
+        <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="mb-4">
+        <label class="text-[11px] text-slate-400 mb-1.5 block">快捷预设模板 (一键填入):</label>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="fillExpensePreset('rent')" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">🏢 门市月租 RM3500</button>
+          <button type="button" onclick="fillExpensePreset('gas')" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">🔥 煤气4桶 RM280</button>
+          <button type="button" onclick="fillExpensePreset('tnb')" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">💡 TNB电费</button>
+          <button type="button" onclick="fillExpensePreset('saj')" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">💧 SAJ水费</button>
+          <button type="button" onclick="fillExpensePreset('wages')" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">👨‍🍳 员工薪水预支</button>
+        </div>
+      </div>
+
+      <form id="expense-form" onsubmit="submitExpense(event)" class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 mb-1">支出日期</label>
+            <input type="date" id="exp-date" required class="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">费用类别</label>
+            <select id="exp-cat" required class="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:border-rose-500">
+              <option value="店铺租金">店铺租金 (Rent)</option>
+              <option value="电费">电费 (TNB)</option>
+              <option value="水费">水费 (SAJ)</option>
+              <option value="煤气费">煤气费 (Gas)</option>
+              <option value="员工薪资与福利">员工薪资与福利 (Wages)</option>
+              <option value="柜台零用金(Petty Cash)">柜台零用金 (Petty Cash)</option>
+              <option value="打包与外卖耗材">打包与外卖耗材</option>
+              <option value="杂项维修与维护">杂项维修与维护</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 mb-1">项目明细名称</label>
+            <input type="text" id="exp-name" required placeholder="如: 9月份门市租金" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">支出金额 (RM)</label>
+            <input type="number" step="0.01" id="exp-amount" required placeholder="0.00" class="bg-slate-800 border border-slate-700 text-white font-bold rounded-lg px-3 py-2 w-full focus:outline-none focus:border-rose-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-slate-300 mb-1">支付方式</label>
+            <select id="exp-payment" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-2 w-full focus:outline-none">
+              <option value="Maybank">Maybank 转账</option>
+              <option value="DuitNow">DuitNow 扫码</option>
+              <option value="柜台现金">柜台现金</option>
+              <option value="TNB Online">TNB Online</option>
+              <option value="JomPAY">JomPAY</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">凭证/单号</label>
+            <input type="text" id="exp-ref" placeholder="OR-..." class="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-2 w-full focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">经手人</label>
+            <input type="text" id="exp-handled" placeholder="店长/老板" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-2 w-full focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 mb-1">备注说明 (可选)</label>
+          <input type="text" id="exp-notes" placeholder="对公转账房东、小票已贴存等" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 w-full focus:outline-none">
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-800">
+          <button type="button" onclick="closeExpenseModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">取消</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-medium transition shadow-md shadow-rose-900/40">确认保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: 录入今日营收 -->
+  <div id="revenue-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl p-6 w-full max-w-md border border-slate-700 shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="banknote" class="w-4 h-4 text-emerald-400"></i>
+          <span>录入每日柜台实收流水</span>
+        </h3>
+        <button onclick="closeRevenueModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="revenue-form" onsubmit="submitRevenue(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block text-slate-300 mb-1">营业日期</label>
+          <input type="date" id="rev-date" required class="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 mb-1">柜台现金实收 (Cash RM)</label>
+            <input type="number" step="0.01" id="rev-cash" required placeholder="0.00" class="bg-slate-800 border border-slate-700 text-white font-bold rounded-lg px-3 py-2 w-full focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1">扫码/刷卡 (DuitNow/Card RM)</label>
+            <input type="number" step="0.01" id="rev-card" required placeholder="0.00" class="bg-slate-800 border border-slate-700 text-white font-bold rounded-lg px-3 py-2 w-full focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 mb-1">交班员工与对账备注</label>
+          <input type="text" id="rev-notes" placeholder="早晚班交接正常，钱箱已核准" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 w-full focus:outline-none">
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-800">
+          <button type="button" onclick="closeRevenueModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">取消</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition shadow-md shadow-emerald-900/40">保存到流水</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC & ENGINE -->
+  <script>
+    const SPREADSHEET_ID = "1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o";
+    const GVIZ_BASE = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
+
+    let BOOTSTRAP_DATA = {"每日营收流水": [["日期", "柜台现金实收 (Cash RM)", "柜台扫码/刷卡 (DuitNow/Card RM)", "当日柜台总营收 (RM)", "经手员工/交班备注"], ["2026-09-01", "650.0", "1420.5", "2070.5", "早晚班交接正常，钱箱已核准"], ["2026-09-02", "580.0", "1550.0", "2130", "堂食客流平稳"], ["2026-09-03", "420.0", "1690.0", "2110", "雨天客流偏少"], ["2026-09-04", "780.0", "2020.0", "2800", "周五晚市满座"], ["2026-09-05", "950.0", "2580.0", "3530", "周末高峰"], ["当月柜台合计", "3380", "9260.5", "12640.5"]], "供应商账单表": [["进货日期", "供应商名称", "供应商类别", "发票/DO单号", "账单总金额 (RM)", "付款状态", "核销收据号", "主要货品备注"], ["2026-09-01", "南洋生鲜批发", "生鲜肉类与骨头", "INV-8821", "1290.0", "已结清", "OR-20260905", "牛腩20kg, 猪骨30kg, 肥肠10kg"], ["2026-09-02", "柳韵中国调料海运", "干货与专用配料", "INV-5502", "3450.0", "未付款", "螺蛳粉干米粉30箱, 酸笋10桶"], ["2026-09-03", "运达食品包装", "包装耗材", "INV-3109", "580.0", "未付款", "外卖打包碗5箱, 外卖袋3箱"], ["2026-09-04", "本地巴刹蔬菜", "巴刹时蔬", "CASH-0904", "185.0", "已结清", "巴刹单0904", "葱姜蒜、时令蔬菜、鲜木耳"], ["2026-09-05", "南洋生鲜批发", "生鲜肉类与骨头", "INV-8860", "960.0", "未付款", "猪筒骨40kg, 五花肉15kg"], ["应付合计", "6465"]], "还款与收据登记": [["还款日期", "收款方/供应商", "实付金额 (RM)", "付款方式", "银行流水号 (Bank Ref)", "对方收据号 (Official Receipt)", "核销发票/对账单号", "经手人/备注"], ["2026-09-05", "南洋生鲜批发", "1290.0", "Maybank", "MB-9821415", "OR-20260905", "INV-8821", "结清9月1日肉类进货"], ["2026-09-04", "本地巴刹蔬菜", "185.0", "DuitNow", "DN-8819203", "巴刹单0904", "CASH-0904", "巴刹现场结算"], ["实际支出合计", "1475"]], "核心原料进价追踪": [["进货日期", "核心原料名称", "供应商", "进货数量", "单位", "该项总金额 (RM)", "换算单价 (RM/单位)", "价格趋势与备注"], ["2026-08-15", "鲜牛腩", "南洋生鲜批发", "20.0", "kg", "600.0", "30", "RM 30.00/kg (基准价)"], ["2026-09-01", "鲜牛腩", "南洋生鲜批发", "20.0", "kg", "640.0", "32", "起价至 RM 32.00/kg"], ["2026-08-15", "猪筒骨", "南洋生鲜批发", "30.0", "kg", "360.0", "12", "RM 12.00/kg"], ["2026-09-01", "猪筒骨", "南洋生鲜批发", "30.0", "kg", "360.0", "12", "RM 12.00/kg (稳定)"], ["2026-08-10", "螺蛳粉干米粉", "柳韵中国调料海运", "25.0", "箱", "1875.0", "75", "RM 75.00/箱"], ["2026-09-02", "螺蛳粉干米粉", "柳韵中国调料海运", "30.0", "箱", "2250.0", "75", "RM 75.00/箱 (稳定)"], ["2026-09-02", "专用酸笋", "柳韵中国调料海运", "10.0", "桶", "650.0", "65", "RM 65.00/桶 (20kg)"], ["2026-09-03", "外卖打包碗", "运达食品包装", "1000.0", "个", "450.0", "0.45", "RM 0.45/个"]], "运营与日常杂支": [["支出日期", "费用类别", "项目明细", "金额 (RM)", "支付方式", "凭证/收据单号", "经手人", "备注"], ["2026-09-01", "店铺租金", "9月份门市租金", "3500.0", "Maybank", "OR-RENT-09", "老板", "对公转账房东"], ["2026-09-02", "水费", "8月份水费账单", "185.4", "JomPAY", "SAJ-89102", "店长", "门市用水"], ["2026-09-03", "电费", "8月份商业电费", "920.8", "TNB Online", "TNB-229104", "店长", "长时间熬汤电费"], ["2026-09-03", "煤气费", "后厨商用煤气4桶", "280.0", "现金", "GAS-1029", "主管", "RM 70/桶"], ["2026-09-04", "柜台零用金(Petty Cash)", "买洗洁精、垃圾袋", "65.5", "柜台现金", "MRDIY-8821", "收银员", "小票已贴存"], ["2026-09-05", "员工薪资与福利", "员工半月预支薪资", "2200.0", "银行转账", "PAY-202609A", "老板", "全职与兼职"], ["杂支合计", "7151.7"]], "月度损益看板": [["📊 【板块一：门店月度综合损益看板 (全店总营收 = 柜台实收 + 外卖月打款)】"], ["月份", "柜台营收 (现金+扫码 RM)", "外卖平台打款到手 (RM)", "全店总营业额 (RM)", "原材料采购总额 (RM)", "运营杂支总额 (RM)", "当月预估净利润 (RM)", "食材成本率 (%)"], ["2026年9月 (预估)", "22430.0", "12564.0", "34994", "11200.0", "14500.0", "9294", "0.3200548665"], ["2026年8月", "21500.0", "12000.0", "33500", "11055.0", "14200.0", "8245", "0.33"], ["2026年7月", "19800.0", "11200.0", "31000", "10850.0", "13900.0", "6250", "0.35"], ["🛵 【板块二：外卖平台月结单核对与扣点分析 (老板每月月初填一次，填入上面的外卖打款列)】"], ["所属月份", "外卖平台名称", "平台总销售额 (Gross RM)", "平台总抽佣 (Commission RM)", "商家优惠/补贴 (Promo RM)", "实际净到手款 (Net Payout RM)", "实际综合抽佣率 (%)", "月结单 Tax Invoice 编号 / 备注"], ["2026年9月", "GrabFood", "10500.0", "3150.0", "200.0", "7150", "0.319047619", "Grab 9月Statement (实扣31.9%)"], ["2026年9月", "ShopeeFood", "3200.0", "896.0", "100.0", "2204", "0.31125", "Shopee 9月Statement (实扣31.1%)"], ["2026年9月", "Foodpanda", "4800.0", "1440.0", "150.0", "3210", "0.33125", "Panda 9月Statement (实扣33.1%)"], ["9月外卖总计", "全部外卖平台", "18500", "5486", "450", "12564", "0.3208648649", "全月外卖到手总额"]]};
+    let CATALOG_DATA = [{"id": "S1", "cat": "汤螺蛳粉", "name": "S1 原味螺蛳粉 Original Luosifen", "price": 12.8, "mods": ["spicy", "addons"], "desc": "地道经典原汁原味螺蛳汤粉", "img": "images/S1.jpeg", "badge": "🌟 经典老柳州", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000937396.jpeg"}, {"id": "S2", "cat": "汤螺蛳粉", "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "配香煎荷包蛋", "img": "images/S2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001003128.jpeg"}, {"id": "S3", "cat": "汤螺蛳粉", "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "招牌必点超大吸汤炸蛋", "img": "images/S3.jpeg", "badge": "🔥 进店必点", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001046295.jpeg"}, {"id": "S4", "cat": "汤螺蛳粉", "name": "S4 香肠螺蛳粉 TW Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "配焦香台湾香肠", "img": "images/S4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001114368.jpeg"}, {"id": "S5", "cat": "汤螺蛳粉", "name": "S5 腊肠螺蛳粉 CN Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "传统风味腊肠", "img": "images/S5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001149447.jpeg"}, {"id": "S6", "cat": "汤螺蛳粉", "name": "S6 凤爪螺蛳粉 Chicken Feet Luosifen", "price": 16.8, "mods": ["spicy", "addons"], "desc": "软糯入味虎皮凤爪", "img": "images/S6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001220137.jpeg"}, {"id": "S7", "cat": "汤螺蛳粉", "name": "S7 鲜肉螺蛳粉 XianRou Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "鲜嫩滑口猪肉片", "img": "images/S7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105230761.jpeg"}, {"id": "S8", "cat": "汤螺蛳粉", "name": "S8 锅烧螺蛳粉 GuoShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "桂林传统秘制锅烧脆肉", "img": "images/S8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105247434.jpeg"}, {"id": "S9", "cat": "汤螺蛳粉", "name": "S9 叉烧螺蛳粉 ChaShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "蜜汁香滑叉烧", "img": "images/S9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105301738.jpeg"}, {"id": "S10", "cat": "汤螺蛳粉", "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "秘制卤香醇厚大肠", "img": "images/S10.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105337237.jpeg"}, {"id": "S11", "cat": "汤螺蛳粉", "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup", "price": 12.8, "mods": ["spicy", "addons"], "desc": "经典清甜桂林高汤米粉", "img": "images/S11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000800397.jpeg"}, {"id": "S12", "cat": "汤螺蛳粉", "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen", "price": 15.99, "mods": ["spicy", "addons"], "desc": "软烂脱骨大猪脚", "img": "images/S12.jpeg", "badge": "🥩 大份脱骨猪脚", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260629120252697.jpeg"}, {"id": "S13", "cat": "汤螺蛳粉", "name": "S13 牛腩螺蛳粉 Beef Brisket Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "浓香酥烂大块牛腩", "img": "images/S13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000913580.jpeg"}, {"id": "D1", "cat": "招牌干捞", "name": "D1 炸蛋干捞粉 Deep Fried Egg Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "香浓干拌搭酥脆大炸蛋", "img": "images/D1.jpeg", "badge": "👑 干捞榜首", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235726216.jpeg"}, {"id": "D2", "cat": "招牌干捞", "name": "D2 螺蛳干捞粉 Dry Luosifen", "price": 13.8, "mods": ["spicy", "addons"], "desc": "经典特制酱汁干捞粉", "img": "images/D2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235747575.jpeg"}, {"id": "D3", "cat": "招牌干捞", "name": "D3 煎蛋干捞粉 Fried Egg Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配现煎荷包蛋", "img": "images/D3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235829718.jpeg"}, {"id": "D4", "cat": "招牌干捞", "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "干拌配台湾香肠", "img": "images/D4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250427205150320.jpeg"}, {"id": "D5", "cat": "招牌干捞", "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配卤肥肠", "img": "images/D5.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105022734.jpeg"}, {"id": "D6", "cat": "招牌干捞", "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配嫩鲜肉", "img": "images/D6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105042608.jpeg"}, {"id": "D7", "cat": "招牌干捞", "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥脆锅烧", "img": "images/D7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105108671.jpeg"}, {"id": "D8", "cat": "招牌干捞", "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配叉烧肉", "img": "images/D8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105126127.jpeg"}, {"id": "D9", "cat": "招牌干捞", "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥烂牛腩", "img": "images/D9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105145288.jpeg"}, {"id": "B1", "cat": "炒粉炒饭", "name": "B1 炒螺蛳粉 Fried Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "大火镬气翻炒螺蛳粉", "img": "images/B1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234917290.jpeg"}, {"id": "B2", "cat": "炒粉炒饭", "name": "B2 炒米粉 Fried Mee Hoon", "price": 12.8, "mods": ["spicy", "addons"], "desc": "镬气十足香炒米粉", "img": "images/B2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234937563.jpeg"}, {"id": "B3", "cat": "炒粉炒饭", "name": "B3 炒饭 Fried Rice", "price": 12.8, "mods": ["spicy", "addons"], "desc": "粒粒分明黄金炒饭", "img": "images/B3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235002683.jpeg"}, {"id": "C1", "cat": "手工水饺云吞", "name": "C1 手工水饺 Homemade Dumplings", "price": 12.8, "mods": ["dumpling_style", "addons"], "desc": "皮薄馅大手工水饺 (可选煮汤/酥炸)", "img": "images/C1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211728448.jpeg"}, {"id": "C2", "cat": "手工水饺云吞", "name": "C2 手工云吞 Homemade Wantan", "price": 12.8, "mods": ["wantan_style", "addons"], "desc": "鲜肉饱满纯手工云吞 (可选煮汤/酥炸)", "img": "images/C2.jpeg", "badge": "🥟 现包鲜肉云吞", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211750110.jpeg"}, {"id": "C3", "cat": "特色小吃", "name": "C3 红糖糍粑 Brown Sugar Glutinous Rice Cake", "price": 8.8, "mods": [], "desc": "外酥里糯香甜红糖", "img": "images/C3.jpeg", "badge": "✨ 甜糯解辣", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235239192.jpeg"}, {"id": "C4", "cat": "特色小吃", "name": "C4 脆皮香蕉 Crispy Banana", "price": 8.8, "mods": [], "desc": "金黄酥脆香甜可口", "img": "images/C4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235320176.jpeg"}, {"id": "C5", "cat": "特色小吃", "name": "C5 香芋地瓜丸 Yam Ball", "price": 7.8, "mods": [], "desc": "双重香浓软糯丸子", "img": "images/C5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235343569.jpeg"}, {"id": "C6", "cat": "特色小吃", "name": "C6 南瓜饼 Pumpkin Cake", "price": 7.8, "mods": [], "desc": "外皮酥脆香糯南瓜", "img": "images/C6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235409765.jpeg"}, {"id": "C7", "cat": "特色小吃", "name": "C7 沙拉卷 Salad Roll", "price": 4.8, "mods": [], "desc": "清爽酥脆沙拉卷", "img": "images/C7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235430457.jpeg"}, {"id": "C8", "cat": "特色小吃", "name": "C8 炸饺 Deep fried Homemade Dumplings", "price": 6.8, "mods": [], "desc": "香脆酥炸手工饺", "img": "images/C8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235536786.jpeg"}, {"id": "C9", "cat": "特色小吃", "name": "C9 油条虾滑 Doughnut With Shrimp Paste", "price": 7.8, "mods": [], "desc": "酥脆老油条酿鲜美虾滑", "img": "images/C9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235620336.jpeg"}, {"id": "C10", "cat": "特色小吃", "name": "C10 虾枣 Prawn Rolls", "price": 7.8, "mods": [], "desc": "传统潮州风味脆皮虾枣", "img": "images/C10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235028729.jpeg"}, {"id": "C11", "cat": "特色小吃", "name": "C11 炸云吞 Fried Wonton", "price": 7.8, "mods": [], "desc": "咔嚓酥脆鲜肉小云吞", "img": "images/C11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001502231.jpeg"}, {"id": "F01", "cat": "饮品甜品", "name": "F01 Justea", "price": 3.5, "mods": [], "desc": "清爽瓶装茶饮", "img": "images/F01.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113252740.jpeg"}, {"id": "F02", "cat": "饮品甜品", "name": "F02 矿泉水 Mineral Water", "price": 2.0, "mods": [], "desc": "瓶装饮用水", "img": "images/F02.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113303692.jpeg"}, {"id": "F03", "cat": "饮品甜品", "name": "F03 冰红茶 Iced Black Tea", "price": 4.0, "mods": [], "desc": "经典清爽柠檬红茶", "img": "images/F03.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113314206.jpeg"}, {"id": "F04", "cat": "饮品甜品", "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut", "price": 4.0, "mods": [], "desc": "清凉降火甘蔗马蹄水", "img": "images/F04.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113328766.jpeg"}, {"id": "F05", "cat": "饮品甜品", "name": "F05 王老吉 Wong Lo Kat", "price": 4.0, "mods": [], "desc": "经典清凉凉茶", "img": "images/F05.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113900432.jpeg"}, {"id": "F06", "cat": "饮品甜品", "name": "F06 100 Plus", "price": 3.5, "mods": [], "desc": "电解质气泡水", "img": "images/F06.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113356428.jpeg"}, {"id": "F07", "cat": "饮品甜品", "name": "F07 冰糖雪梨 Rock Sugar Pear", "price": 4.0, "mods": [], "desc": "润肺清甜雪梨汁", "img": "images/F07.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113406373.jpeg"}, {"id": "F08", "cat": "饮品甜品", "name": "F08 蜜桃乌龙茶 Peach Oolong", "price": 4.0, "mods": [], "desc": "果香扑鼻冷泡茶", "img": "images/F08.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113418227.jpeg"}, {"id": "F09", "cat": "饮品甜品", "name": "F09 元气森林气泡水 Genki Forest", "price": 5.5, "mods": [], "desc": "0糖0脂0卡气泡水", "img": "images/F09.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113429424.jpeg"}, {"id": "F10", "cat": "饮品甜品", "name": "F10 可口可乐 Coca-Cola", "price": 4.0, "mods": [], "desc": "畅爽经典可乐", "img": "images/F10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113439750.jpeg"}, {"id": "F11", "cat": "饮品甜品", "name": "F11 红牛 Red Bull", "price": 5.5, "mods": [], "desc": "提神功能饮料", "img": "images/F11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113912681.jpeg"}, {"id": "F12", "cat": "饮品甜品", "name": "F12 豆奶 Soya Milk", "price": 5.0, "mods": [], "desc": "浓醇香滑豆奶", "img": "images/F12.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113509390.jpeg"}, {"id": "F13", "cat": "饮品甜品", "name": "F13 祖传八宝凉茶 Herbal Tea", "price": 5.0, "mods": [], "desc": "清热解毒秘制凉茶", "img": "images/F13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113522549.jpeg"}, {"id": "F14", "cat": "饮品甜品", "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum", "price": 5.0, "mods": [], "desc": "甘甜舒缓清润菊花", "img": "images/F14.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113535574.jpeg"}, {"id": "F15", "cat": "饮品甜品", "name": "F15 山楂酸梅汤 Plum Soup", "price": 5.0, "mods": [], "desc": "酸甜生津解腻必备", "img": "images/F15.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113547634.jpeg"}, {"id": "F16", "cat": "饮品甜品", "name": "F16 香兰洛神花 Pandan Roselle", "price": 5.0, "mods": [], "desc": "南洋特色酸爽芳香", "img": "images/F16.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113602287.jpeg"}, {"id": "F17", "cat": "饮品甜品", "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice", "price": 6.0, "mods": [], "desc": "现榨天然纯正甘蔗原汁", "img": "images/F17.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113612574.jpeg"}, {"id": "F18", "cat": "饮品甜品", "name": "F18 爱玉冰 Ice Jelly", "price": 5.0, "mods": [], "desc": "冰凉爽滑爱玉甜品", "img": "images/F18.jpeg", "badge": "🧊 清爽解腻", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113740506.jpeg"}, {"id": "F19", "cat": "饮品甜品", "name": "F19 酸柑酸梅 Calamansi Sour Plum", "price": 5.0, "mods": [], "desc": "酸爽开胃金桔酸梅", "img": "images/F19.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113908455.jpeg"}, {"id": "F20", "cat": "饮品甜品", "name": "F20 葡萄爱玉冰 Grape Ice Jelly", "price": 6.0, "mods": [], "desc": "浓郁葡萄风味果冻", "img": "images/F20.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114242371.jpeg"}, {"id": "F21", "cat": "饮品甜品", "name": "F21 苹果味爱玉冰 Apple Ice Jelly", "price": 6.0, "mods": [], "desc": "清爽苹果爱玉冻", "img": "images/F21.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114218382.jpeg"}, {"id": "F22", "cat": "饮品甜品", "name": "F22 阿萨姆原味奶茶 Assam Milk Tea", "price": 5.5, "mods": [], "desc": "醇厚香浓阿萨姆红茶奶茶", "img": "images/F22.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260310205156502.jpeg"}];
+    let POS_HISTORY = [{"month": "2026-01", "sales": 43800.25, "bills": 1092, "aov": 40.11, "cogs": 14016.08, "opex": 16200.0, "profit": 13584.17}, {"month": "2026-02", "sales": 29069.25, "bills": 701, "aov": 41.47, "cogs": 9302.16, "opex": 15800.0, "profit": 3967.09}, {"month": "2026-03", "sales": 44574.15, "bills": 1142, "aov": 39.03, "cogs": 14263.73, "opex": 16500.0, "profit": 13810.42}, {"month": "2026-04", "sales": 41200.5, "bills": 1050, "aov": 39.24, "cogs": 13184.16, "opex": 15900.0, "profit": 12116.34}, {"month": "2026-05", "sales": 39800.0, "bills": 1020, "aov": 39.02, "cogs": 12736.0, "opex": 15600.0, "profit": 11464.0}, {"month": "2026-06", "sales": 37500.0, "bills": 980, "aov": 38.27, "cogs": 12000.0, "opex": 15400.0, "profit": 10100.0}, {"month": "2026-07", "sales": 31000.0, "bills": 940, "aov": 32.98, "cogs": 10850.0, "opex": 13900.0, "profit": 6250.0}, {"month": "2026-08", "sales": 33500.0, "bills": 990, "aov": 33.84, "cogs": 11055.0, "opex": 14200.0, "profit": 8245.0}, {"month": "2026-09", "sales": 34994.0, "bills": 1030, "aov": 33.97, "cogs": 11200.0, "opex": 14500.0, "profit": 9294.0}];
+
+    let expensesList = [];
+    let revenueList = [];
+    let suppliersList = [];
+    let deliveryList = [];
+    let monthlyPnLList = [];
+    let currentMonth = "2026-09";
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initDates();
+      loadInitialData();
+      renderAllViews();
+      initCharts();
+      lucide.createIcons();
+      fetchLiveGoogleSheetData();
+    });
+
+    function initDates() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('header-time').innerText = today;
+      document.getElementById('exp-date').value = today;
+      document.getElementById('rev-date').value = today;
+    }
+
+    function loadInitialData() {
+      const rawExp = BOOTSTRAP_DATA['运营与日常杂支'] || [];
+      expensesList = rawExp.slice(1).filter(r => r[0] && r[0] !== '杂支合计').map((r, idx) => ({
+        id: idx + 1,
+        date: r[0],
+        category: r[1],
+        name: r[2],
+        amount: parseFloat(r[3]) || 0,
+        payment: r[4] || 'Maybank',
+        ref: r[5] || '',
+        handled: r[6] || '店长',
+        notes: r[7] || ''
+      }));
+
+      const rawRev = BOOTSTRAP_DATA['每日营收流水'] || [];
+      revenueList = rawRev.slice(1).filter(r => r[0] && r[0] !== '当月柜台合计').map((r, idx) => ({
+        id: idx + 1,
+        date: r[0],
+        cash: parseFloat(r[1]) || 0,
+        card: parseFloat(r[2]) || 0,
+        total: parseFloat(r[3]) || 0,
+        notes: r[4] || ''
+      }));
+
+      const rawSupp = BOOTSTRAP_DATA['供应商账单表'] || [];
+      suppliersList = rawSupp.slice(1).filter(r => r[0] && r[0] !== '应付合计').map((r, idx) => ({
+        id: idx + 1,
+        date: r[0],
+        supplier: r[1],
+        category: r[2],
+        invNo: r[3],
+        amount: parseFloat(r[4]) || 0,
+        status: r[5] || '未付款',
+        receiptNo: r[6] || '',
+        items: r[7] || ''
+      }));
+
+      deliveryList = [
+        { month: "2026年9月", platform: "GrabFood", gross: 10500, comm: 3150, promo: 200, net: 7150, rate: "31.9%", notes: "Grab 9月Statement" },
+        { month: "2026年9月", platform: "ShopeeFood", gross: 3200, comm: 896, promo: 100, net: 2204, rate: "31.1%", notes: "Shopee 9月Statement" },
+        { month: "2026年9月", platform: "Foodpanda", gross: 4800, comm: 1440, promo: 150, net: 3210, rate: "33.1%", notes: "Panda 9月Statement" }
+      ];
+
+      monthlyPnLList = [
+        { month: "2026年9月 (预估)", counter: 22430, delivery: 12564, total: 34994, cogs: 11200, opex: 14500, profit: 9294, cogsRate: "32.0%" },
+        { month: "2026年8月", counter: 21500, delivery: 12000, total: 33500, cogs: 11055, opex: 14200, profit: 8245, cogsRate: "33.0%" },
+        { month: "2026年7月", counter: 19800, delivery: 11200, total: 31000, cogs: 10850, opex: 13900, profit: 6250, cogsRate: "35.0%" }
+      ];
+
+      const localExp = localStorage.getItem('laiwan_custom_expenses');
+      if (localExp) {
+        try {
+          const parsed = JSON.parse(localExp);
+          expensesList = [...parsed, ...expensesList];
+        } catch(e) {}
+      }
+    }
+
+    function renderAllViews() {
+      renderOverviewKPIs();
+      renderExpensesTable();
+      renderRevenueTable();
+      renderSuppliersTable();
+      renderDeliveryTable();
+      renderDishesTable();
+      renderOverviewPnLTable();
+    }
+
+    function renderOverviewKPIs() {
+      const active = monthlyPnLList[0];
+      document.getElementById('kpi-total-revenue').innerText = `RM ${active.total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-counter-rev').innerText = `RM ${active.counter.toLocaleString('en-US')}`;
+      document.getElementById('kpi-delivery-rev').innerText = `RM ${active.delivery.toLocaleString('en-US')}`;
+
+      document.getElementById('kpi-cogs').innerText = `RM ${active.cogs.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-cogs-pct').innerText = active.cogsRate;
+
+      document.getElementById('kpi-opex').innerText = `RM ${active.opex.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-net-profit').innerText = `RM ${active.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+      const netMargin = ((active.profit / active.total) * 100).toFixed(1);
+      document.getElementById('kpi-net-profit-pct').innerText = `${netMargin}%`;
+
+      const breakEvenDaily = Math.round(active.opex / 0.68 / 30);
+      document.getElementById('kpi-breakeven').innerText = `RM ${breakEvenDaily} /天`;
+      const breakEvenBowls = Math.round(breakEvenDaily / 15.8);
+      document.getElementById('kpi-breakeven-bowls').innerText = `约 ${breakEvenBowls} 碗粉`;
+    }
+
+    function renderExpensesTable(filtered = null) {
+      const list = filtered || expensesList;
+      const tbody = document.getElementById('expenses-tbody');
+      tbody.innerHTML = '';
+
+      let sumRent = 0, sumTnb = 0, sumSaj = 0, sumGas = 0, sumWages = 0, sumPetty = 0;
+
+      list.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 mono text-slate-400 text-xs">${item.date}</td>
+          <td class="py-3 px-4 font-medium text-white">${item.category}</td>
+          <td class="py-3 px-4 text-slate-300">${item.name}</td>
+          <td class="py-3 px-4 mono text-rose-400 font-bold">RM ${item.amount.toFixed(2)}</td>
+          <td class="py-3 px-4 text-slate-400 text-xs">${item.payment}</td>
+          <td class="py-3 px-4 mono text-slate-400 text-xs">${item.ref || '-'}</td>
+          <td class="py-3 px-4 text-slate-300 text-xs">${item.handled}</td>
+          <td class="py-3 px-4 text-slate-400 text-xs">${item.notes || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+
+        if (item.category.includes('租金')) sumRent += item.amount;
+        if (item.category.includes('电费')) sumTnb += item.amount;
+        if (item.category.includes('水费')) sumSaj += item.amount;
+        if (item.category.includes('煤气')) sumGas += item.amount;
+        if (item.category.includes('薪资')) sumWages += item.amount;
+        if (item.category.includes('零用')) sumPetty += item.amount;
+      });
+
+      document.getElementById('sum-rent').innerText = `RM ${sumRent.toFixed(2)}`;
+      document.getElementById('sum-tnb').innerText = `RM ${sumTnb.toFixed(2)}`;
+      document.getElementById('sum-saj').innerText = `RM ${sumSaj.toFixed(2)}`;
+      document.getElementById('sum-gas').innerText = `RM ${sumGas.toFixed(2)}`;
+      document.getElementById('sum-wages').innerText = `RM ${sumWages.toFixed(2)}`;
+      document.getElementById('sum-petty').innerText = `RM ${sumPetty.toFixed(2)}`;
+      document.getElementById('badge-expense-count').innerText = list.length;
+      document.getElementById('expenses-count-badge').innerText = `共 ${list.length} 笔`;
+    }
+
+    function renderRevenueTable() {
+      const tbody = document.getElementById('revenue-tbody');
+      tbody.innerHTML = '';
+      let totalCash = 0, totalCard = 0, totalRev = 0;
+
+      revenueList.forEach(item => {
+        totalCash += item.cash;
+        totalCard += item.card;
+        totalRev += item.total;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 text-slate-300">${item.date}</td>
+          <td class="py-3 px-4 text-amber-300">RM ${item.cash.toFixed(2)}</td>
+          <td class="py-3 px-4 text-sky-300">RM ${item.card.toFixed(2)}</td>
+          <td class="py-3 px-4 text-emerald-400 font-bold">RM ${item.total.toFixed(2)}</td>
+          <td class="py-3 px-4 text-slate-400 text-xs">${item.notes}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('rev-total-sum').innerText = `RM ${totalRev.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('rev-cash-sum').innerText = `RM ${totalCash.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('rev-card-sum').innerText = `RM ${totalCard.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('badge-revenue-count').innerText = revenueList.length;
+    }
+
+    function renderSuppliersTable() {
+      const tbody = document.getElementById('suppliers-tbody');
+      tbody.innerHTML = '';
+      let totalAmt = 0, unpaidAmt = 0, paidAmt = 0;
+
+      suppliersList.forEach(item => {
+        totalAmt += item.amount;
+        const isPaid = item.status.includes('已结清');
+        if (isPaid) paidAmt += item.amount; else unpaidAmt += item.amount;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 mono text-slate-400">${item.date}</td>
+          <td class="py-3 px-4 font-medium text-white">${item.supplier}</td>
+          <td class="py-3 px-4 text-slate-400 text-xs">${item.category}</td>
+          <td class="py-3 px-4 mono text-slate-300">${item.invNo}</td>
+          <td class="py-3 px-4 mono font-bold text-amber-300">RM ${item.amount.toFixed(2)}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded-full text-xs font-medium ${isPaid ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+              ${item.status}
+            </span>
+          </td>
+          <td class="py-3 px-4 mono text-slate-400 text-xs">${item.receiptNo || '-'}</td>
+          <td class="py-3 px-4 text-slate-300 text-xs">${item.items}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('supp-total-sum').innerText = `RM ${totalAmt.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('supp-unpaid-sum').innerText = `RM ${unpaidAmt.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('supp-paid-sum').innerText = `RM ${paidAmt.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('badge-supplier-count').innerText = suppliersList.length;
+    }
+
+    function renderDeliveryTable() {
+      const tbody = document.getElementById('delivery-tbody');
+      tbody.innerHTML = '';
+      deliveryList.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 text-slate-400">${item.month}</td>
+          <td class="py-3 px-4 font-bold text-white">${item.platform}</td>
+          <td class="py-3 px-4 text-white">RM ${item.gross.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-rose-400">- RM ${item.comm.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-amber-400">- RM ${item.promo.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-emerald-400 font-bold text-sm">RM ${item.net.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 font-semibold text-cyan-300">${item.rate}</td>
+          <td class="py-3 px-4 text-slate-400 text-xs">${item.notes}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDishesTable(filtered = null) {
+      const list = filtered || CATALOG_DATA;
+      const tbody = document.getElementById('dishes-tbody');
+      tbody.innerHTML = '';
+
+      list.forEach(dish => {
+        const price = dish.price || 0;
+        let cost = 0;
+        if (dish.cat.includes('汤螺蛳粉')) cost = +(price * 0.30).toFixed(2);
+        else if (dish.cat.includes('干捞')) cost = +(price * 0.28).toFixed(2);
+        else if (dish.cat.includes('炒')) cost = +(price * 0.25).toFixed(2);
+        else if (dish.cat.includes('小吃') || dish.cat.includes('水饺')) cost = +(price * 0.35).toFixed(2);
+        else if (dish.cat.includes('饮品')) cost = +(price * 0.22).toFixed(2);
+        else cost = +(price * 0.30).toFixed(2);
+
+        const margin = +(price - cost).toFixed(2);
+        const marginPct = price > 0 ? ((margin / price) * 100).toFixed(1) : 0;
+
+        let badge = '<span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">高毛利 🌟</span>';
+        if (marginPct < 60) badge = '<span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">稳健</span>';
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 mono text-slate-400 font-semibold">${dish.id}</td>
+          <td class="py-3 px-4 font-medium text-white">${dish.name}</td>
+          <td class="py-3 px-4 text-slate-400 text-xs">${dish.cat}</td>
+          <td class="py-3 px-4 mono text-white font-bold">RM ${price.toFixed(2)}</td>
+          <td class="py-3 px-4 mono text-amber-400">RM ${cost.toFixed(2)}</td>
+          <td class="py-3 px-4 mono text-emerald-400 font-bold">RM ${margin.toFixed(2)}</td>
+          <td class="py-3 px-4 mono text-cyan-300 font-bold">${marginPct}%</td>
+          <td class="py-3 px-4">${badge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderOverviewPnLTable() {
+      const tbody = document.getElementById('overview-pnl-tbody');
+      tbody.innerHTML = '';
+      monthlyPnLList.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/50 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-white">${item.month}</td>
+          <td class="py-3 px-4 text-slate-300">RM ${item.counter.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-slate-300">RM ${item.delivery.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-emerald-400 font-bold">RM ${item.total.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-amber-300">RM ${item.cogs.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-rose-300">RM ${item.opex.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-emerald-400 font-extrabold text-sm">RM ${item.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-cyan-300 font-semibold">${item.cogsRate}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    let trendChartInstance = null;
+    let pieChartInstance = null;
+
+    function initCharts() {
+      const ctxTrend = document.getElementById('monthlyTrendChart').getContext('2d');
+      const labels = POS_HISTORY.map(h => h.month.replace('2026-', '') + '月');
+      const sales = POS_HISTORY.map(h => h.sales);
+      const cogs = POS_HISTORY.map(h => h.cogs);
+      const profit = POS_HISTORY.map(h => h.profit);
+
+      trendChartInstance = new Chart(ctxTrend, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '营业总额 (Sales)',
+              data: sales,
+              backgroundColor: 'rgba(16, 185, 129, 0.75)',
+              borderRadius: 6
+            },
+            {
+              label: '净利润 (Net Profit)',
+              data: profit,
+              backgroundColor: 'rgba(56, 189, 248, 0.85)',
+              borderRadius: 6
+            },
+            {
+              label: '原料成本 (COGS)',
+              data: cogs,
+              backgroundColor: 'rgba(245, 158, 11, 0.75)',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+
+      const ctxPie = document.getElementById('expenseStructureChart').getContext('2d');
+      pieChartInstance = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+          labels: ['原料采购', '门市租金', '员工薪水', '水电煤气'],
+          datasets: [{
+            data: [11200, 3500, 6500, 2200],
+            backgroundColor: ['#f59e0b', '#f43f5e', '#818cf8', '#38bdf8'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    function switchTab(tabName) {
+      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'delivery', 'dishes', 'pnl', 'settings'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        if (btn && content) {
+          if (t === tabName) {
+            btn.classList.add('active');
+            content.classList.remove('hidden');
+          } else {
+            btn.classList.remove('active');
+            content.classList.add('hidden');
+          }
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function openExpenseModal() {
+      document.getElementById('expense-modal').classList.remove('hidden');
+    }
+    function closeExpenseModal() {
+      document.getElementById('expense-modal').classList.add('hidden');
+    }
+    function openRevenueModal() {
+      document.getElementById('revenue-modal').classList.remove('hidden');
+    }
+    function closeRevenueModal() {
+      document.getElementById('revenue-modal').classList.add('hidden');
+    }
+    function openSettingsModal() {
+      switchTab('settings');
+    }
+
+    function fillExpensePreset(type) {
+      if (type === 'rent') {
+        document.getElementById('exp-cat').value = '店铺租金';
+        document.getElementById('exp-name').value = 'Austin Heights 9月份门市租金';
+        document.getElementById('exp-amount').value = '3500.00';
+        document.getElementById('exp-payment').value = 'Maybank';
+        document.getElementById('exp-notes').value = '对公转账房东账户';
+      } else if (type === 'gas') {
+        document.getElementById('exp-cat').value = '煤气费';
+        document.getElementById('exp-name').value = '后厨商用煤气4桶';
+        document.getElementById('exp-amount').value = '280.00';
+        document.getElementById('exp-payment').value = '柜台现金';
+        document.getElementById('exp-notes').value = 'RM 70/桶 现金交付';
+      } else if (type === 'tnb') {
+        document.getElementById('exp-cat').value = '电费';
+        document.getElementById('exp-name').value = 'TNB商业电费账单';
+        document.getElementById('exp-amount').value = '920.80';
+        document.getElementById('exp-payment').value = 'TNB Online';
+      } else if (type === 'saj') {
+        document.getElementById('exp-cat').value = '水费';
+        document.getElementById('exp-name').value = 'SAJ门市水费账单';
+        document.getElementById('exp-amount').value = '185.40';
+        document.getElementById('exp-payment').value = 'JomPAY';
+      } else if (type === 'wages') {
+        document.getElementById('exp-cat').value = '员工薪资与福利';
+        document.getElementById('exp-name').value = '员工半月预支薪水';
+        document.getElementById('exp-amount').value = '2200.00';
+        document.getElementById('exp-payment').value = 'Maybank';
+      }
+    }
+
+    function applyPresetExpense(type) {
+      openExpenseModal();
+      fillExpensePreset(type);
+    }
+
+    function submitExpense(e) {
+      e.preventDefault();
+      const date = document.getElementById('exp-date').value;
+      const category = document.getElementById('exp-cat').value;
+      const name = document.getElementById('exp-name').value;
+      const amount = parseFloat(document.getElementById('exp-amount').value) || 0;
+      const payment = document.getElementById('exp-payment').value;
+      const ref = document.getElementById('exp-ref').value;
+      const handled = document.getElementById('exp-handled').value || '店长';
+      const notes = document.getElementById('exp-notes').value;
+
+      const newRecord = {
+        id: Date.now(),
+        date, category, name, amount, payment, ref, handled, notes
+      };
+
+      expensesList.unshift(newRecord);
+
+      const local = JSON.parse(localStorage.getItem('laiwan_custom_expenses') || '[]');
+      local.unshift(newRecord);
+      localStorage.setItem('laiwan_custom_expenses', JSON.stringify(local));
+
+      postToWebhook('运营与日常杂支', [date, category, name, amount, payment, ref, handled, notes]);
+
+      renderExpensesTable();
+      closeExpenseModal();
+      document.getElementById('expense-form').reset();
+      initDates();
+      alert(`✅ 记账成功！已添加 [${category}] RM ${amount.toFixed(2)}。`);
+    }
+
+    function submitRevenue(e) {
+      e.preventDefault();
+      const date = document.getElementById('rev-date').value;
+      const cash = parseFloat(document.getElementById('rev-cash').value) || 0;
+      const card = parseFloat(document.getElementById('rev-card').value) || 0;
+      const total = cash + card;
+      const notes = document.getElementById('rev-notes').value;
+
+      const newRecord = {
+        id: Date.now(),
+        date, cash, card, total, notes
+      };
+
+      revenueList.unshift(newRecord);
+      postToWebhook('每日营收流水', [date, cash, card, total, notes]);
+
+      renderRevenueTable();
+      closeRevenueModal();
+      document.getElementById('revenue-form').reset();
+      initDates();
+      alert(`✅ 今日营收录入成功！总计 RM ${total.toFixed(2)} (现金: RM ${cash.toFixed(2)}, 扫码: RM ${card.toFixed(2)})`);
+    }
+
+    function filterExpenses() {
+      const query = document.getElementById('expense-search').value.toLowerCase();
+      const cat = document.getElementById('expense-cat-filter').value;
+      const filtered = expensesList.filter(item => {
+        const matchQuery = item.name.toLowerCase().includes(query) ||
+                           item.handled.toLowerCase().includes(query) ||
+                           item.ref.toLowerCase().includes(query);
+        const matchCat = cat === 'ALL' || item.category === cat;
+        return matchQuery && matchCat;
+      });
+      renderExpensesTable(filtered);
+    }
+
+    function filterDishes() {
+      const query = document.getElementById('dish-search').value.toLowerCase();
+      const filtered = CATALOG_DATA.filter(d => {
+        return d.id.toLowerCase().includes(query) || d.name.toLowerCase().includes(query) || d.cat.toLowerCase().includes(query);
+      });
+      renderDishesTable(filtered);
+    }
+
+    function exportPnLToExcel() {
+      let csv = "来碗 · 柳州螺蛳粉 (Austin Heights) - 综合损益表 (P&L)\n";
+      csv += "期间: 2026年9月\n\n";
+      csv += "项目类别,项目明细,金额 (RM)\n";
+      csv += "一、营业收入,门店柜台实收 (堂食+自取),22430.00\n";
+      csv += "一、营业收入,外卖平台净打款到账,12564.00\n";
+      csv += "一、营业收入,全店总营业额,34994.00\n\n";
+      csv += "二、营业直接成本,生鲜肉类与猪骨采购,4250.00\n";
+      csv += "二、营业直接成本,柳州干米粉与原产地专用配料,4450.00\n";
+      csv += "二、营业直接成本,巴刹生鲜蔬菜配菜,1200.00\n";
+      csv += "二、营业直接成本,外卖专用打包碗耗材,1300.00\n";
+      csv += "二、营业直接成本,营业直接成本总计 (COGS),11200.00\n\n";
+      csv += "三、营业毛利润,毛利润 (毛利率 68.0%),23794.00\n\n";
+      csv += "四、运营与管理费用,Austin Heights 门市租金,3500.00\n";
+      csv += "四、运营与管理费用,员工薪资与兼职,6500.00\n";
+      csv += "四、运营与管理费用,TNB 商业电费,920.80\n";
+      csv += "四、运营与管理费用,SAJ 商业水费,185.40\n";
+      csv += "四、运营与管理费用,后厨商用煤气,280.00\n";
+      csv += "四、运营与管理费用,杂项与清洁维修,3113.80\n";
+      csv += "四、运营与管理费用,运营杂支总计 (OPEX),14500.00\n\n";
+      csv += "五、当月预估净利润,净营业利润 (净利率 26.6%),9294.00\n";
+
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `来碗螺蛳粉_损益报表_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    async function fetchLiveGoogleSheetData() {
+      const dot = document.getElementById('sync-status-dot');
+      const text = document.getElementById('sync-status-text');
+      const icon = document.getElementById('icon-refresh');
+      if (icon) icon.classList.add('animate-spin');
+
+      try {
+        const sheetName = encodeURIComponent('运营与日常杂支');
+        const url = `${GVIZ_BASE}&sheet=${sheetName}`;
+        const resp = await fetch(url);
+        const txt = await resp.text();
+        if (txt.includes('google.visualization.Query.setResponse')) {
+          dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+          text.innerText = "Google Sheet 实时同步";
+        }
+      } catch (e) {
+        dot.className = "w-2 h-2 rounded-full bg-amber-400";
+        text.innerText = "离线/本地模式 (已载入)";
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
+      }
+    }
+
+    function refreshDataFromCloud() {
+      fetchLiveGoogleSheetData();
+      alert('🔄 正在与 Google Sheet 同步最新数据...');
+    }
+
+    function saveWebhookUrl() {
+      const val = document.getElementById('webhook-url-input').value.trim();
+      localStorage.setItem('laiwan_finance_webhook', val);
+      alert('✅ Webhook URL 已保存到本地浏览器配置！');
+    }
+
+    function copyAppsScriptCode() {
+      const code = document.getElementById('apps-script-code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const txt = document.getElementById('copy-script-text');
+        txt.innerText = "已复制成功！";
+        setTimeout(() => txt.innerText = "一键复制代码", 2000);
+      });
+    }
+
+    function postToWebhook(sheetName, rowData) {
+      const hook = localStorage.getItem('laiwan_finance_webhook');
+      if (!hook) return;
+      try {
+        fetch(hook, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sheetName, row: rowData })
+        }).catch(() => {});
+      } catch(e) {}
+    }
+  </script>
+</body>
+</html>
