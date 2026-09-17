@@ -243,9 +243,16 @@
           <div class="flex items-center gap-2 w-full md:w-auto">
             <span class="text-xs font-medium whitespace-nowrap" style="color: var(--text-secondary);">月份切换:</span>
             <select id="month-picker" onchange="onMonthChange(this.value)" class="text-xs border rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-              <option value="2026-09" selected>2026年 9月 (当月实时)</option>
-              <option value="2026-08">2026年 8月 (真实已结)</option>
-              <option value="2026-07">2026年 7月 (真实已结)</option>
+              <option value="2026-09" selected>2026年 9月 (当月实时 · POS已记17天)</option>
+              <option value="2026-08">2026年 8月 (POS 31天真实流水)</option>
+              <option value="2026-07">2026年 7月 (POS 31天真实流水)</option>
+              <option value="2026-06">2026年 6月 (POS 30天真实流水)</option>
+              <option value="2026-05">2026年 5月 (POS 31天真实流水)</option>
+              <option value="2026-04">2026年 4月 (POS 30天真实流水)</option>
+              <option value="2026-03">2026年 3月 (POS 31天真实流水)</option>
+              <option value="2026-02">2026年 2月 (POS 28天真实流水)</option>
+              <option value="2026-01">2026年 1月 (POS 31天真实流水)</option>
+              <option value="ALL">🌟 2026全年 (1~9月 累计 260天)</option>
             </select>
           </div>
 
@@ -420,15 +427,15 @@
           <table class="w-full text-left text-xs sm:text-sm">
             <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
               <tr>
-                <th class="py-3 px-4">月份</th>
-                <th class="py-3 px-4">柜台营收 (现金+扫码)</th>
-                <th class="py-3 px-4">外卖平台到手打款</th>
-                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">全店总营业额</th>
-                <th class="py-3 px-4" style="color: var(--accent-amber);">原材料采购 (COGS)</th>
-                <th class="py-3 px-4" style="color: var(--accent-rose);">运营杂支 (OPEX)</th>
-                <th class="py-3 px-4 font-black" style="color: var(--accent-emerald);">净营业利润</th>
-                <th class="py-3 px-4">食材成本率</th>
-                <th class="py-3 px-4 text-right">状态</th>
+                <th class="py-3 px-4">核算月份</th>
+                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">POS 实收营业额</th>
+                <th class="py-3 px-4">订单单量</th>
+                <th class="py-3 px-4">客单价 (AOV)</th>
+                <th class="py-3 px-4">服务费 (10%)</th>
+                <th class="py-3 px-4" style="color: var(--accent-amber);">食材原料成本 (COGS)</th>
+                <th class="py-3 px-4" style="color: var(--accent-rose);">运营日常杂支 (OPEX)</th>
+                <th class="py-3 px-4 font-black" style="color: var(--accent-emerald);">净利润</th>
+                <th class="py-3 px-4 text-right">数据状态</th>
               </tr>
             </thead>
             <tbody id="tbody-monthly-summary" class="divide-y mono" style="border-color: var(--border-subtle);">
@@ -1210,16 +1217,16 @@ function doPost(e) {
     const SPREADSHEET_ID = "1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o";
     const GVIZ_BASE = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
 
-    let BOOTSTRAP_DATA = {"每日营收流水": [["日期", "柜台现金实收 (Cash RM)", "柜台扫码/刷卡 (DuitNow/Card RM)", "当日柜台总营收 (RM)", "经手员工/交班备注"], ["2026-09-01", "650.0", "1420.5", "2070.5", "早晚班交接正常，钱箱已核准"], ["2026-09-02", "580.0", "1550.0", "2130", "堂食客流平稳"], ["2026-09-03", "420.0", "1690.0", "2110", "雨天客流偏少"], ["2026-09-04", "780.0", "2020.0", "2800", "周五晚市满座"], ["2026-09-05", "950.0", "2580.0", "3530", "周末高峰"], ["当月柜台合计", "3380", "9260.5", "12640.5"]], "供应商账单表": [["进货日期", "供应商名称", "供应商类别", "发票/DO单号", "账单总金额 (RM)", "付款状态", "核销收据号", "主要货品备注"], ["2026-09-01", "南洋生鲜批发", "生鲜肉类与骨头", "INV-8821", "1290.0", "已结清", "OR-20260905", "牛腩20kg, 猪骨30kg, 肥肠10kg"], ["2026-09-02", "柳韵中国调料海运", "干货与专用配料", "INV-5502", "3450.0", "未付款", "螺蛳粉干米粉30箱, 酸笋10桶"], ["2026-09-03", "运达食品包装", "包装耗材", "INV-3109", "580.0", "未付款", "外卖打包碗5箱, 外卖袋3箱"], ["2026-09-04", "本地巴刹蔬菜", "巴刹时蔬", "CASH-0904", "185.0", "已结清", "巴刹单0904", "葱姜蒜、时令蔬菜、鲜木耳"], ["2026-09-05", "南洋生鲜批发", "生鲜肉类与骨头", "INV-8860", "960.0", "未付款", "猪筒骨40kg, 五花肉15kg"], ["应付合计", "6465"]], "还款与收据登记": [["还款日期", "收款方/供应商", "实付金额 (RM)", "付款方式", "银行流水号 (Bank Ref)", "对方收据号 (Official Receipt)", "核销发票/对账单号", "经手人/备注"], ["2026-09-05", "南洋生鲜批发", "1290.0", "Maybank", "MB-9821415", "OR-20260905", "INV-8821", "结清9月1日肉类进货"], ["2026-09-04", "本地巴刹蔬菜", "185.0", "DuitNow", "DN-8819203", "巴刹单0904", "CASH-0904", "巴刹现场结算"], ["实际支出合计", "1475"]], "核心原料进价追踪": [["进货日期", "核心原料名称", "供应商", "进货数量", "单位", "该项总金额 (RM)", "换算单价 (RM/单位)", "价格趋势与备注"], ["2026-08-15", "鲜牛腩", "南洋生鲜批发", "20.0", "kg", "600.0", "30", "RM 30.00/kg (基准价)"], ["2026-09-01", "鲜牛腩", "南洋生鲜批发", "20.0", "kg", "640.0", "32", "起价至 RM 32.00/kg"], ["2026-08-15", "猪筒骨", "南洋生鲜批发", "30.0", "kg", "360.0", "12", "RM 12.00/kg"], ["2026-09-01", "猪筒骨", "南洋生鲜批发", "30.0", "kg", "360.0", "12", "RM 12.00/kg (稳定)"], ["2026-08-10", "螺蛳粉干米粉", "柳韵中国调料海运", "25.0", "箱", "1875.0", "75", "RM 75.00/箱"], ["2026-09-02", "螺蛳粉干米粉", "柳韵中国调料海运", "30.0", "箱", "2250.0", "75", "RM 75.00/箱 (稳定)"], ["2026-09-02", "专用酸笋", "柳韵中国调料海运", "10.0", "桶", "650.0", "65", "RM 65.00/桶 (20kg)"], ["2026-09-03", "外卖打包碗", "运达食品包装", "1000.0", "个", "450.0", "0.45", "RM 0.45/个"]], "运营与日常杂支": [["支出日期", "费用类别", "项目明细", "金额 (RM)", "支付方式", "凭证/收据单号", "经手人", "备注"], ["2026-09-01", "店铺租金", "9月份门市租金", "3500.0", "Maybank", "OR-RENT-09", "老板", "对公转账房东"], ["2026-09-02", "水费", "8月份水费账单", "185.4", "JomPAY", "SAJ-89102", "店长", "门市用水"], ["2026-09-03", "电费", "8月份商业电费", "920.8", "TNB Online", "TNB-229104", "店长", "长时间熬汤电费"], ["2026-09-03", "煤气费", "后厨商用煤气4桶", "280.0", "现金", "GAS-1029", "主管", "RM 70/桶"], ["2026-09-04", "柜台零用金(Petty Cash)", "买洗洁精、垃圾袋", "65.5", "柜台现金", "MRDIY-8821", "收银员", "小票已贴存"], ["2026-09-05", "员工薪资与福利", "员工半月预支薪资", "2200.0", "银行转账", "PAY-202609A", "老板", "全职与兼职"], ["杂支合计", "7151.7"]], "月度损益看板": [["📊 【板块一：门店月度综合损益看板 (全店总营收 = 柜台实收 + 外卖月打款)】"], ["月份", "柜台营收 (现金+扫码 RM)", "外卖平台打款到手 (RM)", "全店总营业额 (RM)", "原材料采购总额 (RM)", "运营杂支总额 (RM)", "当月预估净利润 (RM)", "食材成本率 (%)"], ["2026年9月 (预估)", "22430.0", "12564.0", "34994", "11200.0", "14500.0", "9294", "0.3200548665"], ["2026年8月", "21500.0", "12000.0", "33500", "11055.0", "14200.0", "8245", "0.33"], ["2026年7月", "19800.0", "11200.0", "31000", "10850.0", "13900.0", "6250", "0.35"], ["🛵 【板块二：外卖平台月结单核对与扣点分析 (老板每月月初填一次，填入上面的外卖打款列)】"], ["所属月份", "外卖平台名称", "平台总销售额 (Gross RM)", "平台总抽佣 (Commission RM)", "商家优惠/补贴 (Promo RM)", "实际净到手款 (Net Payout RM)", "实际综合抽佣率 (%)", "月结单 Tax Invoice 编号 / 备注"], ["2026年9月", "GrabFood", "10500.0", "3150.0", "200.0", "7150", "0.319047619", "Grab 9月Statement (实扣31.9%)"], ["2026年9月", "ShopeeFood", "3200.0", "896.0", "100.0", "2204", "0.31125", "Shopee 9月Statement (实扣31.1%)"], ["2026年9月", "Foodpanda", "4800.0", "1440.0", "150.0", "3210", "0.33125", "Panda 9月Statement (实扣33.1%)"], ["9月外卖总计", "全部外卖平台", "18500", "5486", "450", "12564", "0.3208648649", "全月外卖到手总额"]]};
+    // 2026 年 1~9 月 POS 门店直连真实销售数据 (包含全年月度汇总与 260 天每日明细)
+    const POS_SALES_HISTORY = {"2026-01": {"month": "2026-01", "total_sales": 43800.25, "total_bills": 1092, "aov": 40.11, "total_service_charge": 3663.44, "days_count": 31, "daily_sales": [{"date": "2026-01-01", "total": 1505.85, "bills": 33, "charge": 109.89, "net": 1505.85}, {"date": "2026-01-02", "total": 1524.9, "bills": 34, "charge": 127.23, "net": 1524.9}, {"date": "2026-01-03", "total": 2066.6, "bills": 40, "charge": 179.96, "net": 2066.6}, {"date": "2026-01-04", "total": 1565.7, "bills": 41, "charge": 133.7, "net": 1565.7}, {"date": "2026-01-05", "total": 1443.7, "bills": 35, "charge": 124.68, "net": 1443.7}, {"date": "2026-01-06", "total": 1178.6, "bills": 29, "charge": 90.07, "net": 1178.6}, {"date": "2026-01-07", "total": 662.1, "bills": 19, "charge": 56.24, "net": 662.1}, {"date": "2026-01-08", "total": 1017.7, "bills": 24, "charge": 75.3, "net": 1017.7}, {"date": "2026-01-09", "total": 1282.6, "bills": 33, "charge": 109.14, "net": 1282.6}, {"date": "2026-01-10", "total": 1935.95, "bills": 46, "charge": 168.06, "net": 1935.95}, {"date": "2026-01-11", "total": 1441.6, "bills": 35, "charge": 125.22, "net": 1441.6}, {"date": "2026-01-12", "total": 1283.05, "bills": 37, "charge": 109.69, "net": 1283.05}, {"date": "2026-01-13", "total": 987.15, "bills": 33, "charge": 81.9, "net": 987.15}, {"date": "2026-01-14", "total": 1624.4, "bills": 39, "charge": 140.38, "net": 1624.4}, {"date": "2026-01-15", "total": 1301.5, "bills": 30, "charge": 108.96, "net": 1301.5}, {"date": "2026-01-16", "total": 1692.9, "bills": 47, "charge": 142.93, "net": 1692.9}, {"date": "2026-01-17", "total": 1499.55, "bills": 43, "charge": 122.01, "net": 1499.55}, {"date": "2026-01-18", "total": 1698.85, "bills": 37, "charge": 147.0, "net": 1698.85}, {"date": "2026-01-19", "total": 849.4, "bills": 22, "charge": 71.2, "net": 849.4}, {"date": "2026-01-20", "total": 1606.75, "bills": 44, "charge": 134.44, "net": 1606.75}, {"date": "2026-01-21", "total": 1162.4, "bills": 31, "charge": 88.98, "net": 1162.4}, {"date": "2026-01-22", "total": 1036.85, "bills": 31, "charge": 90.04, "net": 1036.85}, {"date": "2026-01-23", "total": 1372.35, "bills": 35, "charge": 118.91, "net": 1372.35}, {"date": "2026-01-24", "total": 2327.75, "bills": 49, "charge": 200.99, "net": 2327.75}, {"date": "2026-01-25", "total": 2098.95, "bills": 53, "charge": 174.81, "net": 2098.95}, {"date": "2026-01-26", "total": 1272.1, "bills": 31, "charge": 98.6, "net": 1272.1}, {"date": "2026-01-27", "total": 869.7, "bills": 28, "charge": 75.27, "net": 869.7}, {"date": "2026-01-28", "total": 1355.2, "bills": 29, "charge": 114.03, "net": 1355.2}, {"date": "2026-01-29", "total": 949.35, "bills": 23, "charge": 78.65, "net": 949.35}, {"date": "2026-01-30", "total": 1518.25, "bills": 39, "charge": 121.13, "net": 1518.25}, {"date": "2026-01-31", "total": 1668.5, "bills": 42, "charge": 144.03, "net": 1668.5}]}, "2026-02": {"month": "2026-02", "total_sales": 29069.25, "total_bills": 701, "aov": 41.47, "total_service_charge": 2431.57, "days_count": 28, "daily_sales": [{"date": "2026-02-01", "total": 1377.25, "bills": 28, "charge": 113.07, "net": 1377.25}, {"date": "2026-02-02", "total": 1188.85, "bills": 28, "charge": 107.71, "net": 1188.85}, {"date": "2026-02-03", "total": 1098.65, "bills": 27, "charge": 87.72, "net": 1098.65}, {"date": "2026-02-04", "total": 1087.25, "bills": 29, "charge": 94.8, "net": 1087.25}, {"date": "2026-02-05", "total": 939.5, "bills": 26, "charge": 68.47, "net": 939.5}, {"date": "2026-02-06", "total": 1211.25, "bills": 30, "charge": 96.34, "net": 1211.25}, {"date": "2026-02-07", "total": 1723.15, "bills": 39, "charge": 149.63, "net": 1723.15}, {"date": "2026-02-08", "total": 1801.5, "bills": 39, "charge": 159.35, "net": 1801.5}, {"date": "2026-02-09", "total": 1206.15, "bills": 32, "charge": 94.44, "net": 1206.15}, {"date": "2026-02-10", "total": 754.8, "bills": 23, "charge": 63.94, "net": 754.8}, {"date": "2026-02-11", "total": 980.5, "bills": 23, "charge": 85.81, "net": 980.5}, {"date": "2026-02-12", "total": 922.6, "bills": 26, "charge": 78.66, "net": 922.6}, {"date": "2026-02-13", "total": 1771.0, "bills": 37, "charge": 148.06, "net": 1771.0}, {"date": "2026-02-14", "total": 1927.1, "bills": 42, "charge": 170.06, "net": 1927.1}, {"date": "2026-02-15", "total": 1164.75, "bills": 22, "charge": 103.1, "net": 1164.75}, {"date": "2026-02-16", "total": 257.35, "bills": 8, "charge": 15.96, "net": 257.35}, {"date": "2026-02-17", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-18", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-19", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-20", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-21", "total": 1343.75, "bills": 34, "charge": 108.41, "net": 1343.75}, {"date": "2026-02-22", "total": 1068.1, "bills": 27, "charge": 95.57, "net": 1068.1}, {"date": "2026-02-23", "total": 1002.75, "bills": 25, "charge": 82.06, "net": 1002.75}, {"date": "2026-02-24", "total": 970.2, "bills": 25, "charge": 70.03, "net": 970.2}, {"date": "2026-02-25", "total": 1105.45, "bills": 29, "charge": 91.41, "net": 1105.45}, {"date": "2026-02-26", "total": 956.9, "bills": 29, "charge": 78.35, "net": 956.9}, {"date": "2026-02-27", "total": 1505.7, "bills": 32, "charge": 124.5, "net": 1505.7}, {"date": "2026-02-28", "total": 1704.75, "bills": 41, "charge": 144.12, "net": 1704.75}]}, "2026-03": {"month": "2026-03", "total_sales": 44574.15, "total_bills": 1142, "aov": 39.03, "total_service_charge": 3692.21, "days_count": 31, "daily_sales": [{"date": "2026-03-01", "total": 1985.75, "bills": 46, "charge": 173.51, "net": 1985.75}, {"date": "2026-03-02", "total": 1573.7, "bills": 40, "charge": 134.58, "net": 1573.7}, {"date": "2026-03-03", "total": 1138.05, "bills": 27, "charge": 98.79, "net": 1138.05}, {"date": "2026-03-04", "total": 1212.6, "bills": 28, "charge": 109.92, "net": 1212.6}, {"date": "2026-03-05", "total": 967.1, "bills": 28, "charge": 79.45, "net": 967.1}, {"date": "2026-03-06", "total": 1760.3, "bills": 43, "charge": 138.54, "net": 1760.3}, {"date": "2026-03-07", "total": 2455.45, "bills": 59, "charge": 204.59, "net": 2455.45}, {"date": "2026-03-08", "total": 1301.4, "bills": 34, "charge": 115.14, "net": 1301.4}, {"date": "2026-03-09", "total": 531.15, "bills": 18, "charge": 46.03, "net": 531.15}, {"date": "2026-03-10", "total": 1415.1, "bills": 34, "charge": 123.6, "net": 1415.1}, {"date": "2026-03-11", "total": 1241.85, "bills": 36, "charge": 99.6, "net": 1241.85}, {"date": "2026-03-12", "total": 1544.6, "bills": 38, "charge": 131.86, "net": 1544.6}, {"date": "2026-03-13", "total": 1106.5, "bills": 30, "charge": 94.82, "net": 1106.5}, {"date": "2026-03-14", "total": 1153.05, "bills": 33, "charge": 83.35, "net": 1153.05}, {"date": "2026-03-15", "total": 2178.25, "bills": 57, "charge": 179.29, "net": 2178.25}, {"date": "2026-03-16", "total": 1321.45, "bills": 40, "charge": 96.83, "net": 1321.45}, {"date": "2026-03-17", "total": 1219.8, "bills": 33, "charge": 97.64, "net": 1219.8}, {"date": "2026-03-18", "total": 1249.1, "bills": 39, "charge": 102.7, "net": 1249.1}, {"date": "2026-03-19", "total": 1263.6, "bills": 33, "charge": 108.03, "net": 1263.6}, {"date": "2026-03-20", "total": 1870.95, "bills": 45, "charge": 151.34, "net": 1870.95}, {"date": "2026-03-21", "total": 1847.15, "bills": 45, "charge": 142.75, "net": 1847.15}, {"date": "2026-03-22", "total": 1188.4, "bills": 34, "charge": 102.2, "net": 1188.4}, {"date": "2026-03-23", "total": 1873.5, "bills": 49, "charge": 154.83, "net": 1873.5}, {"date": "2026-03-24", "total": 1600.75, "bills": 34, "charge": 121.32, "net": 1600.75}, {"date": "2026-03-25", "total": 1039.0, "bills": 28, "charge": 86.36, "net": 1039.0}, {"date": "2026-03-26", "total": 919.2, "bills": 26, "charge": 80.5, "net": 919.2}, {"date": "2026-03-27", "total": 1722.0, "bills": 38, "charge": 147.12, "net": 1722.0}, {"date": "2026-03-28", "total": 1637.7, "bills": 42, "charge": 140.78, "net": 1637.7}, {"date": "2026-03-29", "total": 1182.2, "bills": 29, "charge": 99.32, "net": 1182.2}, {"date": "2026-03-30", "total": 2169.8, "bills": 49, "charge": 170.4, "net": 2169.8}, {"date": "2026-03-31", "total": 904.7, "bills": 27, "charge": 77.02, "net": 904.7}]}, "2026-04": {"month": "2026-04", "total_sales": 36099.4, "total_bills": 895, "aov": 40.33, "total_service_charge": 2931.46, "days_count": 30, "daily_sales": [{"date": "2026-04-01", "total": 1008.0, "bills": 26, "charge": 82.43, "net": 1008.0}, {"date": "2026-04-02", "total": 928.5, "bills": 23, "charge": 77.3, "net": 928.5}, {"date": "2026-04-03", "total": 1859.85, "bills": 48, "charge": 152.06, "net": 1859.85}, {"date": "2026-04-04", "total": 1858.65, "bills": 38, "charge": 157.18, "net": 1858.65}, {"date": "2026-04-05", "total": 1298.45, "bills": 31, "charge": 106.79, "net": 1298.45}, {"date": "2026-04-06", "total": 1052.35, "bills": 27, "charge": 84.53, "net": 1052.35}, {"date": "2026-04-07", "total": 1220.05, "bills": 34, "charge": 95.63, "net": 1220.05}, {"date": "2026-04-08", "total": 1407.95, "bills": 34, "charge": 113.41, "net": 1407.95}, {"date": "2026-04-09", "total": 819.85, "bills": 22, "charge": 68.49, "net": 819.85}, {"date": "2026-04-10", "total": 1584.05, "bills": 36, "charge": 131.6, "net": 1584.05}, {"date": "2026-04-11", "total": 1739.1, "bills": 45, "charge": 146.84, "net": 1739.1}, {"date": "2026-04-12", "total": 1585.4, "bills": 38, "charge": 129.59, "net": 1585.4}, {"date": "2026-04-13", "total": 1156.7, "bills": 27, "charge": 100.03, "net": 1156.7}, {"date": "2026-04-14", "total": 736.05, "bills": 23, "charge": 47.38, "net": 736.05}, {"date": "2026-04-15", "total": 871.0, "bills": 25, "charge": 70.64, "net": 871.0}, {"date": "2026-04-16", "total": 574.05, "bills": 17, "charge": 43.36, "net": 574.05}, {"date": "2026-04-17", "total": 1251.55, "bills": 31, "charge": 82.39, "net": 1251.55}, {"date": "2026-04-18", "total": 1663.7, "bills": 35, "charge": 136.59, "net": 1663.7}, {"date": "2026-04-19", "total": 1292.05, "bills": 29, "charge": 115.56, "net": 1292.05}, {"date": "2026-04-20", "total": 1147.75, "bills": 30, "charge": 96.7, "net": 1147.75}, {"date": "2026-04-21", "total": 877.0, "bills": 22, "charge": 65.04, "net": 877.0}, {"date": "2026-04-22", "total": 578.5, "bills": 16, "charge": 45.91, "net": 578.5}, {"date": "2026-04-23", "total": 1235.9, "bills": 33, "charge": 108.89, "net": 1235.9}, {"date": "2026-04-24", "total": 1389.2, "bills": 31, "charge": 108.51, "net": 1389.2}, {"date": "2026-04-25", "total": 1632.6, "bills": 42, "charge": 136.64, "net": 1632.6}, {"date": "2026-04-26", "total": 1196.3, "bills": 27, "charge": 97.95, "net": 1196.3}, {"date": "2026-04-27", "total": 661.1, "bills": 15, "charge": 57.75, "net": 661.1}, {"date": "2026-04-28", "total": 1009.65, "bills": 26, "charge": 81.42, "net": 1009.65}, {"date": "2026-04-29", "total": 1208.25, "bills": 31, "charge": 93.62, "net": 1208.25}, {"date": "2026-04-30", "total": 1255.85, "bills": 33, "charge": 97.23, "net": 1255.85}]}, "2026-05": {"month": "2026-05", "total_sales": 33535.6, "total_bills": 837, "aov": 40.07, "total_service_charge": 2714.64, "days_count": 31, "daily_sales": [{"date": "2026-05-01", "total": 1519.6, "bills": 33, "charge": 121.61, "net": 1519.6}, {"date": "2026-05-02", "total": 1294.2, "bills": 35, "charge": 98.14, "net": 1294.2}, {"date": "2026-05-03", "total": 1134.55, "bills": 27, "charge": 95.49, "net": 1134.55}, {"date": "2026-05-04", "total": 518.6, "bills": 17, "charge": 42.53, "net": 518.6}, {"date": "2026-05-05", "total": 630.75, "bills": 22, "charge": 39.42, "net": 630.75}, {"date": "2026-05-06", "total": 1002.6, "bills": 22, "charge": 84.22, "net": 1002.6}, {"date": "2026-05-07", "total": 735.25, "bills": 19, "charge": 56.61, "net": 735.25}, {"date": "2026-05-08", "total": 924.95, "bills": 26, "charge": 74.63, "net": 924.95}, {"date": "2026-05-09", "total": 1418.8, "bills": 29, "charge": 121.34, "net": 1418.8}, {"date": "2026-05-10", "total": 981.75, "bills": 25, "charge": 81.32, "net": 981.75}, {"date": "2026-05-11", "total": 1167.25, "bills": 23, "charge": 93.14, "net": 1167.25}, {"date": "2026-05-12", "total": 724.2, "bills": 20, "charge": 55.3, "net": 724.2}, {"date": "2026-05-13", "total": 757.95, "bills": 24, "charge": 57.71, "net": 757.95}, {"date": "2026-05-14", "total": 882.9, "bills": 22, "charge": 72.89, "net": 882.9}, {"date": "2026-05-15", "total": 992.0, "bills": 26, "charge": 69.2, "net": 992.0}, {"date": "2026-05-16", "total": 2026.7, "bills": 44, "charge": 177.34, "net": 2026.7}, {"date": "2026-05-17", "total": 1476.05, "bills": 33, "charge": 112.97, "net": 1476.05}, {"date": "2026-05-18", "total": 764.85, "bills": 20, "charge": 60.98, "net": 764.85}, {"date": "2026-05-19", "total": 849.3, "bills": 25, "charge": 68.18, "net": 849.3}, {"date": "2026-05-20", "total": 1074.05, "bills": 29, "charge": 94.21, "net": 1074.05}, {"date": "2026-05-21", "total": 688.7, "bills": 17, "charge": 62.24, "net": 688.7}, {"date": "2026-05-22", "total": 1158.3, "bills": 29, "charge": 102.15, "net": 1158.3}, {"date": "2026-05-23", "total": 1396.85, "bills": 36, "charge": 113.4, "net": 1396.85}, {"date": "2026-05-24", "total": 1195.7, "bills": 29, "charge": 102.93, "net": 1195.7}, {"date": "2026-05-25", "total": 862.9, "bills": 22, "charge": 72.16, "net": 862.9}, {"date": "2026-05-26", "total": 1216.5, "bills": 25, "charge": 93.84, "net": 1216.5}, {"date": "2026-05-27", "total": 1136.35, "bills": 29, "charge": 94.49, "net": 1136.35}, {"date": "2026-05-28", "total": 1081.95, "bills": 26, "charge": 90.43, "net": 1081.95}, {"date": "2026-05-29", "total": 1643.95, "bills": 42, "charge": 126.32, "net": 1643.95}, {"date": "2026-05-30", "total": 1366.9, "bills": 34, "charge": 110.54, "net": 1366.9}, {"date": "2026-05-31", "total": 911.2, "bills": 27, "charge": 68.91, "net": 911.2}]}, "2026-06": {"month": "2026-06", "total_sales": 34416.8, "total_bills": 858, "aov": 40.11, "total_service_charge": 2814.98, "days_count": 30, "daily_sales": [{"date": "2026-06-01", "total": 1234.45, "bills": 29, "charge": 106.91, "net": 1234.45}, {"date": "2026-06-02", "total": 1313.45, "bills": 30, "charge": 112.66, "net": 1313.45}, {"date": "2026-06-03", "total": 1400.65, "bills": 34, "charge": 101.51, "net": 1400.65}, {"date": "2026-06-04", "total": 1503.95, "bills": 35, "charge": 122.78, "net": 1503.95}, {"date": "2026-06-05", "total": 778.6, "bills": 21, "charge": 64.94, "net": 778.6}, {"date": "2026-06-06", "total": 1542.8, "bills": 42, "charge": 133.5, "net": 1542.8}, {"date": "2026-06-07", "total": 1487.75, "bills": 27, "charge": 132.2, "net": 1487.75}, {"date": "2026-06-08", "total": 777.1, "bills": 19, "charge": 58.29, "net": 777.1}, {"date": "2026-06-09", "total": 1182.1, "bills": 26, "charge": 97.47, "net": 1182.1}, {"date": "2026-06-10", "total": 1167.45, "bills": 28, "charge": 92.29, "net": 1167.45}, {"date": "2026-06-11", "total": 1193.65, "bills": 30, "charge": 93.97, "net": 1193.65}, {"date": "2026-06-12", "total": 1313.55, "bills": 37, "charge": 110.32, "net": 1313.55}, {"date": "2026-06-13", "total": 1243.9, "bills": 34, "charge": 98.68, "net": 1243.9}, {"date": "2026-06-14", "total": 1442.25, "bills": 35, "charge": 119.25, "net": 1442.25}, {"date": "2026-06-15", "total": 915.5, "bills": 25, "charge": 72.91, "net": 915.5}, {"date": "2026-06-16", "total": 1189.9, "bills": 28, "charge": 87.43, "net": 1189.9}, {"date": "2026-06-17", "total": 1233.95, "bills": 27, "charge": 111.81, "net": 1233.95}, {"date": "2026-06-18", "total": 1089.55, "bills": 32, "charge": 83.92, "net": 1089.55}, {"date": "2026-06-19", "total": 1112.15, "bills": 34, "charge": 87.96, "net": 1112.15}, {"date": "2026-06-20", "total": 1536.9, "bills": 42, "charge": 128.65, "net": 1536.9}, {"date": "2026-06-21", "total": 854.7, "bills": 24, "charge": 66.98, "net": 854.7}, {"date": "2026-06-22", "total": 687.95, "bills": 22, "charge": 52.71, "net": 687.95}, {"date": "2026-06-23", "total": 565.1, "bills": 16, "charge": 45.62, "net": 565.1}, {"date": "2026-06-24", "total": 773.25, "bills": 22, "charge": 64.09, "net": 773.25}, {"date": "2026-06-25", "total": 785.25, "bills": 22, "charge": 64.02, "net": 785.25}, {"date": "2026-06-26", "total": 1067.9, "bills": 25, "charge": 89.97, "net": 1067.9}, {"date": "2026-06-27", "total": 1681.45, "bills": 37, "charge": 149.7, "net": 1681.45}, {"date": "2026-06-28", "total": 1458.2, "bills": 29, "charge": 115.38, "net": 1458.2}, {"date": "2026-06-29", "total": 898.85, "bills": 22, "charge": 66.05, "net": 898.85}, {"date": "2026-06-30", "total": 984.55, "bills": 24, "charge": 83.01, "net": 984.55}]}, "2026-07": {"month": "2026-07", "total_sales": 33078.3, "total_bills": 797, "aov": 41.5, "total_service_charge": 2763.87, "days_count": 31, "daily_sales": [{"date": "2026-07-01", "total": 786.65, "bills": 22, "charge": 64.75, "net": 786.65}, {"date": "2026-07-02", "total": 739.45, "bills": 20, "charge": 56.69, "net": 739.45}, {"date": "2026-07-03", "total": 1309.4, "bills": 30, "charge": 109.31, "net": 1309.4}, {"date": "2026-07-04", "total": 1249.65, "bills": 34, "charge": 103.99, "net": 1249.65}, {"date": "2026-07-05", "total": 1172.1, "bills": 21, "charge": 106.57, "net": 1172.1}, {"date": "2026-07-06", "total": 639.35, "bills": 15, "charge": 49.74, "net": 639.35}, {"date": "2026-07-07", "total": 750.95, "bills": 19, "charge": 64.21, "net": 750.95}, {"date": "2026-07-08", "total": 776.4, "bills": 24, "charge": 53.5, "net": 776.4}, {"date": "2026-07-09", "total": 704.3, "bills": 18, "charge": 59.26, "net": 704.3}, {"date": "2026-07-10", "total": 1400.9, "bills": 32, "charge": 110.08, "net": 1400.9}, {"date": "2026-07-11", "total": 1932.25, "bills": 45, "charge": 154.72, "net": 1932.25}, {"date": "2026-07-12", "total": 1369.35, "bills": 34, "charge": 108.22, "net": 1369.35}, {"date": "2026-07-13", "total": 1143.4, "bills": 32, "charge": 93.23, "net": 1143.4}, {"date": "2026-07-14", "total": 756.8, "bills": 22, "charge": 60.15, "net": 756.8}, {"date": "2026-07-15", "total": 964.9, "bills": 22, "charge": 76.19, "net": 964.9}, {"date": "2026-07-16", "total": 695.7, "bills": 17, "charge": 55.85, "net": 695.7}, {"date": "2026-07-17", "total": 797.6, "bills": 21, "charge": 69.46, "net": 797.6}, {"date": "2026-07-18", "total": 1971.4, "bills": 39, "charge": 176.44, "net": 1971.4}, {"date": "2026-07-19", "total": 817.35, "bills": 18, "charge": 69.98, "net": 817.35}, {"date": "2026-07-20", "total": 1022.75, "bills": 27, "charge": 86.86, "net": 1022.75}, {"date": "2026-07-21", "total": 1453.75, "bills": 34, "charge": 122.09, "net": 1453.75}, {"date": "2026-07-22", "total": 833.65, "bills": 22, "charge": 72.09, "net": 833.65}, {"date": "2026-07-23", "total": 678.3, "bills": 18, "charge": 56.98, "net": 678.3}, {"date": "2026-07-24", "total": 884.2, "bills": 26, "charge": 66.44, "net": 884.2}, {"date": "2026-07-25", "total": 1956.85, "bills": 41, "charge": 166.94, "net": 1956.85}, {"date": "2026-07-26", "total": 1019.0, "bills": 23, "charge": 88.15, "net": 1019.0}, {"date": "2026-07-27", "total": 1160.2, "bills": 23, "charge": 105.48, "net": 1160.2}, {"date": "2026-07-28", "total": 978.3, "bills": 25, "charge": 85.52, "net": 978.3}, {"date": "2026-07-29", "total": 871.45, "bills": 19, "charge": 71.84, "net": 871.45}, {"date": "2026-07-30", "total": 909.65, "bills": 23, "charge": 80.18, "net": 909.65}, {"date": "2026-07-31", "total": 1332.3, "bills": 31, "charge": 118.96, "net": 1332.3}]}, "2026-08": {"month": "2026-08", "total_sales": 37490.75, "total_bills": 904, "aov": 41.47, "total_service_charge": 3146.97, "days_count": 31, "daily_sales": [{"date": "2026-08-01", "total": 1546.25, "bills": 40, "charge": 125.1, "net": 1546.25}, {"date": "2026-08-02", "total": 1358.2, "bills": 30, "charge": 118.88, "net": 1358.2}, {"date": "2026-08-03", "total": 938.75, "bills": 25, "charge": 80.17, "net": 938.75}, {"date": "2026-08-04", "total": 1180.8, "bills": 31, "charge": 92.78, "net": 1180.8}, {"date": "2026-08-05", "total": 656.5, "bills": 19, "charge": 51.32, "net": 656.5}, {"date": "2026-08-06", "total": 845.05, "bills": 19, "charge": 75.57, "net": 845.05}, {"date": "2026-08-07", "total": 1131.0, "bills": 29, "charge": 91.68, "net": 1131.0}, {"date": "2026-08-08", "total": 1591.15, "bills": 38, "charge": 140.07, "net": 1591.15}, {"date": "2026-08-09", "total": 2081.1, "bills": 41, "charge": 186.14, "net": 2081.1}, {"date": "2026-08-10", "total": 1281.0, "bills": 33, "charge": 103.53, "net": 1281.0}, {"date": "2026-08-11", "total": 1003.55, "bills": 27, "charge": 83.37, "net": 1003.55}, {"date": "2026-08-12", "total": 991.65, "bills": 24, "charge": 81.15, "net": 991.65}, {"date": "2026-08-13", "total": 919.35, "bills": 22, "charge": 83.57, "net": 919.35}, {"date": "2026-08-14", "total": 1000.45, "bills": 26, "charge": 78.29, "net": 1000.45}, {"date": "2026-08-15", "total": 2218.05, "bills": 51, "charge": 185.92, "net": 2218.05}, {"date": "2026-08-16", "total": 939.2, "bills": 24, "charge": 75.95, "net": 939.2}, {"date": "2026-08-17", "total": 1225.55, "bills": 29, "charge": 105.76, "net": 1225.55}, {"date": "2026-08-18", "total": 969.9, "bills": 22, "charge": 81.6, "net": 969.9}, {"date": "2026-08-19", "total": 937.85, "bills": 30, "charge": 71.18, "net": 937.85}, {"date": "2026-08-20", "total": 1238.3, "bills": 33, "charge": 102.73, "net": 1238.3}, {"date": "2026-08-21", "total": 1698.4, "bills": 41, "charge": 141.94, "net": 1698.4}, {"date": "2026-08-22", "total": 1229.3, "bills": 29, "charge": 103.39, "net": 1229.3}, {"date": "2026-08-23", "total": 1539.95, "bills": 31, "charge": 133.52, "net": 1539.95}, {"date": "2026-08-24", "total": 1501.9, "bills": 31, "charge": 128.15, "net": 1501.9}, {"date": "2026-08-25", "total": 925.1, "bills": 21, "charge": 81.66, "net": 925.1}, {"date": "2026-08-26", "total": 1017.65, "bills": 25, "charge": 82.97, "net": 1017.65}, {"date": "2026-08-27", "total": 462.1, "bills": 15, "charge": 30.1, "net": 462.1}, {"date": "2026-08-28", "total": 1095.0, "bills": 27, "charge": 88.66, "net": 1095.0}, {"date": "2026-08-29", "total": 1626.4, "bills": 35, "charge": 145.61, "net": 1626.4}, {"date": "2026-08-30", "total": 1088.8, "bills": 28, "charge": 92.4, "net": 1088.8}, {"date": "2026-08-31", "total": 1252.5, "bills": 28, "charge": 103.81, "net": 1252.5}]}, "2026-09": {"month": "2026-09", "total_sales": 18092.55, "total_bills": 457, "aov": 39.59, "total_service_charge": 1525.58, "days_count": 17, "daily_sales": [{"date": "2026-09-01", "total": 557.45, "bills": 18, "charge": 49.93, "net": 557.45}, {"date": "2026-09-02", "total": 921.65, "bills": 26, "charge": 79.37, "net": 921.65}, {"date": "2026-09-03", "total": 1407.1, "bills": 29, "charge": 127.91, "net": 1407.1}, {"date": "2026-09-04", "total": 983.5, "bills": 28, "charge": 79.0, "net": 983.5}, {"date": "2026-09-05", "total": 1494.8, "bills": 38, "charge": 118.71, "net": 1494.8}, {"date": "2026-09-06", "total": 1309.85, "bills": 34, "charge": 114.13, "net": 1309.85}, {"date": "2026-09-07", "total": 1085.5, "bills": 27, "charge": 92.13, "net": 1085.5}, {"date": "2026-09-08", "total": 940.75, "bills": 26, "charge": 79.47, "net": 940.75}, {"date": "2026-09-09", "total": 1001.85, "bills": 30, "charge": 87.29, "net": 1001.85}, {"date": "2026-09-10", "total": 954.3, "bills": 21, "charge": 71.06, "net": 954.3}, {"date": "2026-09-11", "total": 1114.8, "bills": 29, "charge": 95.15, "net": 1114.8}, {"date": "2026-09-12", "total": 1120.25, "bills": 26, "charge": 97.42, "net": 1120.25}, {"date": "2026-09-13", "total": 1569.2, "bills": 33, "charge": 137.7, "net": 1569.2}, {"date": "2026-09-14", "total": 685.05, "bills": 19, "charge": 55.86, "net": 685.05}, {"date": "2026-09-15", "total": 787.35, "bills": 19, "charge": 59.16, "net": 787.35}, {"date": "2026-09-16", "total": 1426.95, "bills": 37, "charge": 116.87, "net": 1426.95}, {"date": "2026-09-17", "total": 732.2, "bills": 17, "charge": 64.42, "net": 732.2}]}};
+
     let CATALOG_DATA = [{"id": "S1", "cat": "汤螺蛳粉", "name": "S1 原味螺蛳粉 Original Luosifen", "price": 12.8, "mods": ["spicy", "addons"], "desc": "地道经典原汁原味螺蛳汤粉", "img": "images/S1.jpeg", "badge": "🌟 经典老柳州", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000937396.jpeg"}, {"id": "S2", "cat": "汤螺蛳粉", "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "配香煎荷包蛋", "img": "images/S2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001003128.jpeg"}, {"id": "S3", "cat": "汤螺蛳粉", "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "招牌必点超大吸汤炸蛋", "img": "images/S3.jpeg", "badge": "🔥 进店必点", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001046295.jpeg"}, {"id": "S4", "cat": "汤螺蛳粉", "name": "S4 香肠螺蛳粉 TW Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "配焦香台湾香肠", "img": "images/S4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001114368.jpeg"}, {"id": "S5", "cat": "汤螺蛳粉", "name": "S5 腊肠螺蛳粉 CN Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "传统风味腊肠", "img": "images/S5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001149447.jpeg"}, {"id": "S6", "cat": "汤螺蛳粉", "name": "S6 凤爪螺蛳粉 Chicken Feet Luosifen", "price": 16.8, "mods": ["spicy", "addons"], "desc": "软糯入味虎皮凤爪", "img": "images/S6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001220137.jpeg"}, {"id": "S7", "cat": "汤螺蛳粉", "name": "S7 鲜肉螺蛳粉 XianRou Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "鲜嫩滑口猪肉片", "img": "images/S7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105230761.jpeg"}, {"id": "S8", "cat": "汤螺蛳粉", "name": "S8 锅烧螺蛳粉 GuoShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "桂林传统秘制锅烧脆肉", "img": "images/S8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105247434.jpeg"}, {"id": "S9", "cat": "汤螺蛳粉", "name": "S9 叉烧螺蛳粉 ChaShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "蜜汁香滑叉烧", "img": "images/S9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105301738.jpeg"}, {"id": "S10", "cat": "汤螺蛳粉", "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "秘制卤香醇厚大肠", "img": "images/S10.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105337237.jpeg"}, {"id": "S11", "cat": "汤螺蛳粉", "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup", "price": 12.8, "mods": ["spicy", "addons"], "desc": "经典清甜桂林高汤米粉", "img": "images/S11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000800397.jpeg"}, {"id": "S12", "cat": "汤螺蛳粉", "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen", "price": 15.99, "mods": ["spicy", "addons"], "desc": "软烂脱骨大猪脚", "img": "images/S12.jpeg", "badge": "🥩 大份脱骨猪脚", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260629120252697.jpeg"}, {"id": "S13", "cat": "汤螺蛳粉", "name": "S13 牛腩螺蛳粉 Beef Brisket Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "浓香酥烂大块牛腩", "img": "images/S13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000913580.jpeg"}, {"id": "D1", "cat": "招牌干捞", "name": "D1 炸蛋干捞粉 Deep Fried Egg Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "香浓干拌搭酥脆大炸蛋", "img": "images/D1.jpeg", "badge": "👑 干捞榜首", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235726216.jpeg"}, {"id": "D2", "cat": "招牌干捞", "name": "D2 螺蛳干捞粉 Dry Luosifen", "price": 13.8, "mods": ["spicy", "addons"], "desc": "经典特制酱汁干捞粉", "img": "images/D2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235747575.jpeg"}, {"id": "D3", "cat": "招牌干捞", "name": "D3 煎蛋干捞粉 Fried Egg Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配现煎荷包蛋", "img": "images/D3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235829718.jpeg"}, {"id": "D4", "cat": "招牌干捞", "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "干拌配台湾香肠", "img": "images/D4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250427205150320.jpeg"}, {"id": "D5", "cat": "招牌干捞", "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配卤肥肠", "img": "images/D5.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105022734.jpeg"}, {"id": "D6", "cat": "招牌干捞", "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配嫩鲜肉", "img": "images/D6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105042608.jpeg"}, {"id": "D7", "cat": "招牌干捞", "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥脆锅烧", "img": "images/D7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105108671.jpeg"}, {"id": "D8", "cat": "招牌干捞", "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配叉烧肉", "img": "images/D8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105126127.jpeg"}, {"id": "D9", "cat": "招牌干捞", "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥烂牛腩", "img": "images/D9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105145288.jpeg"}, {"id": "B1", "cat": "炒粉炒饭", "name": "B1 炒螺蛳粉 Fried Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "大火镬气翻炒螺蛳粉", "img": "images/B1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234917290.jpeg"}, {"id": "B2", "cat": "炒粉炒饭", "name": "B2 炒米粉 Fried Mee Hoon", "price": 12.8, "mods": ["spicy", "addons"], "desc": "镬气十足香炒米粉", "img": "images/B2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234937563.jpeg"}, {"id": "B3", "cat": "炒粉炒饭", "name": "B3 炒饭 Fried Rice", "price": 12.8, "mods": ["spicy", "addons"], "desc": "粒粒分明黄金炒饭", "img": "images/B3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235002683.jpeg"}, {"id": "C1", "cat": "手工水饺云吞", "name": "C1 手工水饺 Homemade Dumplings", "price": 12.8, "mods": ["dumpling_style", "addons"], "desc": "皮薄馅大手工水饺 (可选煮汤/酥炸)", "img": "images/C1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211728448.jpeg"}, {"id": "C2", "cat": "手工水饺云吞", "name": "C2 手工云吞 Homemade Wantan", "price": 12.8, "mods": ["wantan_style", "addons"], "desc": "鲜肉饱满纯手工云吞 (可选煮汤/酥炸)", "img": "images/C2.jpeg", "badge": "🥟 现包鲜肉云吞", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211750110.jpeg"}, {"id": "C3", "cat": "特色小吃", "name": "C3 红糖糍粑 Brown Sugar Glutinous Rice Cake", "price": 8.8, "mods": [], "desc": "外酥里糯香甜红糖", "img": "images/C3.jpeg", "badge": "✨ 甜糯解辣", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235239192.jpeg"}, {"id": "C4", "cat": "特色小吃", "name": "C4 脆皮香蕉 Crispy Banana", "price": 8.8, "mods": [], "desc": "金黄酥脆香甜可口", "img": "images/C4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235320176.jpeg"}, {"id": "C5", "cat": "特色小吃", "name": "C5 香芋地瓜丸 Yam Ball", "price": 7.8, "mods": [], "desc": "双重香浓软糯丸子", "img": "images/C5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235343569.jpeg"}, {"id": "C6", "cat": "特色小吃", "name": "C6 南瓜饼 Pumpkin Cake", "price": 7.8, "mods": [], "desc": "外皮酥脆香糯南瓜", "img": "images/C6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235409765.jpeg"}, {"id": "C7", "cat": "特色小吃", "name": "C7 沙拉卷 Salad Roll", "price": 4.8, "mods": [], "desc": "清爽酥脆沙拉卷", "img": "images/C7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235430457.jpeg"}, {"id": "C8", "cat": "特色小吃", "name": "C8 炸饺 Deep fried Homemade Dumplings", "price": 6.8, "mods": [], "desc": "香脆酥炸手工饺", "img": "images/C8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235536786.jpeg"}, {"id": "C9", "cat": "特色小吃", "name": "C9 油条虾滑 Doughnut With Shrimp Paste", "price": 7.8, "mods": [], "desc": "酥脆老油条酿鲜美虾滑", "img": "images/C9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235620336.jpeg"}, {"id": "C10", "cat": "特色小吃", "name": "C10 虾枣 Prawn Rolls", "price": 7.8, "mods": [], "desc": "传统潮州风味脆皮虾枣", "img": "images/C10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235028729.jpeg"}, {"id": "C11", "cat": "特色小吃", "name": "C11 炸云吞 Fried Wonton", "price": 7.8, "mods": [], "desc": "咔嚓酥脆鲜肉小云吞", "img": "images/C11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001502231.jpeg"}, {"id": "F01", "cat": "饮品甜品", "name": "F01 Justea", "price": 3.5, "mods": [], "desc": "清爽瓶装茶饮", "img": "images/F01.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113252740.jpeg"}, {"id": "F02", "cat": "饮品甜品", "name": "F02 矿泉水 Mineral Water", "price": 2.0, "mods": [], "desc": "瓶装饮用水", "img": "images/F02.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113303692.jpeg"}, {"id": "F03", "cat": "饮品甜品", "name": "F03 冰红茶 Iced Black Tea", "price": 4.0, "mods": [], "desc": "经典清爽柠檬红茶", "img": "images/F03.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113314206.jpeg"}, {"id": "F04", "cat": "饮品甜品", "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut", "price": 4.0, "mods": [], "desc": "清凉降火甘蔗马蹄水", "img": "images/F04.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113328766.jpeg"}, {"id": "F05", "cat": "饮品甜品", "name": "F05 王老吉 Wong Lo Kat", "price": 4.0, "mods": [], "desc": "经典清凉凉茶", "img": "images/F05.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113900432.jpeg"}, {"id": "F06", "cat": "饮品甜品", "name": "F06 100 Plus", "price": 3.5, "mods": [], "desc": "电解质气泡水", "img": "images/F06.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113356428.jpeg"}, {"id": "F07", "cat": "饮品甜品", "name": "F07 冰糖雪梨 Rock Sugar Pear", "price": 4.0, "mods": [], "desc": "润肺清甜雪梨汁", "img": "images/F07.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113406373.jpeg"}, {"id": "F08", "cat": "饮品甜品", "name": "F08 蜜桃乌龙茶 Peach Oolong", "price": 4.0, "mods": [], "desc": "果香扑鼻冷泡茶", "img": "images/F08.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113418227.jpeg"}, {"id": "F09", "cat": "饮品甜品", "name": "F09 元气森林气泡水 Genki Forest", "price": 5.5, "mods": [], "desc": "0糖0脂0卡气泡水", "img": "images/F09.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113429424.jpeg"}, {"id": "F10", "cat": "饮品甜品", "name": "F10 可口可乐 Coca-Cola", "price": 4.0, "mods": [], "desc": "畅爽经典可乐", "img": "images/F10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113439750.jpeg"}, {"id": "F11", "cat": "饮品甜品", "name": "F11 红牛 Red Bull", "price": 5.5, "mods": [], "desc": "提神功能饮料", "img": "images/F11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113912681.jpeg"}, {"id": "F12", "cat": "饮品甜品", "name": "F12 豆奶 Soya Milk", "price": 5.0, "mods": [], "desc": "浓醇香滑豆奶", "img": "images/F12.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113509390.jpeg"}, {"id": "F13", "cat": "饮品甜品", "name": "F13 祖传八宝凉茶 Herbal Tea", "price": 5.0, "mods": [], "desc": "清热解毒秘制凉茶", "img": "images/F13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113522549.jpeg"}, {"id": "F14", "cat": "饮品甜品", "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum", "price": 5.0, "mods": [], "desc": "甘甜舒缓清润菊花", "img": "images/F14.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113535574.jpeg"}, {"id": "F15", "cat": "饮品甜品", "name": "F15 山楂酸梅汤 Plum Soup", "price": 5.0, "mods": [], "desc": "酸甜生津解腻必备", "img": "images/F15.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113547634.jpeg"}, {"id": "F16", "cat": "饮品甜品", "name": "F16 香兰洛神花 Pandan Roselle", "price": 5.0, "mods": [], "desc": "南洋特色酸爽芳香", "img": "images/F16.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113602287.jpeg"}, {"id": "F17", "cat": "饮品甜品", "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice", "price": 6.0, "mods": [], "desc": "现榨天然纯正甘蔗原汁", "img": "images/F17.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113612574.jpeg"}, {"id": "F18", "cat": "饮品甜品", "name": "F18 爱玉冰 Ice Jelly", "price": 5.0, "mods": [], "desc": "冰凉爽滑爱玉甜品", "img": "images/F18.jpeg", "badge": "🧊 清爽解腻", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113740506.jpeg"}, {"id": "F19", "cat": "饮品甜品", "name": "F19 酸柑酸梅 Calamansi Sour Plum", "price": 5.0, "mods": [], "desc": "酸爽开胃金桔酸梅", "img": "images/F19.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113908455.jpeg"}, {"id": "F20", "cat": "饮品甜品", "name": "F20 葡萄爱玉冰 Grape Ice Jelly", "price": 6.0, "mods": [], "desc": "浓郁葡萄风味果冻", "img": "images/F20.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114242371.jpeg"}, {"id": "F21", "cat": "饮品甜品", "name": "F21 苹果味爱玉冰 Apple Ice Jelly", "price": 6.0, "mods": [], "desc": "清爽苹果爱玉冻", "img": "images/F21.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114218382.jpeg"}, {"id": "F22", "cat": "饮品甜品", "name": "F22 阿萨姆原味奶茶 Assam Milk Tea", "price": 5.5, "mods": [], "desc": "醇厚香浓阿萨姆红茶奶茶", "img": "images/F22.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260310205156502.jpeg"}];
-    let POS_HISTORY = [{"month": "2026-01", "sales": 43800.25, "bills": 1092, "aov": 40.11, "cogs": 14016.08, "opex": 16200.0, "profit": 13584.17}, {"month": "2026-02", "sales": 29069.25, "bills": 701, "aov": 41.47, "cogs": 9302.16, "opex": 15800.0, "profit": 3967.09}, {"month": "2026-03", "sales": 44574.15, "bills": 1142, "aov": 39.03, "cogs": 14263.73, "opex": 16500.0, "profit": 13810.42}, {"month": "2026-04", "sales": 41200.5, "bills": 1050, "aov": 39.24, "cogs": 13184.16, "opex": 15900.0, "profit": 12116.34}, {"month": "2026-05", "sales": 39800.0, "bills": 1020, "aov": 39.02, "cogs": 12736.0, "opex": 15600.0, "profit": 11464.0}, {"month": "2026-06", "sales": 37500.0, "bills": 980, "aov": 38.27, "cogs": 12000.0, "opex": 15400.0, "profit": 10100.0}, {"month": "2026-07", "sales": 31000.0, "bills": 940, "aov": 32.98, "cogs": 10850.0, "opex": 13900.0, "profit": 6250.0}, {"month": "2026-08", "sales": 33500.0, "bills": 990, "aov": 33.84, "cogs": 11055.0, "opex": 14200.0, "profit": 8245.0}];
 
     // 状态
     let expensesList = [];
-    let revenueList = [];
+    let customRevenueList = []; // 店主手动录入的线下团餐/非POS营收
+    let dayNotesMap = {};      // 每日营业备忘字典 { '2026-09-01': '早晚班交接正常' }
     let suppliersList = [];
-    let deliveryList = [];
-    let monthlyPnLList = [];
     let activeMonth = "2026-09";
 
     // 图表引用
@@ -1229,7 +1236,7 @@ function doPost(e) {
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       initDates();
-      loadDataFromStorageOrBootstrap();
+      loadDataFromStorage();
       renderAllViews();
       initCharts();
       lucide.createIcons();
@@ -1249,7 +1256,6 @@ function doPost(e) {
       localStorage.setItem('laiwan_finance_theme', nextTheme);
       updateThemeIcons(nextTheme);
 
-      // 重新渲染图表适配颜色
       if (chartTrend && chartDonut) {
         initCharts();
       }
@@ -1258,6 +1264,7 @@ function doPost(e) {
     function updateThemeIcons(theme) {
       const sun = document.getElementById('theme-icon-sun');
       const moon = document.getElementById('theme-icon-moon');
+      if (!sun || !moon) return;
       if (theme === 'dark') {
         sun.classList.remove('hidden');
         moon.classList.add('hidden');
@@ -1269,101 +1276,74 @@ function doPost(e) {
 
     function initDates() {
       const today = new Date().toISOString().split('T')[0];
-      document.getElementById('live-datetime').innerText = today;
-      document.getElementById('inp-exp-date').value = today;
-      document.getElementById('inp-rev-date').value = today;
+      const liveElem = document.getElementById('live-datetime');
+      if (liveElem) liveElem.innerText = today;
+      const inpExp = document.getElementById('inp-exp-date');
+      if (inpExp) inpExp.value = today;
+      const inpRev = document.getElementById('inp-rev-date');
+      if (inpRev) inpRev.value = today;
     }
 
-    // 数据载入
-    function loadDataFromStorageOrBootstrap() {
+    // 数据载入：开支、备忘、供应商对账
+    function loadDataFromStorage() {
       // 1. 杂支
       const localExp = localStorage.getItem('laiwan_finance_expenses_v2');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
       if (!expensesList || expensesList.length === 0) {
-        const raw = BOOTSTRAP_DATA['运营与日常杂支'] || [];
-        expensesList = raw.slice(1).filter(r => r[0] && r[0] !== '杂支合计').map((r, i) => ({
-          id: 'exp_' + (i + 1),
-          date: r[0],
-          category: r[1],
-          name: r[2],
-          amount: parseFloat(r[3]) || 0,
-          payment: r[4] || 'Maybank',
-          ref: r[5] || '',
-          handled: r[6] || '店长',
-          notes: r[7] || ''
-        }));
+        // 初始导入 9 月份真实的 6 笔杂支流水 (房租、水费、电费、煤气、零用金、预支薪资，共 RM 7,151.70)
+        expensesList = [
+          { id: 'exp_1', date: '2026-09-01', category: '店铺租金', name: '9月份门市租金', amount: 3500.0, payment: 'Maybank', ref: 'OR-RENT-09', handled: '老板', notes: '对公转账房东' },
+          { id: 'exp_2', date: '2026-09-02', category: '水费', name: '8月份水费账单', amount: 185.4, payment: 'JomPAY', ref: 'SAJ-89102', handled: '店长', notes: '门市用水' },
+          { id: 'exp_3', date: '2026-09-03', category: '电费', name: '8月份商业电费', amount: 920.8, payment: 'TNB Online', ref: 'TNB-229104', handled: '店长', notes: '长时间熬汤电费' },
+          { id: 'exp_4', date: '2026-09-03', category: '煤气费', name: '后厨商用煤气4桶', amount: 280.0, payment: '现金', ref: 'GAS-1029', handled: '主管', notes: 'RM 70/桶' },
+          { id: 'exp_5', date: '2026-09-04', category: '柜台零用金(Petty Cash)', name: '买洗洁精、垃圾袋', amount: 65.5, payment: '柜台现金', ref: 'MRDIY-8821', handled: '收银员', notes: '小票已贴存' },
+          { id: 'exp_6', date: '2026-09-05', category: '员工薪资与福利', name: '员工半月预支薪资', amount: 2200.0, payment: '银行转账', ref: 'PAY-202609A', handled: '老板', notes: '全职与兼职' }
+        ];
         saveExpensesToStorage();
       }
 
-      // 2. 每日营收 (自动检测并保护 Google Sheet 原始 5 天营收记录)
-      const localRev = localStorage.getItem('laiwan_finance_revenue_v2');
-      if (localRev) {
-        try { revenueList = JSON.parse(localRev); } catch(e) {}
-      }
-      const officialDates = ['2026-09-01', '2026-09-02', '2026-09-03', '2026-09-04', '2026-09-05'];
-      const existingDates = (revenueList || []).map(r => r.date);
-      const isMissingOfficial = officialDates.some(d => !existingDates.includes(d));
-
-      if (!revenueList || revenueList.length === 0 || isMissingOfficial) {
-        const raw = BOOTSTRAP_DATA['每日营收流水'] || [];
-        const officialItems = raw.slice(1).filter(r => r[0] && r[0] !== '当月柜台合计').map((r, i) => ({
-          id: 'rev_' + (i + 1),
-          date: r[0],
-          cash: parseFloat(r[1]) || 0,
-          card: parseFloat(r[2]) || 0,
-          total: parseFloat(r[3]) || 0,
-          notes: r[4] || ''
-        }));
-
-        if (!revenueList || revenueList.length === 0) {
-          revenueList = officialItems;
-        } else {
-          // 自动补全被不小心误删的官方基准天数
-          officialItems.forEach(off => {
-            if (!existingDates.includes(off.date)) {
-              revenueList.push(off);
-            }
-          });
-          revenueList.sort((a, b) => a.date.localeCompare(b.date));
-        }
-        saveRevenueToStorage();
+      // 2. 每日营业备忘
+      const localNotes = localStorage.getItem('laiwan_finance_day_notes_v2');
+      if (localNotes) {
+        try { dayNotesMap = JSON.parse(localNotes); } catch(e) {}
       }
 
-      // 3. 供应商对账
-      const rawSupp = BOOTSTRAP_DATA['供应商账单表'] || [];
-      suppliersList = rawSupp.slice(1).filter(r => r[0] && r[0] !== '应付合计').map((r, i) => ({
-        id: 'sup_' + (i + 1),
-        date: r[0],
-        supplier: r[1],
-        category: r[2],
-        invNo: r[3],
-        amount: parseFloat(r[4]) || 0,
-        status: r[5] || '未付款',
-        receiptNo: r[6] || '',
-        items: r[7] || ''
-      }));
+      // 3. 补充的线下营收 (如果店主有手动录入)
+      const localCustomRev = localStorage.getItem('laiwan_finance_custom_rev_v2');
+      if (localCustomRev) {
+        try { customRevenueList = JSON.parse(localCustomRev); } catch(e) {}
+      }
 
-      // 4. 外卖月结
-      deliveryList = [
-        { month: "2026年9月", platform: "GrabFood", gross: 10500, comm: 3150, promo: 200, net: 7150, rate: "31.9%", notes: "Grab 9月Statement (实扣31.9%)" },
-        { month: "2026年9月", platform: "Foodpanda", gross: 4800, comm: 1440, promo: 150, net: 3210, rate: "33.1%", notes: "Panda 9月Statement (实扣33.1%)" },
-        { month: "2026年9月", platform: "ShopeeFood", gross: 3200, comm: 896, promo: 100, net: 2204, rate: "31.1%", notes: "Shopee 9月Statement (实扣31.1%)" }
-      ];
-
-      // 5. 历史月度损益
-      monthlyPnLList = [
-        { month: "2026年8月", counter: 21500, delivery: 12000, total: 33500, cogs: 11055, opex: 14200, profit: 8245, cogsRate: "33.0%", status: "真实已结" },
-        { month: "2026年7月", counter: 19800, delivery: 11200, total: 31000, cogs: 10850, opex: 13900, profit: 6250, cogsRate: "35.0%", status: "真实已结" }
-      ];
+      // 4. 供应商进货账单
+      const localSupp = localStorage.getItem('laiwan_finance_suppliers_v2');
+      if (localSupp) {
+        try { suppliersList = JSON.parse(localSupp); } catch(e) {}
+      }
+      if (!suppliersList || suppliersList.length === 0) {
+        suppliersList = [
+          { id: 'sup_1', date: '2026-09-01', supplier: '南洋生鲜批发', category: '生鲜肉类与骨头', invNo: 'INV-8821', amount: 1290.0, status: '已结清', receiptNo: 'OR-20260905', items: '牛腩20kg, 猪骨30kg, 肥肠10kg' },
+          { id: 'sup_2', date: '2026-09-02', supplier: '柳韵中国调料海运', category: '干货与专用配料', invNo: 'INV-5502', amount: 3450.0, status: '未付款', receiptNo: '', items: '螺蛳粉干米粉30箱, 酸笋10桶' },
+          { id: 'sup_3', date: '2026-09-03', supplier: '运达食品包装', category: '包装耗材', invNo: 'INV-3109', amount: 580.0, status: '未付款', receiptNo: '', items: '外卖打包碗5箱, 外卖袋3箱' },
+          { id: 'sup_4', date: '2026-09-04', supplier: '本地巴刹蔬菜', category: '巴刹时蔬', invNo: 'CASH-0904', amount: 185.0, status: '已结清', receiptNo: '巴刹单0904', items: '葱姜蒜、时令蔬菜、鲜木耳' },
+          { id: 'sup_5', date: '2026-09-05', supplier: '南洋生鲜批发', category: '生鲜肉类与骨头', invNo: 'INV-8860', amount: 960.0, status: '未付款', receiptNo: '', items: '猪筒骨40kg, 五花肉15kg' }
+        ];
+        saveSuppliersToStorage();
+      }
     }
 
     function saveExpensesToStorage() {
       localStorage.setItem('laiwan_finance_expenses_v2', JSON.stringify(expensesList));
     }
-    function saveRevenueToStorage() {
-      localStorage.setItem('laiwan_finance_revenue_v2', JSON.stringify(revenueList));
+    function saveDayNotesToStorage() {
+      localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
+    }
+    function saveSuppliersToStorage() {
+      localStorage.setItem('laiwan_finance_suppliers_v2', JSON.stringify(suppliersList));
+    }
+    function saveCustomRevToStorage() {
+      localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
 
     // 全局重渲染
@@ -1372,7 +1352,6 @@ function doPost(e) {
       renderExpensesTable();
       renderRevenueTable();
       renderSuppliersTable();
-      renderDeliveryTable();
       renderDishesTable();
       renderPnLStatement();
       updateBadges();
@@ -1380,145 +1359,328 @@ function doPost(e) {
     }
 
     function updateBadges() {
-      document.getElementById('nav-badge-expenses').innerText = expensesList.length;
-      document.getElementById('nav-badge-revenue').innerText = revenueList.length;
-      document.getElementById('nav-badge-suppliers').innerText = suppliersList.length;
+      const bExp = document.getElementById('nav-badge-expenses');
+      if (bExp) bExp.innerText = expensesList.length;
+      const bRev = document.getElementById('nav-badge-revenue');
+      if (bRev) {
+        const totalDays = activeMonth === 'ALL' ? 260 : (POS_SALES_HISTORY[activeMonth]?.days_count || 0);
+        bRev.innerText = `${totalDays}天`;
+      }
+      const bSupp = document.getElementById('nav-badge-suppliers');
+      if (bSupp) bSupp.innerText = suppliersList.length;
+    }
+
+    // 月份切换控制
+    function onMonthChange(val) {
+      activeMonth = val;
+      const statusTag = document.getElementById('period-status-tag');
+      const titleElem = document.getElementById('overview-period-title');
+
+      if (val === 'ALL') {
+        titleElem.innerText = "2026年 1~9月 全年经营盘点";
+        statusTag.innerText = "2026 全年 POS 真实汇总 (260天)";
+        statusTag.style.background = "rgba(16,185,129,0.15)";
+        statusTag.style.color = "var(--accent-emerald)";
+      } else if (val === '2026-09') {
+        titleElem.innerText = "2026年 9月 经营动态盘点";
+        statusTag.innerText = "当月记账进行中 (POS已记17天)";
+        statusTag.style.background = "rgba(245,158,11,0.15)";
+        statusTag.style.color = "var(--accent-amber)";
+      } else {
+        titleElem.innerText = `${val.replace('-', '年 ')}月 经营动态盘点`;
+        statusTag.innerText = "POS 真实已结月度流水";
+        statusTag.style.background = "rgba(56,189,248,0.15)";
+        statusTag.style.color = "var(--accent-sky)";
+      }
+
+      renderAllViews();
+      if (chartTrend) initCharts();
     }
 
     // -------------------------------------------------------------
-    // TAB 1: 渲染经营总览 KPI (完全基于真实流水累加计算)
+    // TAB 1: 渲染经营总览 KPI (完全基于 POS 真实营业额与真实开销)
     // -------------------------------------------------------------
     function renderOverviewTab() {
-      // 柜台实际营收总额
-      const actualCounterRev = revenueList.reduce((acc, it) => acc + it.total, 0);
-      // 外卖净打款总额
-      const actualDeliveryRev = deliveryList.reduce((acc, it) => acc + it.net, 0);
-      // 全店实际总营业额
-      const totalRevenue = actualCounterRev + actualDeliveryRev;
+      let periodSales = 0;
+      let periodBills = 0;
+      let periodCharge = 0;
+      let periodDays = 0;
 
-      // 原材料采购总额 (从供应商账单已结+待付，或实际采购)
-      const cogsAmount = suppliersList.reduce((acc, it) => acc + it.amount, 0);
-      const cogsRatio = totalRevenue > 0 ? ((cogsAmount / totalRevenue) * 100).toFixed(1) : 0;
+      if (activeMonth === 'ALL') {
+        Object.values(POS_SALES_HISTORY).forEach(m => {
+          periodSales += m.total_sales;
+          periodBills += m.total_bills;
+          periodCharge += m.total_service_charge;
+          periodDays += m.days_count;
+        });
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        const m = POS_SALES_HISTORY[activeMonth];
+        periodSales = m.total_sales;
+        periodBills = m.total_bills;
+        periodCharge = m.total_service_charge;
+        periodDays = m.days_count;
+      }
 
-      // 运营杂支总额 (从费用流水中累加)
-      const opexAmount = expensesList.reduce((acc, it) => acc + it.amount, 0);
+      // 叠加手动补充的其他营收 (若有)
+      const customMatches = customRevenueList.filter(r => activeMonth === 'ALL' || r.date.startsWith(activeMonth));
+      const customTotal = customMatches.reduce((acc, it) => acc + (it.amount || 0), 0);
+      const totalRevenue = periodSales + customTotal;
 
-      // 净营业利润
+      const aov = periodBills > 0 ? (periodSales / periodBills).toFixed(2) : "0.00";
+
+      // 真实运营杂支 (严格按所选月份过滤，绝不凭空假设)
+      const currentExpenses = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const opexAmount = currentExpenses.reduce((acc, it) => acc + it.amount, 0);
+
+      // 真实供应商进货 (严格按所选月份过滤，绝不凭空假设)
+      const currentSuppliers = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+      const cogsAmount = currentSuppliers.reduce((acc, it) => acc + it.amount, 0);
+      const cogsRatio = totalRevenue > 0 && cogsAmount > 0 ? ((cogsAmount / totalRevenue) * 100).toFixed(1) : "0.0";
+
+      // 净利润 (全店营业额 - 已录食材 - 已录杂支)
       const netProfit = totalRevenue - cogsAmount - opexAmount;
-      const profitRatio = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : 0;
+      const profitRatio = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : "0.0";
 
-      // 每日保本线
-      const grossMarginPct = totalRevenue > 0 ? (totalRevenue - cogsAmount) / totalRevenue : 0.65;
-      const breakEvenDaily = grossMarginPct > 0 ? Math.round(opexAmount / grossMarginPct / 30) : 0;
+      // 保本线
+      const breakEvenDaily = opexAmount > 0 ? Math.round(opexAmount / 0.65 / (periodDays || 30)) : 0;
       const breakEvenOrders = Math.round(breakEvenDaily / 15.8);
 
       // 界面赋值
       document.getElementById('kpi-gross-revenue').innerText = `RM ${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-counter-sales').innerText = `RM ${actualCounterRev.toLocaleString('en-US')}`;
-      document.getElementById('kpi-delivery-sales').innerText = `RM ${actualDeliveryRev.toLocaleString('en-US')}`;
+      document.getElementById('kpi-counter-sales').innerText = `RM ${periodSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-delivery-sales').innerText = `${periodBills} 单 (AOV: RM ${aov})`;
 
       document.getElementById('kpi-cogs-amount').innerText = `RM ${cogsAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-cogs-ratio').innerText = `${cogsRatio}%`;
+      document.getElementById('kpi-cogs-ratio').innerText = cogsAmount > 0 ? `${cogsRatio}%` : "0.0% (待店主补录)";
 
       document.getElementById('kpi-opex-amount').innerText = `RM ${opexAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-expense-count-text').innerText = `${expensesList.length} 笔实际流水`;
+      document.getElementById('kpi-expense-count-text').innerText = `${currentExpenses.length} 笔真实流水 ${currentExpenses.length === 0 ? '(待补录)' : ''}`;
 
       document.getElementById('kpi-net-profit').innerText = `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
       document.getElementById('kpi-profit-ratio').innerText = `${profitRatio}%`;
 
-      document.getElementById('kpi-breakeven-target').innerText = `RM ${breakEvenDaily} /天`;
-      document.getElementById('kpi-breakeven-orders').innerText = `约 ${breakEvenOrders} 碗粉`;
+      document.getElementById('kpi-breakeven-target').innerText = opexAmount > 0 ? `RM ${breakEvenDaily} /天` : "待录入成本";
+      document.getElementById('kpi-breakeven-orders').innerText = opexAmount > 0 ? `约 ${breakEvenOrders} 碗粉` : "暂无开销";
 
-      // 渲染历史对比表
+      // 渲染 2026 年 1~9 月历史经营月报对比表 (从 9月 倒排至 1月)
       const tbody = document.getElementById('tbody-monthly-summary');
       tbody.innerHTML = '';
 
-      // 插入当月实时计算的一行
-      const trCurrent = document.createElement('tr');
-      trCurrent.className = "hover:bg-slate-800/40 transition font-bold";
-      trCurrent.innerHTML = `
-        <td class="py-3 px-4 flex items-center gap-1.5 text-current">
-          <span>2026年 9月</span>
-          <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold text-amber-500 bg-amber-500/10">进行中</span>
-        </td>
-        <td class="py-3 px-4">RM ${actualCounterRev.toLocaleString('en-US')}</td>
-        <td class="py-3 px-4">RM ${actualDeliveryRev.toLocaleString('en-US')}</td>
-        <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-extrabold">RM ${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-        <td class="py-3 px-4" style="color: var(--accent-amber);">RM ${cogsAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-        <td class="py-3 px-4" style="color: var(--accent-rose);">RM ${opexAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-        <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-black">RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-        <td class="py-3 px-4">${cogsRatio}%</td>
-        <td class="py-3 px-4 text-right">
-          <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium">实时动态</span>
-        </td>
-      `;
-      tbody.appendChild(trCurrent);
+      const monthsList = ['2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02', '2026-01'];
 
-      // 插入过去已结账月份
-      monthlyPnLList.forEach(m => {
+      monthsList.forEach(mKey => {
+        const mData = POS_SALES_HISTORY[mKey];
+        if (!mData) return;
+
+        // 计算该月份店主已实际录入的开销与采购 (绝不凭空伪造)
+        const mExp = expensesList.filter(e => e.date.startsWith(mKey)).reduce((a, b) => a + b.amount, 0);
+        const mCogs = suppliersList.filter(s => s.date.startsWith(mKey)).reduce((a, b) => a + b.amount, 0);
+        const mNet = mData.total_sales - mCogs - mExp;
+
+        const isCurrent = mKey === '2026-09';
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-800/30 transition text-slate-400";
+        tr.className = isCurrent ? "hover:bg-slate-800/40 transition font-bold" : "hover:bg-slate-800/30 transition text-slate-400";
+        
+        const monthBadge = isCurrent 
+          ? `<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold text-amber-500 bg-amber-500/10">进行中 (17天)</span>` 
+          : `<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold text-emerald-500 bg-emerald-500/10">${mData.days_count}天</span>`;
+
+        const cogsDisplay = mCogs > 0 
+          ? `<span class="mono" style="color: var(--accent-amber);">RM ${mCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>` 
+          : `<span class="text-xs text-slate-500">RM 0.00 (待补录)</span>`;
+
+        const opexDisplay = mExp > 0 
+          ? `<span class="mono" style="color: var(--accent-rose);">RM ${mExp.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>` 
+          : `<span class="text-xs text-slate-500">RM 0.00 (待补录)</span>`;
+
         tr.innerHTML = `
-          <td class="py-3 px-4 font-semibold text-current">${m.month}</td>
-          <td class="py-3 px-4">RM ${m.counter.toLocaleString('en-US')}</td>
-          <td class="py-3 px-4">RM ${m.delivery.toLocaleString('en-US')}</td>
-          <td class="py-3 px-4 font-bold text-current">RM ${m.total.toLocaleString('en-US')}</td>
-          <td class="py-3 px-4">RM ${m.cogs.toLocaleString('en-US')}</td>
-          <td class="py-3 px-4">RM ${m.opex.toLocaleString('en-US')}</td>
-          <td class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">RM ${m.profit.toLocaleString('en-US')}</td>
-          <td class="py-3 px-4">${m.cogsRate}</td>
+          <td class="py-3 px-4 flex items-center gap-1.5 text-current font-bold">
+            <span>${mKey.replace('-', '年 ')}月</span>
+            ${monthBadge}
+          </td>
+          <td class="py-3 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${mData.total_sales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 mono">${mData.total_bills.toLocaleString('en-US')} 单</td>
+          <td class="py-3 px-4 mono" style="color: var(--accent-sky);">RM ${mData.aov.toFixed(2)}</td>
+          <td class="py-3 px-4 mono" style="color: var(--accent-indigo);">RM ${mData.total_service_charge.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4">${cogsDisplay}</td>
+          <td class="py-3 px-4">${opexDisplay}</td>
+          <td class="py-3 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${mNet.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
           <td class="py-3 px-4 text-right">
-            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium">${m.status}</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full ${isCurrent ? 'bg-amber-500/15 text-amber-500' : 'bg-emerald-500/15 text-emerald-500'} font-semibold">
+              ${isCurrent ? 'POS动态同步' : 'POS真实已结'}
+            </span>
           </td>
         `;
         tbody.appendChild(tr);
       });
+
+      // 插入全年累计底行
+      let allSales = 0, allBills = 0, allCharge = 0;
+      Object.values(POS_SALES_HISTORY).forEach(m => {
+        allSales += m.total_sales;
+        allBills += m.total_bills;
+        allCharge += m.total_service_charge;
+      });
+      const allOpex = expensesList.reduce((a, b) => a + b.amount, 0);
+      const allCogs = suppliersList.reduce((a, b) => a + b.amount, 0);
+      const allNet = allSales - allCogs - allOpex;
+      const allAov = allBills > 0 ? (allSales / allBills).toFixed(2) : "0.00";
+
+      const trTotal = document.createElement('tr');
+      trTotal.className = "border-t-2 border-emerald-500/40 bg-emerald-500/5 font-black text-current";
+      trTotal.innerHTML = `
+        <td class="py-3.5 px-4 font-extrabold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+          <span>🌟 2026 全年累计 (1~9月)</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded font-bold bg-emerald-500/20">260天</span>
+        </td>
+        <td class="py-3.5 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${allSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 mono">${allBills.toLocaleString('en-US')} 单</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-sky);">RM ${allAov}</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-indigo);">RM ${allCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-amber);">RM ${allCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-rose);">RM ${allOpex.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${allNet.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 text-right font-bold text-emerald-500">
+          全店历史核准
+        </td>
+      `;
+      tbody.appendChild(trTotal);
     }
 
     // -------------------------------------------------------------
-    // TAB 2: 运营杂支台账渲染 (带【修改】与【删除】按钮)
+    // TAB 3: 每日营收流水渲染 (直连 POS 真实 260 天每日记录)
+    // -------------------------------------------------------------
+    function renderRevenueTable() {
+      const tbody = document.getElementById('tbody-revenue');
+      tbody.innerHTML = '';
+
+      let dayRows = [];
+
+      if (activeMonth === 'ALL') {
+        // 汇总 1~9 月所有 260 天流水 (倒序显示最新日期在前)
+        Object.keys(POS_SALES_HISTORY).sort().reverse().forEach(mKey => {
+          const days = POS_SALES_HISTORY[mKey].daily_sales || [];
+          for (let i = days.length - 1; i >= 0; i--) {
+            dayRows.push(days[i]);
+          }
+        });
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        const days = POS_SALES_HISTORY[activeMonth].daily_sales || [];
+        for (let i = days.length - 1; i >= 0; i--) {
+          dayRows.push(days[i]);
+        }
+      }
+
+      let sumTotal = 0, sumBills = 0, sumCharge = 0;
+
+      dayRows.forEach(item => {
+        sumTotal += item.total;
+        sumBills += item.bills;
+        sumCharge += item.charge;
+
+        const dayAov = item.bills > 0 ? (item.total / item.bills).toFixed(2) : "0.00";
+        const note = dayNotesMap[item.date] || (item.total > 0 ? "POS交班核对正常" : "门店休息/未营业");
+
+        const tr = document.createElement('tr');
+        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-semibold text-current mono">${item.date}</td>
+          <td class="py-3 px-4 mono font-black text-emerald-600 dark:text-emerald-400">RM ${item.total.toFixed(2)}</td>
+          <td class="py-3 px-4 mono font-semibold">${item.bills} 单</td>
+          <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-sky);">RM ${dayAov}</td>
+          <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-amber);">RM ${item.charge.toFixed(2)}</td>
+          <td class="py-3 px-4 text-xs">
+            <span class="px-2 py-0.5 rounded-md font-medium" style="background-color: var(--bg-card-subtle); color: var(--text-secondary);">
+              Optimy POS 门店柜台
+            </span>
+          </td>
+          <td class="py-3 px-4 text-xs text-slate-400 max-w-[200px] truncate" id="day-note-text-${item.date}">${note}</td>
+          <td class="py-3 px-4 text-right whitespace-nowrap">
+            <button onclick="editDayNote('${item.date}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition" title="为当日营业添加或修改备忘笔记">
+              编辑备注
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 界面 4 大卡片更新
+      document.getElementById('rev-metric-total').innerText = `RM ${sumTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('rev-metric-bills').innerText = `${sumBills.toLocaleString('en-US')} 单`;
+      const avgAov = sumBills > 0 ? (sumTotal / sumBills).toFixed(2) : "0.00";
+      document.getElementById('rev-metric-aov').innerText = `RM ${avgAov}`;
+      document.getElementById('rev-metric-charge').innerText = `RM ${sumCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('rev-metric-days-text').innerText = `核算 ${dayRows.length} 天 POS 流水`;
+    }
+
+    // 编辑当日交班备注
+    function editDayNote(date) {
+      const currentNote = dayNotesMap[date] || "POS交班核对正常";
+      const newNote = prompt(`✍️ 请输入【${date}】的营业备注或交班对账说明:`, currentNote);
+      if (newNote !== null) {
+        dayNotesMap[date] = newNote.trim();
+        saveDayNotesToStorage();
+        const elem = document.getElementById(`day-note-text-${date}`);
+        if (elem) elem.innerText = newNote.trim() || "-";
+      }
+    }
+
+    // -------------------------------------------------------------
+    // TAB 2: 运营与日常杂支台账 (按当前月份筛选，绝不假想开销)
     // -------------------------------------------------------------
     function renderExpensesTable(customList = null) {
-      const list = customList || expensesList;
+      const list = customList || expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
       const tbody = document.getElementById('tbody-expenses');
       tbody.innerHTML = '';
 
       let sumRent = 0, sumTnb = 0, sumSaj = 0, sumGas = 0, sumWages = 0, sumPetty = 0;
 
-      list.forEach(item => {
-        if (item.category.includes('租金')) sumRent += item.amount;
-        if (item.category.includes('电费')) sumTnb += item.amount;
-        if (item.category.includes('水费')) sumSaj += item.amount;
-        if (item.category.includes('煤气')) sumGas += item.amount;
-        if (item.category.includes('薪资')) sumWages += item.amount;
-        if (item.category.includes('零用')) sumPetty += item.amount;
-
+      if (list.length === 0) {
         const tr = document.createElement('tr');
-        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40";
         tr.innerHTML = `
-          <td class="py-3 px-3 mono text-xs" style="color: var(--text-muted);">${item.date}</td>
-          <td class="py-3 px-3">
-            <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background-color: var(--bg-card-subtle); color: var(--text-secondary);">
-              ${item.category}
-            </span>
-          </td>
-          <td class="py-3 px-3 font-semibold text-current">${item.name}</td>
-          <td class="py-3 px-3 font-bold mono" style="color: var(--accent-rose);">RM ${item.amount.toFixed(2)}</td>
-          <td class="py-3 px-3 text-xs" style="color: var(--text-muted);">${item.payment}</td>
-          <td class="py-3 px-3 mono text-xs" style="color: var(--text-muted);">${item.ref || '-'}</td>
-          <td class="py-3 px-3 text-xs" style="color: var(--text-secondary);">${item.handled}</td>
-          <td class="py-3 px-3 text-xs max-w-[150px] truncate" style="color: var(--text-muted);">${item.notes || '-'}</td>
-          <td class="py-3 px-3 text-right whitespace-nowrap">
-            <button onclick="editExpense('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 mr-1.5 transition" title="修改该笔账单">
-              修改
-            </button>
-            <button onclick="deleteExpense('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-rose-600 hover:bg-rose-500/10 transition" title="删除该笔记录">
-              删除
-            </button>
+          <td colspan="9" class="py-8 text-center" style="color: var(--text-muted);">
+            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <p class="font-medium text-xs sm:text-sm">当前核算期间 (${activeMonth === 'ALL' ? '2026全年' : activeMonth}) 暂无杂支记录</p>
+            <p class="text-xs opacity-75 mt-1">系统严格保持真实零捏造。点击右上角【记杂支】即可随时录入房租、水电或薪资。</p>
           </td>
         `;
         tbody.appendChild(tr);
-      });
+      } else {
+        list.forEach(item => {
+          if (item.category.includes('租金')) sumRent += item.amount;
+          if (item.category.includes('电费')) sumTnb += item.amount;
+          if (item.category.includes('水费')) sumSaj += item.amount;
+          if (item.category.includes('煤气')) sumGas += item.amount;
+          if (item.category.includes('薪资')) sumWages += item.amount;
+          if (item.category.includes('零用')) sumPetty += item.amount;
+
+          const tr = document.createElement('tr');
+          tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40";
+          tr.innerHTML = `
+            <td class="py-3 px-3 mono text-xs" style="color: var(--text-muted);">${item.date}</td>
+            <td class="py-3 px-3">
+              <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background-color: var(--bg-card-subtle); color: var(--text-secondary);">
+                ${item.category}
+              </span>
+            </td>
+            <td class="py-3 px-3 font-semibold text-current">${item.name}</td>
+            <td class="py-3 px-3 font-bold mono" style="color: var(--accent-rose);">RM ${item.amount.toFixed(2)}</td>
+            <td class="py-3 px-3 text-xs" style="color: var(--text-muted);">${item.payment}</td>
+            <td class="py-3 px-3 mono text-xs" style="color: var(--text-muted);">${item.ref || '-'}</td>
+            <td class="py-3 px-3 text-xs" style="color: var(--text-secondary);">${item.handled}</td>
+            <td class="py-3 px-3 text-xs max-w-[150px] truncate" style="color: var(--text-muted);">${item.notes || '-'}</td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">
+              <button onclick="editExpense('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 mr-1.5 transition" title="修改该笔账单">
+                修改
+              </button>
+              <button onclick="deleteExpense('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-rose-600 hover:bg-rose-500/10 transition" title="删除该笔记录">
+                删除
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
 
       document.getElementById('cat-sum-rent').innerText = `RM ${sumRent.toFixed(2)}`;
       document.getElementById('cat-sum-tnb').innerText = `RM ${sumTnb.toFixed(2)}`;
@@ -1530,58 +1692,16 @@ function doPost(e) {
     }
 
     // -------------------------------------------------------------
-    // TAB 3: 每日柜台营收渲染 (带【修改】与【删除】按钮)
-    // -------------------------------------------------------------
-    function renderRevenueTable() {
-      const tbody = document.getElementById('tbody-revenue');
-      tbody.innerHTML = '';
-      let sumCash = 0, sumCard = 0, sumTotal = 0;
-
-      revenueList.forEach(item => {
-        sumCash += item.cash;
-        sumCard += item.card;
-        sumTotal += item.total;
-
-        const tr = document.createElement('tr');
-        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40";
-        tr.innerHTML = `
-          <td class="py-3 px-4 font-semibold text-current">${item.date}</td>
-          <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-amber);">RM ${item.cash.toFixed(2)}</td>
-          <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-sky);">RM ${item.card.toFixed(2)}</td>
-          <td class="py-3 px-4 mono font-bold text-emerald-600 dark:text-emerald-400">RM ${item.total.toFixed(2)}</td>
-          <td class="py-3 px-4 text-xs" style="color: var(--text-muted);">${item.notes || '-'}</td>
-          <td class="py-3 px-4 text-right whitespace-nowrap">
-            <button onclick="editRevenue('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 mr-1.5 transition">
-              修改
-            </button>
-            <button onclick="deleteRevenue('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-rose-600 hover:bg-rose-500/10 transition">
-              删除
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      document.getElementById('rev-metric-total').innerText = `RM ${sumTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('rev-metric-cash').innerText = `RM ${sumCash.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('rev-metric-card').innerText = `RM ${sumCard.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('rev-metric-count').innerText = `统计 ${revenueList.length} 天流水`;
-
-      if (sumTotal > 0) {
-        document.getElementById('rev-metric-cash-ratio').innerText = `占比 ${(sumCash / sumTotal * 100).toFixed(1)}%`;
-        document.getElementById('rev-metric-card-ratio').innerText = `占比 ${(sumCard / sumTotal * 100).toFixed(1)}% (主流)`;
-      }
-    }
-
-    // -------------------------------------------------------------
-    // TAB 4: 供应商账单渲染
+    // TAB 4: 供应商账单对账
     // -------------------------------------------------------------
     function renderSuppliersTable() {
       const tbody = document.getElementById('tbody-suppliers');
       tbody.innerHTML = '';
       let total = 0, unpaid = 0, paid = 0;
 
-      suppliersList.forEach(item => {
+      const list = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+
+      list.forEach(item => {
         total += item.amount;
         const isPaid = item.status.includes('已结清');
         if (isPaid) paid += item.amount; else unpaid += item.amount;
@@ -1625,35 +1745,13 @@ function doPost(e) {
         item.status = '已结清';
         item.receiptNo = 'OR-' + new Date().toISOString().split('T')[0].replace(/-/g, '');
       }
+      saveSuppliersToStorage();
       renderSuppliersTable();
       renderOverviewTab();
     }
 
     // -------------------------------------------------------------
-    // TAB 5: 外卖月结对账渲染
-    // -------------------------------------------------------------
-    function renderDeliveryTable() {
-      const tbody = document.getElementById('tbody-delivery');
-      tbody.innerHTML = '';
-      deliveryList.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
-        tr.innerHTML = `
-          <td class="py-3 px-4" style="color: var(--text-muted);">${item.month}</td>
-          <td class="py-3 px-4 font-bold text-current">${item.platform}</td>
-          <td class="py-3 px-4 mono font-semibold">RM ${item.gross.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-          <td class="py-3 px-4 mono text-rose-500 font-semibold">- RM ${item.comm.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-          <td class="py-3 px-4 mono" style="color: var(--accent-amber);">- RM ${item.promo.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-          <td class="py-3 px-4 mono font-black text-emerald-600 dark:text-emerald-400">RM ${item.net.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-          <td class="py-3 px-4 font-bold text-cyan-600 dark:text-cyan-400">${item.rate}</td>
-          <td class="py-3 px-4 text-xs" style="color: var(--text-muted);">${item.notes}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // -------------------------------------------------------------
-    // TAB 6: 58道菜品毛利透视
+    // TAB 6: 58道菜品毛利透视 (与 POS 价格实时一致)
     // -------------------------------------------------------------
     function renderDishesTable(customList = null) {
       const list = customList || CATALOG_DATA;
@@ -1701,54 +1799,59 @@ function doPost(e) {
     }
 
     // -------------------------------------------------------------
-    // TAB 7: 损益表 (P&L) 动态计算与排版
+    // TAB 7: 损益表 (P&L) 动态计算与排版 (基于 POS 真实营业与已录成本)
     // -------------------------------------------------------------
     function renderPnLStatement() {
-      const counterRev = revenueList.reduce((a, b) => a + b.total, 0);
-      const deliveryRev = deliveryList.reduce((a, b) => a + b.net, 0);
-      const totalRev = counterRev + deliveryRev;
+      let totalSales = 0;
+      if (activeMonth === 'ALL') {
+        Object.values(POS_SALES_HISTORY).forEach(m => totalSales += m.total_sales);
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        totalSales = POS_SALES_HISTORY[activeMonth].total_sales;
+      }
 
-      document.getElementById('pnl-counter-rev').innerText = `RM ${counterRev.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('pnl-delivery-rev').innerText = `RM ${deliveryRev.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('pnl-total-rev').innerText = `RM ${totalRev.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+      const totalCogs = currentSupp.reduce((a, b) => a + b.amount, 0);
 
-      // COGS
-      const totalCogs = suppliersList.reduce((a, b) => a + b.amount, 0);
+      const currentExp = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const totalOpex = currentExp.reduce((a, b) => a + b.amount, 0);
+
+      const grossProfit = totalSales - totalCogs;
+      const grossMargin = totalSales > 0 ? ((grossProfit / totalSales) * 100).toFixed(1) : "0.0";
+
+      const netProfit = grossProfit - totalOpex;
+      const netMargin = totalSales > 0 ? ((netProfit / totalSales) * 100).toFixed(1) : "0.0";
+
+      document.getElementById('pnl-counter-rev').innerText = `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('pnl-delivery-rev').innerText = `RM 0.00 (已并入POS实收)`;
+      document.getElementById('pnl-total-rev').innerText = `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
       document.getElementById('pnl-total-cogs').innerText = `RM ${totalCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-
-      // 毛利润
-      const grossProfit = totalRev - totalCogs;
-      const grossMargin = totalRev > 0 ? ((grossProfit / totalRev) * 100).toFixed(1) : 0;
       document.getElementById('pnl-gross-profit').innerText = `RM ${grossProfit.toLocaleString('en-US', {minimumFractionDigits: 2})} (毛利率 ${grossMargin}%)`;
 
-      // OPEX 杂支细项
       const opexBox = document.getElementById('pnl-opex-breakdown');
       opexBox.innerHTML = '';
-      let totalOpex = 0;
-
-      expensesList.forEach((it, idx) => {
-        totalOpex += it.amount;
-        const row = document.createElement('div');
-        row.className = "py-1.5 flex justify-between";
-        row.style.color = "var(--text-secondary)";
-        row.innerHTML = `
-          <span>${idx + 1}. ${it.name} [${it.category}]</span>
-          <span class="text-current font-semibold">RM ${it.amount.toFixed(2)}</span>
-        `;
-        opexBox.appendChild(row);
-      });
+      if (currentExp.length === 0) {
+        opexBox.innerHTML = '<div class="py-2 text-xs text-slate-500">当前期间暂无录入杂支，待店主自主补录。</div>';
+      } else {
+        currentExp.forEach((it, idx) => {
+          const row = document.createElement('div');
+          row.className = "py-1.5 flex justify-between text-xs";
+          row.style.color = "var(--text-secondary)";
+          row.innerHTML = `
+            <span>${idx + 1}. ${it.name} [${it.category}]</span>
+            <span class="text-current font-semibold mono">RM ${it.amount.toFixed(2)}</span>
+          `;
+          opexBox.appendChild(row);
+        });
+      }
 
       document.getElementById('pnl-total-opex').innerText = `RM ${totalOpex.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-
-      // 净利润
-      const netProfit = grossProfit - totalOpex;
-      const netMargin = totalRev > 0 ? ((netProfit / totalRev) * 100).toFixed(1) : 0;
       document.getElementById('pnl-final-net-profit').innerText = `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
       document.getElementById('pnl-final-margin').innerText = `${netMargin}%`;
     }
 
     // -------------------------------------------------------------
-    // 记一笔 / 修改开支 (MODAL & ACTION HANDLERS)
+    // 杂支记账 MODAL & ACTION HANDLERS
     // -------------------------------------------------------------
     function openAddExpenseModal() {
       document.getElementById('modal-expense-title').innerText = "记一笔日常杂支开销";
@@ -1765,7 +1868,6 @@ function doPost(e) {
       document.getElementById('modal-expense').classList.add('hidden');
     }
 
-    // 点击【修改】开支
     function editExpense(id) {
       const item = expensesList.find(x => x.id === id);
       if (!item) return;
@@ -1774,7 +1876,7 @@ function doPost(e) {
       document.getElementById('edit-expense-id').value = item.id;
       document.getElementById('btn-expense-submit-text').innerText = "保存修改";
       document.getElementById('btn-delete-expense').classList.remove('hidden');
-      document.getElementById('expense-preset-box').classList.add('hidden'); // 修改时不显示预设
+      document.getElementById('expense-preset-box').classList.add('hidden');
 
       document.getElementById('inp-exp-date').value = item.date;
       document.getElementById('inp-exp-cat').value = item.category;
@@ -1788,7 +1890,6 @@ function doPost(e) {
       document.getElementById('modal-expense').classList.remove('hidden');
     }
 
-    // 提交开支表单 (支持新增或更新现有项)
     function saveExpenseRecord(e) {
       e.preventDefault();
       const editId = document.getElementById('edit-expense-id').value;
@@ -1802,13 +1903,11 @@ function doPost(e) {
       const notes = document.getElementById('inp-exp-notes').value.trim();
 
       if (editId) {
-        // 更新已有项
         const idx = expensesList.findIndex(x => x.id === editId);
         if (idx !== -1) {
           expensesList[idx] = { id: editId, date, category, name, amount, payment, ref, handled, notes };
         }
       } else {
-        // 新增项
         const newRecord = {
           id: 'exp_' + Date.now(),
           date, category, name, amount, payment, ref, handled, notes
@@ -1823,7 +1922,6 @@ function doPost(e) {
       alert(editId ? "✅ 该笔账单修改成功！数据已实时更新。" : "✅ 记账成功！已加入流水并在本地保存。");
     }
 
-    // 点击【删除】开支
     function deleteExpense(id) {
       const item = expensesList.find(x => x.id === id);
       if (!item) return;
@@ -1843,111 +1941,23 @@ function doPost(e) {
       }
     }
 
-    // -------------------------------------------------------------
-    // 录入 / 修改每日营收 (MODAL & ACTION HANDLERS)
-    // -------------------------------------------------------------
     function openAddRevenueModal() {
-      document.getElementById('modal-revenue-title').innerText = "录入每日柜台实收流水";
-      document.getElementById('edit-revenue-id').value = "";
-      document.getElementById('btn-revenue-submit-text').innerText = "保存流水";
-      document.getElementById('btn-delete-revenue').classList.add('hidden');
-      document.getElementById('form-revenue').reset();
-      initDates();
-      document.getElementById('modal-revenue').classList.remove('hidden');
-    }
-
-    function closeRevenueModal() {
-      document.getElementById('modal-revenue').classList.add('hidden');
-    }
-
-    function editRevenue(id) {
-      const item = revenueList.find(x => x.id === id);
-      if (!item) return;
-
-      document.getElementById('modal-revenue-title').innerText = "修改该日收银流水";
-      document.getElementById('edit-revenue-id').value = item.id;
-      document.getElementById('btn-revenue-submit-text').innerText = "保存修改";
-      document.getElementById('btn-delete-revenue').classList.remove('hidden');
-
-      document.getElementById('inp-rev-date').value = item.date;
-      document.getElementById('inp-rev-cash').value = item.cash;
-      document.getElementById('inp-rev-card').value = item.card;
-      document.getElementById('inp-rev-notes').value = item.notes;
-
-      document.getElementById('modal-revenue').classList.remove('hidden');
-    }
-
-    function saveRevenueRecord(e) {
-      e.preventDefault();
-      const editId = document.getElementById('edit-revenue-id').value;
-      const date = document.getElementById('inp-rev-date').value;
-      const cash = parseFloat(document.getElementById('inp-rev-cash').value) || 0;
-      const card = parseFloat(document.getElementById('inp-rev-card').value) || 0;
-      const total = cash + card;
-      const notes = document.getElementById('inp-rev-notes').value.trim();
-
-      if (editId) {
-        const idx = revenueList.findIndex(x => x.id === editId);
-        if (idx !== -1) {
-          revenueList[idx] = { id: editId, date, cash, card, total, notes };
-        }
-      } else {
-        revenueList.unshift({ id: 'rev_' + Date.now(), date, cash, card, total, notes });
-      }
-
-      saveRevenueToStorage();
-      closeRevenueModal();
+      const amtStr = prompt("➕ 补录其他线下营业流水\n\n请输入补充金额 (RM):", "500.00");
+      if (!amtStr) return;
+      const amt = parseFloat(amtStr);
+      if (isNaN(amt) || amt <= 0) return alert("请输入有效金额！");
+      const note = prompt("请输入此笔款项备注 (如: 线下团餐预订 / 现金包场):", "线下包场定制螺蛳粉");
+      customRevenueList.unshift({
+        id: 'cust_rev_' + Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        amount: amt,
+        note: note || "其他营业流水"
+      });
+      saveCustomRevToStorage();
       renderAllViews();
-      alert(editId ? "✅ 营收记录修改成功！" : "✅ 今日营收流水已录入成功！");
+      alert("✅ 已成功补录该笔营业流水！");
     }
 
-    function deleteRevenue(id) {
-      const item = revenueList.find(x => x.id === id);
-      if (!item) return;
-      if (confirm(`⚠️ 确认删除 ${item.date} 的收银流水吗？\n总计金额: RM ${item.total.toFixed(2)}`)) {
-        revenueList = revenueList.filter(x => x.id !== id);
-        saveRevenueToStorage();
-        renderAllViews();
-      }
-    }
-
-    function deleteCurrentRevenue() {
-      const editId = document.getElementById('edit-revenue-id').value;
-      if (editId) {
-        closeRevenueModal();
-        deleteRevenue(editId);
-      }
-    }
-
-    // 从 Google Sheet 恢复 9月1~5日营业营收流水
-    function restoreOfficialRevenueData() {
-      const raw = BOOTSTRAP_DATA['每日营收流水'] || [];
-      revenueList = raw.slice(1).filter(r => r[0] && r[0] !== '当月柜台合计').map((r, i) => ({
-        id: 'rev_' + (i + 1),
-        date: r[0],
-        cash: parseFloat(r[1]) || 0,
-        card: parseFloat(r[2]) || 0,
-        total: parseFloat(r[3]) || 0,
-        notes: r[4] || ''
-      }));
-      saveRevenueToStorage();
-      renderAllViews();
-      alert("✅ 已成功从 Google Sheet 恢复 9月1~5日全部营业营收记录！\n（共 5 天流水，现金实收 RM 3,380.00 + 扫码 RM 9,260.50 = 总计 RM 12,640.50）");
-    }
-
-    // 恢复 Google Sheet 所有原始数据 (开支与营收)
-    function restoreAllSheetData() {
-      if (confirm("⚠️ 确认要恢复 Google Sheet 所有初始数据吗？\n\n这将会把 9月已录入的营业收入流水和日常开支恢复到 Google Sheet 初始完整状态。")) {
-        localStorage.removeItem('laiwan_finance_expenses_v2');
-        localStorage.removeItem('laiwan_finance_revenue_v2');
-        loadDataFromStorageOrBootstrap();
-        renderAllViews();
-        if (chartDonut) initCharts();
-        alert("✅ 财务记账系统已成功恢复所有 Google Sheet 原始数据！");
-      }
-    }
-
-    // 快捷预设填入
     function fillExpensePreset(type) {
       if (type === 'rent') {
         document.getElementById('inp-exp-cat').value = '店铺租金';
@@ -1979,26 +1989,21 @@ function doPost(e) {
       }
     }
 
-    function applyPresetExpense(type) {
-      openAddExpenseModal();
-      fillExpensePreset(type);
-    }
-
-    // 过滤杂支流水
     function filterExpensesList() {
       const kw = document.getElementById('filter-expense-keyword').value.toLowerCase().trim();
       const cat = document.getElementById('filter-expense-category').value;
       const filtered = expensesList.filter(item => {
+        const mMonth = activeMonth === 'ALL' || item.date.startsWith(activeMonth);
         const mKw = item.name.toLowerCase().includes(kw) || item.handled.toLowerCase().includes(kw) || item.ref.toLowerCase().includes(kw);
         const mCat = cat === 'ALL' || item.category === cat;
-        return mKw && mCat;
+        return mMonth && mKw && mCat;
       });
       renderExpensesTable(filtered);
     }
 
     // 选项卡切换
     function switchTab(tabId) {
-      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'delivery', 'dishes', 'pnl', 'settings'];
+      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'dishes', 'pnl', 'settings'];
       tabs.forEach(t => {
         const btn = document.getElementById(`nav-btn-${t}`);
         const content = document.getElementById(`tab-content-${t}`);
@@ -2021,51 +2026,54 @@ function doPost(e) {
       const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
       const textColor = isDark ? '#94a3b8' : '#475569';
 
-      // 1. 月度对比走势柱状图
+      // 1. 月度对比走势柱状图 (覆盖 2026 年 1~9 月所有 9 个月份的 POS 真实销售)
       if (chartTrend) chartTrend.destroy();
-      const ctxTrend = document.getElementById('chart-monthly-trend').getContext('2d');
-      const labels = [...POS_HISTORY.map(h => h.month.replace('2026-', '') + '月'), '9月(实时)'];
-      const sales = [...POS_HISTORY.map(h => h.sales), revenueList.reduce((a,b)=>a+b.total,0) + deliveryList.reduce((a,b)=>a+b.net,0)];
-      const cogs = [...POS_HISTORY.map(h => h.cogs), suppliersList.reduce((a,b)=>a+b.amount,0)];
-      const profit = [...POS_HISTORY.map(h => h.profit), (revenueList.reduce((a,b)=>a+b.total,0)+deliveryList.reduce((a,b)=>a+b.net,0)) - suppliersList.reduce((a,b)=>a+b.amount,0) - expensesList.reduce((a,b)=>a+b.amount,0)];
+      const canvasTrend = document.getElementById('chart-monthly-trend');
+      if (canvasTrend) {
+        const ctxTrend = canvasTrend.getContext('2d');
+        const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'];
+        const labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月 (实时)'];
+        
+        const salesData = months.map(m => POS_SALES_HISTORY[m]?.total_sales || 0);
+        const profitData = months.map(m => {
+          const sales = POS_SALES_HISTORY[m]?.total_sales || 0;
+          const opex = expensesList.filter(e => e.date.startsWith(m)).reduce((a,b)=>a+b.amount, 0);
+          const cogs = suppliersList.filter(s => s.date.startsWith(m)).reduce((a,b)=>a+b.amount, 0);
+          return sales - cogs - opex;
+        });
 
-      chartTrend = new Chart(ctxTrend, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: '营业额 (Revenue)',
-              data: sales,
-              backgroundColor: 'rgba(16, 185, 129, 0.85)',
-              borderRadius: 6
-            },
-            {
-              label: '净利润 (Net Profit)',
-              data: profit,
-              backgroundColor: 'rgba(56, 189, 248, 0.85)',
-              borderRadius: 6
-            },
-            {
-              label: '食材采购 (COGS)',
-              data: cogs,
-              backgroundColor: 'rgba(245, 158, 11, 0.85)',
-              borderRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } } }
+        chartTrend = new Chart(ctxTrend, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'POS 真实营业额 (RM)',
+                data: salesData,
+                backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                borderRadius: 6
+              },
+              {
+                label: '结余营业净利润 (RM)',
+                data: profitData,
+                backgroundColor: 'rgba(56, 189, 248, 0.85)',
+                borderRadius: 6
+              }
+            ]
           },
-          scales: {
-            x: { ticks: { color: textColor }, grid: { color: gridColor } },
-            y: { ticks: { color: textColor }, grid: { color: gridColor } }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } } }
+            },
+            scales: {
+              x: { ticks: { color: textColor }, grid: { color: gridColor } },
+              y: { ticks: { color: textColor }, grid: { color: gridColor } }
+            }
           }
-        }
-      });
+        });
+      }
 
       // 2. 当月开支结构环形图
       updateDonutChart();
@@ -2074,29 +2082,35 @@ function doPost(e) {
     function updateDonutChart() {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       if (chartDonut) chartDonut.destroy();
-      const ctxDonut = document.getElementById('chart-expense-donut').getContext('2d');
+      const canvasDonut = document.getElementById('chart-expense-donut');
+      if (!canvasDonut) return;
+      const ctxDonut = canvasDonut.getContext('2d');
 
-      // 统计当前分类
+      const currentExpenses = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+
       let rent = 0, wages = 0, utilities = 0, misc = 0;
-      expensesList.forEach(it => {
+      currentExpenses.forEach(it => {
         if (it.category.includes('租金')) rent += it.amount;
         else if (it.category.includes('薪资')) wages += it.amount;
         else if (it.category.includes('水') || it.category.includes('电') || it.category.includes('煤气')) utilities += it.amount;
         else misc += it.amount;
       });
-      const cogs = suppliersList.reduce((a, b) => a + b.amount, 0);
+      const cogs = currentSupp.reduce((a, b) => a + b.amount, 0);
 
-      const labels = ['食材原料', '门市租金', '员工薪资', '水电煤气', '其他杂支'];
+      const labels = ['食材采购', '门市租金', '员工薪资', '水电煤气', '其他杂支'];
       const data = [cogs, rent, wages, utilities, misc];
       const colors = ['#f59e0b', '#f43f5e', '#6366f1', '#0ea5e9', '#10b981'];
+
+      const totalSpent = data.reduce((a, b) => a + b, 0);
 
       chartDonut = new Chart(ctxDonut, {
         type: 'doughnut',
         data: {
           labels: labels,
           datasets: [{
-            data: data,
-            backgroundColor: colors,
+            data: totalSpent > 0 ? data : [1],
+            backgroundColor: totalSpent > 0 ? colors : ['#334155'],
             borderWidth: 0
           }]
         },
@@ -2108,74 +2122,65 @@ function doPost(e) {
         }
       });
 
-      // 图例说明
       const legendBox = document.getElementById('donut-legend-box');
-      legendBox.innerHTML = `
-        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 食材: RM ${cogs.toLocaleString('en-US')}</div>
-        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 租金: RM ${rent.toLocaleString('en-US')}</div>
-        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 薪资: RM ${wages.toLocaleString('en-US')}</div>
-        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span> 水电: RM ${utilities.toLocaleString('en-US')}</div>
-      `;
+      if (legendBox) {
+        legendBox.innerHTML = `
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 食材: RM ${cogs.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 租金: RM ${rent.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 薪资: RM ${wages.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span> 水电: RM ${utilities.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+        `;
+      }
     }
 
     function reloadAndRecalculate() {
-      const spinner = document.getElementById('refresh-spinner');
+      const spinner = document.getElementById('refresh-spinner') || document.getElementById('pos-sync-icon');
       if (spinner) spinner.classList.add('animate-spin');
       setTimeout(() => {
         renderAllViews();
         initCharts();
         if (spinner) spinner.classList.remove('animate-spin');
-        alert("✅ 数据已重新核算完毕！");
+        alert("✅ POS 真实营业额与账目已重新核算完毕！");
       }, 300);
-    }
-
-    function onMonthChange(val) {
-      activeMonth = val;
-      if (val === '2026-08' || val === '2026-07') {
-        document.getElementById('period-status-tag').innerText = "已结账归档月份";
-        document.getElementById('period-status-tag').style.background = "rgba(16,185,129,0.15)";
-        document.getElementById('period-status-tag').style.color = "var(--accent-emerald)";
-      } else {
-        document.getElementById('period-status-tag').innerText = "当月记账进行中 (实时动态计算)";
-        document.getElementById('period-status-tag').style.background = "rgba(245,158,11,0.15)";
-        document.getElementById('period-status-tag').style.color = "var(--accent-amber)";
-      }
-      document.getElementById('overview-period-title').innerText = `${val.replace('-', '年 ')}月 经营盘点`;
     }
 
     function exportPnLToExcel() {
       let csv = "来碗 · 柳州螺蛳粉 (Austin Heights) - 综合损益表 (P&L)\n";
-      csv += `核算期间: ${activeMonth}\n\n`;
+      csv += `核算期间: ${activeMonth === 'ALL' ? '2026年 1~9月 全年累计' : activeMonth}\n\n`;
       csv += "项目类别,项目明细,金额 (RM)\n";
-      
-      const counterRev = revenueList.reduce((a, b) => a + b.total, 0);
-      const deliveryRev = deliveryList.reduce((a, b) => a + b.net, 0);
-      const totalRev = counterRev + deliveryRev;
-      const totalCogs = suppliersList.reduce((a, b) => a + b.amount, 0);
-      const grossProfit = totalRev - totalCogs;
-      const totalOpex = expensesList.reduce((a, b) => a + b.amount, 0);
-      const netProfit = grossProfit - totalOpex;
 
-      csv += `一、营业收入,门店柜台实收流水,${counterRev.toFixed(2)}\n`;
-      csv += `一、营业收入,外卖平台净打款到手,${deliveryRev.toFixed(2)}\n`;
-      csv += `一、营业收入,全店总营业额,${totalRev.toFixed(2)}\n\n`;
+      let periodSales = 0;
+      if (activeMonth === 'ALL') {
+        Object.values(POS_SALES_HISTORY).forEach(m => periodSales += m.total_sales);
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        periodSales = POS_SALES_HISTORY[activeMonth].total_sales;
+      }
 
-      csv += `二、营业直接成本,生鲜肉类与食材进货,${totalCogs.toFixed(2)}\n`;
+      const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+      const totalCogs = currentSupp.reduce((a, b) => a + b.amount, 0);
+
+      const currentExp = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const totalOpex = currentExp.reduce((a, b) => a + b.amount, 0);
+
+      const netProfit = periodSales - totalCogs - totalOpex;
+
+      csv += `一、营业收入,Optimy POS 门店实收营业额,${periodSales.toFixed(2)}\n`;
+      csv += `一、营业收入,全店总营业额合计,${periodSales.toFixed(2)}\n\n`;
+
+      csv += `二、营业直接成本,生鲜肉类与食材进货(已录入),${totalCogs.toFixed(2)}\n`;
       csv += `二、营业直接成本,直接成本合计 (COGS),${totalCogs.toFixed(2)}\n\n`;
 
-      csv += `三、营业毛利润,毛利润,${grossProfit.toFixed(2)}\n\n`;
-
-      expensesList.forEach(it => {
-        csv += `四、运营杂支,${it.name} [${it.category}],${it.amount.toFixed(2)}\n`;
+      currentExp.forEach(it => {
+        csv += `三、运营日常杂支,${it.name} [${it.category}],${it.amount.toFixed(2)}\n`;
       });
-      csv += `四、运营杂支,运营费用合计 (OPEX),${totalOpex.toFixed(2)}\n\n`;
+      csv += `三、运营日常杂支,运营杂支合计 (OPEX),${totalOpex.toFixed(2)}\n\n`;
 
-      csv += `五、净利润,净营业利润,${netProfit.toFixed(2)}\n`;
+      csv += `四、净利润,营业结余净利润,${netProfit.toFixed(2)}\n`;
 
       const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `来碗螺蛳粉_损益报表_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `来碗螺蛳粉_损益报表_${activeMonth}_${new Date().toISOString().split('T')[0]}.csv`;
       link.click();
     }
 

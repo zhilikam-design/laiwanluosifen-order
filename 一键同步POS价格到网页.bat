@@ -1,7 +1,7 @@
-﻿@echo off
+@echo off
 chcp 65001 > nul
 echo ========================================================
-echo   柳州螺蛳粉 - Optimy POS 价格一键同步到 GitHub 网页
+echo   柳州螺蛳粉 - Optimy POS 菜品价格与营业额一键同步到网页
 echo ========================================================
 echo.
 py sync_pos_prices.py
