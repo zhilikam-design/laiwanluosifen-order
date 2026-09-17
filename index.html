@@ -892,7 +892,7 @@
        📢 Promo & New Dish Showcase Carousel (活动与新品广告展位)
        ======================================================== */
     .promo-showcase-wrap {
-      max-width: 600px;
+      max-width: 680px;
       margin: 14px auto 4px;
       padding: 0 14px;
     }
@@ -906,7 +906,7 @@
     }
 
     .promo-showcase-title {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 800;
       color: #1e293b;
       display: flex;
@@ -915,14 +915,98 @@
       letter-spacing: -0.2px;
     }
 
-    .promo-showcase-badge {
-      font-size: 11px;
-      font-weight: 700;
-      background: #f1f5f9;
-      color: #64748b;
-      padding: 2px 8px;
-      border-radius: 12px;
+    /* 广告 1 2 3 数字点击指示器 */
+    .promo-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .promo-indicators-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .promo-dot-chip {
+      width: 26px;
+      height: 24px;
+      border-radius: 8px;
       border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #64748b;
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .promo-dot-chip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .promo-dot-chip.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(197, 34, 31, 0.35);
+      transform: scale(1.05);
+    }
+
+    /* 轮播主体容器与左右箭头 */
+    .promo-carousel-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .carousel-arrow-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+      color: #1e293b;
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 15;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      outline: none;
+    }
+
+    .carousel-arrow-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      transform: translateY(-50%) scale(1.12);
+      box-shadow: 0 6px 18px rgba(197, 34, 31, 0.4);
+    }
+
+    .carousel-arrow-btn:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .carousel-arrow-btn.prev {
+      left: -12px;
+    }
+
+    .carousel-arrow-btn.next {
+      right: -12px;
     }
 
     .promo-carousel {
@@ -932,7 +1016,8 @@
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      padding: 2px 2px 8px;
+      padding: 4px 2px 10px;
+      scroll-behavior: smooth;
     }
 
     .promo-carousel::-webkit-scrollbar {
@@ -953,8 +1038,13 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       background: #ffffff;
+    }
+
+    .promo-banner-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     }
 
     .promo-banner-card:active {
@@ -1039,6 +1129,291 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .promo-banner-card:hover .promo-card-thumb img {
+      transform: scale(1.08);
+    }
+
+    /* 默认隐藏电脑端侧边栏 */
+    .desktop-cat-sidebar {
+      display: none;
+    }
+
+    /* ========================================================
+       🖥️ Tablet & Desktop Responsive Layout (电脑与平板宽屏响应式)
+       ======================================================== */
+    @media (min-width: 768px) {
+      .promo-banner-card {
+        flex: 0 0 calc(50% - 6px);
+      }
+      .food-card-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      body {
+        background-color: #f1f5f9;
+      }
+
+      /* 宽屏店面 Header 居中展示 */
+      .store-hero {
+        max-width: 1240px;
+        margin: 0 auto;
+        border-radius: 0 0 28px 28px;
+        padding: 28px 36px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .store-hero .store-info-row {
+        margin-bottom: 0;
+        flex: 1;
+      }
+
+      .store-hero .store-logo {
+        width: 72px;
+        height: 72px;
+        font-size: 38px;
+        border-radius: 20px;
+      }
+
+      .store-hero .store-name {
+        font-size: 26px;
+        letter-spacing: -0.5px;
+      }
+
+      .store-hero .store-tagline {
+        font-size: 14px;
+        margin-top: 4px;
+      }
+
+      .store-hero .order-mode-card {
+        width: 320px;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      /* 宽屏广告位：1240px 居中，3张卡片并排清晰展示，无空白 */
+      .promo-showcase-wrap {
+        max-width: 1240px;
+        margin: 20px auto 8px;
+        padding: 0 20px;
+      }
+
+      .promo-showcase-title {
+        font-size: 15px;
+      }
+
+      .promo-banner-card {
+        flex: 0 0 calc(33.333% - 8px);
+        padding: 16px 18px;
+      }
+
+      .carousel-arrow-btn.prev {
+        left: -18px;
+      }
+
+      .carousel-arrow-btn.next {
+        right: -18px;
+      }
+
+      /* 隐藏移动端顶部吸顶横滑条，使用左侧专属侧边栏 */
+      .sticky-cat-nav {
+        display: none !important;
+      }
+
+      /* 电脑端主体采用双栏布局：左侧导航分类，右侧菜品陈列 */
+      .main-wrapper {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 20px 20px 50px;
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+      }
+
+      /* 左侧分类侧边栏 (Sticky) */
+      .desktop-cat-sidebar {
+        display: flex !important;
+        flex-direction: column;
+        gap: 16px;
+        width: 250px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 24px;
+      }
+
+      .desktop-sidebar-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 18px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid #e2e8f0;
+      }
+
+      .sidebar-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .sidebar-cat-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .sidebar-cat-btn {
+        width: 100%;
+        text-align: left;
+        background: transparent;
+        border: 1px solid transparent;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+      }
+
+      .sidebar-cat-btn:hover {
+        background: #f8fafc;
+        color: var(--primary);
+        transform: translateX(3px);
+      }
+
+      .sidebar-cat-btn.active {
+        background: var(--primary-light);
+        color: var(--primary);
+        font-weight: 800;
+        border-color: var(--primary-border);
+      }
+
+      .sidebar-cat-count {
+        font-size: 11px;
+        opacity: 0.7;
+        font-weight: 600;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 1px 7px;
+        border-radius: 10px;
+      }
+
+      .sidebar-cat-btn.active .sidebar-cat-count {
+        background: rgba(197, 34, 31, 0.12);
+      }
+
+      .sidebar-info-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 18px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid #e2e8f0;
+      }
+
+      .sidebar-info-header {
+        font-size: 13px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 10px;
+      }
+
+      .sidebar-info-body {
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .sidebar-finance-link {
+        margin-top: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 12.5px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .sidebar-finance-link:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: var(--primary);
+      }
+
+      /* 电脑端右侧菜单主体内容区 */
+      .desktop-menu-pane {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .desktop-menu-pane .section-header {
+        margin: 12px 4px 14px;
+      }
+
+      .desktop-menu-pane .section-title {
+        font-size: 18px;
+      }
+
+      /* 菜品网格卡片在电脑端自适应多列 */
+      .food-card-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 16px;
+      }
+
+      .food-card {
+        padding: 16px 18px;
+        border-radius: 18px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+
+      .food-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
+      }
+
+      .food-thumbnail-box {
+        width: 102px;
+        height: 90px;
+      }
+
+      .food-media-wrap {
+        width: 102px;
+      }
+
+      /* 底部购物车胶囊在电脑端扩展居中 */
+      .floating-cart-capsule {
+        max-width: 760px;
+        padding: 12px 24px;
+      }
     }
   </style>
 </head>
@@ -1082,18 +1457,57 @@
         <span>📢</span>
         <span>热卖精选 • 优惠与新品展位</span>
       </div>
-      <span class="promo-showcase-badge" id="promoCurrentIndicator">1 / 3</span>
+      <div class="promo-nav-controls">
+        <div class="promo-indicators-box" id="promoIndicatorsBox">
+          <button class="promo-dot-chip active" onclick="jumpToPromo(0)">1</button>
+          <button class="promo-dot-chip" onclick="jumpToPromo(1)">2</button>
+          <button class="promo-dot-chip" onclick="jumpToPromo(2)">3</button>
+        </div>
+      </div>
     </div>
-    <div class="promo-carousel" id="promoCarousel"></div>
+    <div class="promo-carousel-container">
+      <button class="carousel-arrow-btn prev" id="promoPrevBtn" onclick="scrollPromo(-1)" title="上一张广告">‹</button>
+      <div class="promo-carousel" id="promoCarousel"></div>
+      <button class="carousel-arrow-btn next" id="promoNextBtn" onclick="scrollPromo(1)" title="下一张广告">›</button>
+    </div>
   </div>
 
-  <!-- Sticky Category Navigation -->
-  <div class="sticky-cat-nav">
+  <!-- Sticky Category Navigation (Mobile) -->
+  <div class="sticky-cat-nav" id="mobileCatNav">
     <div class="cat-scroll-container" id="catBar"></div>
   </div>
 
-  <!-- Food Items List -->
-  <div class="main-wrapper" id="menuFeed"></div>
+  <!-- Food Items List & Desktop Dual-Pane Layout -->
+  <div class="main-wrapper" id="mainLayoutWrapper">
+    <!-- Desktop Left Sticky Sidebar (Only on >= 1024px) -->
+    <aside class="desktop-cat-sidebar" id="desktopCatSidebar">
+      <div class="desktop-sidebar-card">
+        <div class="sidebar-title">
+          <span>📋 菜单全部分类</span>
+        </div>
+        <div class="sidebar-cat-list" id="sidebarCatList">
+          <!-- Populated by renderCategories() -->
+        </div>
+      </div>
+
+      <div class="sidebar-info-card">
+        <div class="sidebar-info-header">
+          <span>📍 Austin Heights 门店服务</span>
+        </div>
+        <div class="sidebar-info-body">
+          <div>🛵 <b>专人外直送餐</b><br><span style="font-size:11px; color:#94a3b8;">运费稍后由店员根据距离核算</span></div>
+          <div>🧾 <b>门店服务税</b><br><span style="font-size:11px; color:#94a3b8;">结账抽取 10% Tax 服务税</span></div>
+          <div>⏰ <b>营业时间</b><br><span style="font-size:11px; color:#94a3b8;">10:30 AM - 10:00 PM (现点现熬)</span></div>
+        </div>
+        <a href="finance.html" class="sidebar-finance-link" target="_blank">
+          <span>📊 门店财务记账与经营分析台 ›</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Menu Content Pane -->
+    <div class="desktop-menu-pane" id="menuFeed"></div>
+  </div>
 
   <!-- Store Footer -->
   <footer style="text-align: center; padding: 40px 20px 100px; color: #94a3b8; font-size: 12px;">
@@ -1343,12 +1757,16 @@
       return url;
     }
 
+    let currentPromoIdx = 0;
+    let promoTimer = null;
+
     function renderPromoShowcase() {
       const container = document.getElementById("promoCarousel");
+      const dotsBox = document.getElementById("promoIndicatorsBox");
       if (!container || !PROMO_BANNERS || PROMO_BANNERS.length === 0) return;
 
-      container.innerHTML = PROMO_BANNERS.map((b) => `
-        <div class="promo-banner-card" style="${b.bgStyle || ''}" onclick="handlePromoClick('${b.id}')">
+      container.innerHTML = PROMO_BANNERS.map((b, idx) => `
+        <div class="promo-banner-card" id="promo-card-${idx}" style="${b.bgStyle || ''}" onclick="handlePromoClick('${b.id}')">
           <div class="promo-card-left">
             <span class="promo-tag-pill" style="background: ${b.tagBg || '#fee2e2'}; color: ${b.tagColor || '#b91c1c'};">
               ${b.tag}
@@ -1366,14 +1784,82 @@
         </div>
       `).join('');
 
+      if (dotsBox) {
+        dotsBox.innerHTML = PROMO_BANNERS.map((b, idx) => `
+          <button class="promo-dot-chip ${idx === 0 ? 'active' : ''}" id="promo-dot-${idx}" onclick="jumpToPromo(${idx})" title="切换至广告 ${idx + 1}: ${b.title}">
+            ${idx + 1}
+          </button>
+        `).join('');
+      }
+
       container.addEventListener('scroll', () => {
-        const cardWidth = container.offsetWidth * 0.92;
-        const currentIdx = Math.round(container.scrollLeft / cardWidth);
-        const indicator = document.getElementById("promoCurrentIndicator");
-        if (indicator) {
-          indicator.innerText = `${Math.min(Math.max(currentIdx + 1, 1), PROMO_BANNERS.length)} / ${PROMO_BANNERS.length}`;
-        }
+        const slide = container.firstElementChild;
+        if (!slide) return;
+        const slideWidth = slide.offsetWidth + 12;
+        const currentIdx = Math.min(Math.max(Math.round(container.scrollLeft / slideWidth), 0), PROMO_BANNERS.length - 1);
+        currentPromoIdx = currentIdx;
+        updatePromoDots(currentIdx);
+      }, { passive: true });
+
+      const wrap = document.querySelector('.promo-carousel-container');
+      if (wrap) {
+        wrap.addEventListener('mouseenter', stopPromoAutoPlay);
+        wrap.addEventListener('mouseleave', startPromoAutoPlay);
+      }
+
+      startPromoAutoPlay();
+    }
+
+    function updatePromoDots(idx) {
+      document.querySelectorAll('.promo-dot-chip').forEach((btn, i) => {
+        if (i === idx) btn.classList.add('active');
+        else btn.classList.remove('active');
       });
+      const legacyIndicator = document.getElementById("promoCurrentIndicator");
+      if (legacyIndicator) {
+        legacyIndicator.innerText = `${idx + 1} / ${PROMO_BANNERS.length}`;
+      }
+    }
+
+    function jumpToPromo(idx) {
+      const container = document.getElementById("promoCarousel");
+      if (!container) return;
+      const targetCard = document.getElementById(`promo-card-${idx}`);
+      if (targetCard) {
+        container.scrollTo({
+          left: targetCard.offsetLeft - container.offsetLeft,
+          behavior: 'smooth'
+        });
+      }
+      currentPromoIdx = idx;
+      updatePromoDots(idx);
+      resetPromoAutoPlay();
+    }
+
+    function scrollPromo(direction) {
+      let nextIdx = currentPromoIdx + direction;
+      if (nextIdx >= PROMO_BANNERS.length) nextIdx = 0;
+      if (nextIdx < 0) nextIdx = PROMO_BANNERS.length - 1;
+      jumpToPromo(nextIdx);
+    }
+
+    function startPromoAutoPlay() {
+      stopPromoAutoPlay();
+      promoTimer = setInterval(() => {
+        scrollPromo(1);
+      }, 4500);
+    }
+
+    function stopPromoAutoPlay() {
+      if (promoTimer) {
+        clearInterval(promoTimer);
+        promoTimer = null;
+      }
+    }
+
+    function resetPromoAutoPlay() {
+      stopPromoAutoPlay();
+      startPromoAutoPlay();
     }
 
     function handlePromoClick(bannerId) {
@@ -1489,23 +1975,47 @@
 
       if (updatedMenu.length > 0) {
         MENU = updatedMenu;
+        renderCategories();
         renderMenu();
       }
     }
 
     function renderCategories() {
       const cats = ["全部", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
+      
+      // 1. 移动端横向滑动标签
       const bar = document.getElementById("catBar");
-      bar.innerHTML = cats.map((cat, idx) => `
-        <button class="cat-chip ${idx === 0 ? 'active' : ''}" onclick="selectCategory('${cat}', this)">
-          ${CAT_ICONS[cat] || '🥢'} ${cat}
-        </button>
-      `).join('');
+      if (bar) {
+        bar.innerHTML = cats.map((cat, idx) => `
+          <button class="cat-chip ${idx === 0 ? 'active' : ''}" data-cat="${cat}" onclick="selectCategory('${cat}', this)">
+            ${CAT_ICONS[cat] || '🥢'} ${cat}
+          </button>
+        `).join('');
+      }
+
+      // 2. 电脑端左侧常驻分类导航栏
+      const sidebar = document.getElementById("sidebarCatList");
+      if (sidebar) {
+        sidebar.innerHTML = cats.map((cat, idx) => {
+          const count = cat === "全部" ? MENU.length : MENU.filter(p => p.cat === cat).length;
+          return `
+            <button class="sidebar-cat-btn ${idx === 0 ? 'active' : ''}" data-cat="${cat}" onclick="selectCategory('${cat}', this)">
+              <span>${CAT_ICONS[cat] || '🥢'} ${cat}</span>
+              <span class="sidebar-cat-count">${count}</span>
+            </button>
+          `;
+        }).join('');
+      }
     }
 
     function selectCategory(cat, btn) {
-      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
+      document.querySelectorAll('.cat-chip, .sidebar-cat-btn').forEach(c => {
+        if (c.getAttribute('data-cat') === cat) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
       renderMenu(cat);
     }
 
