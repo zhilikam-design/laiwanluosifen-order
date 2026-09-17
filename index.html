@@ -887,6 +887,159 @@
       gap: 8px;
       box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
     }
+
+    /* ========================================================
+       📢 Promo & New Dish Showcase Carousel (活动与新品广告展位)
+       ======================================================== */
+    .promo-showcase-wrap {
+      max-width: 600px;
+      margin: 14px auto 4px;
+      padding: 0 14px;
+    }
+
+    .promo-showcase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+
+    .promo-showcase-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -0.2px;
+    }
+
+    .promo-showcase-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #64748b;
+      padding: 2px 8px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .promo-carousel {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 2px 2px 8px;
+    }
+
+    .promo-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .promo-banner-card {
+      flex: 0 0 92%;
+      scroll-snap-align: center;
+      border-radius: 16px;
+      padding: 13px 15px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      background: #ffffff;
+    }
+
+    .promo-banner-card:active {
+      transform: scale(0.985);
+    }
+
+    .promo-card-left {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .promo-tag-pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+      letter-spacing: -0.1px;
+    }
+
+    .promo-card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .promo-card-desc {
+      font-size: 11.5px;
+      color: #475569;
+      line-height: 1.35;
+      margin-bottom: 7px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .promo-card-action-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .promo-price-highlight {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .promo-btn-cta {
+      font-size: 11px;
+      font-weight: 800;
+      background: var(--primary);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 2px 6px rgba(185, 28, 28, 0.25);
+    }
+
+    .promo-card-thumb {
+      width: 76px;
+      height: 76px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      background: #f1f5f9;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .promo-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -920,6 +1073,18 @@
         <small>运费稍后店员核算</small>
       </button>
     </div>
+  </div>
+
+  <!-- Promo / New Dish & Advertising Showcase Carousel (活动与新品广告展位) -->
+  <div class="promo-showcase-wrap">
+    <div class="promo-showcase-header">
+      <div class="promo-showcase-title">
+        <span>📢</span>
+        <span>热卖精选 • 优惠与新品展位</span>
+      </div>
+      <span class="promo-showcase-badge" id="promoCurrentIndicator">1 / 3</span>
+    </div>
+    <div class="promo-carousel" id="promoCarousel"></div>
   </div>
 
   <!-- Sticky Category Navigation -->
@@ -1082,6 +1247,51 @@
     const TAX_RATE = 0.10; // 10% 门店税率 (例如 10% 填 0.10，若需修改可直接调整)
     const TAX_LABEL = "税费 / 服务费 (10% Tax)";
 
+    // ========================================================
+    // 📢 专属广告、优惠活动与新品展位配置 (可随时根据需要增改)
+    // ========================================================
+    const PROMO_BANNERS = [
+      {
+        id: "promo-1",
+        tag: "🔥 新品上市 • 独家尝鲜",
+        tagBg: "#fee2e2",
+        tagColor: "#b91c1c",
+        title: "S12 秘制脱骨大猪脚螺蛳粉",
+        desc: "软烂脱骨浓郁卤汁，大块肉感超满足！Austin Heights 独家现熬！",
+        price: "尝鲜价 RM 15.99",
+        btnText: "立即点单 ›",
+        bgStyle: "background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-color: #fed7aa;",
+        img: "images/S12.jpeg",
+        targetDishId: "S12" // 点击一键直达并打开 S12 加料弹窗
+      },
+      {
+        id: "promo-2",
+        tag: "👑 进店必点 • 爆单霸榜",
+        tagBg: "#fef3c7",
+        tagColor: "#b45309",
+        title: "S3 招牌超大吸汤炸蛋粉",
+        desc: "金黄酥脆超大炸蛋，吸饱灵魂鲜螺靓汤，咔嚓爆汁超级过瘾！",
+        price: "热卖 RM 15.80",
+        btnText: "马上抢购 ›",
+        bgStyle: "background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); border-color: #fde047;",
+        img: "images/S3.jpeg",
+        targetDishId: "S3"
+      },
+      {
+        id: "promo-3",
+        tag: "🛵 Austin Heights 外直送餐",
+        tagBg: "#f0fdf4",
+        tagColor: "#15803d",
+        title: "新山 Austin Heights 专人外送",
+        desc: "热汤现熬趁热送达！各区运费根据配送距离由店员接单后核算告知。",
+        price: "趁热送到家",
+        btnText: "点外送 ›",
+        bgStyle: "background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0;",
+        img: "images/S1.jpeg",
+        targetDishId: null
+      }
+    ];
+
     // 您的 Google Sheet CSV 地址 (每次打开自动拉取最新商品、价格与图片链接)
     const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1l19pU26eoXXKaViAgS4xoB5dMqTfTNiIf82v9jVeO3o/gviz/tq?tqx=out:csv";
 
@@ -1122,7 +1332,51 @@
       return url;
     }
 
+    function renderPromoShowcase() {
+      const container = document.getElementById("promoCarousel");
+      if (!container || !PROMO_BANNERS || PROMO_BANNERS.length === 0) return;
+
+      container.innerHTML = PROMO_BANNERS.map((b) => `
+        <div class="promo-banner-card" style="${b.bgStyle || ''}" onclick="handlePromoClick('${b.id}')">
+          <div class="promo-card-left">
+            <span class="promo-tag-pill" style="background: ${b.tagBg || '#fee2e2'}; color: ${b.tagColor || '#b91c1c'};">
+              ${b.tag}
+            </span>
+            <div class="promo-card-title">${b.title}</div>
+            <div class="promo-card-desc">${b.desc}</div>
+            <div class="promo-card-action-row">
+              <span class="promo-price-highlight">${b.price}</span>
+              <span class="promo-btn-cta">${b.btnText}</span>
+            </div>
+          </div>
+          <div class="promo-card-thumb">
+            <img src="${b.img}" alt="${b.title}" onerror="this.src='images/S1.jpeg'">
+          </div>
+        </div>
+      `).join('');
+
+      container.addEventListener('scroll', () => {
+        const cardWidth = container.offsetWidth * 0.92;
+        const currentIdx = Math.round(container.scrollLeft / cardWidth);
+        const indicator = document.getElementById("promoCurrentIndicator");
+        if (indicator) {
+          indicator.innerText = `${Math.min(Math.max(currentIdx + 1, 1), PROMO_BANNERS.length)} / ${PROMO_BANNERS.length}`;
+        }
+      });
+    }
+
+    function handlePromoClick(bannerId) {
+      const banner = PROMO_BANNERS.find(b => b.id === bannerId);
+      if (!banner) return;
+      if (banner.targetDishId) {
+        handleCardClick(banner.targetDishId);
+      } else {
+        openCartDrawer();
+      }
+    }
+
     function init() {
+      renderPromoShowcase();
       renderCategories();
       renderMenu();
       fetchLatestFromGoogleSheets();
