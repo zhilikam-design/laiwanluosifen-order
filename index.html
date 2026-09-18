@@ -6,32 +6,56 @@
   <title>柳州地道螺蛳粉 • 在线自助点餐</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
+    /* ==========================================================================
+       DESIGN TOKENS (designer-skills & WCAG 2.1 AA Compliance)
+       ========================================================================== */
     :root {
-      --primary: #c5221f;
-      --primary-dark: #a51815;
-      --primary-light: #fff1f0;
-      --primary-border: #ffccc7;
-      --accent: #f59e0b;
-      --accent-light: #fef3c7;
-      --text-main: #1f2937;
-      --text-muted: #64748b;
-      --text-light: #94a3b8;
-      --bg-page: #f8fafc;
+      /* Palette */
+      --color-primary: #c5221f;
+      --color-primary-dark: #9e1b19;
+      --color-primary-light: #fef2f2;
+      --color-primary-border: #fecaca;
+      
+      --color-accent: #d97706;
+      --color-accent-light: #fffbeb;
+      --color-accent-border: #fde68a;
+
+      --color-success: #16a34a;
+      --color-success-light: #f0fdf4;
+      
+      --text-main: #1c1917;
+      --text-muted: #57534e;
+      --text-light: #78716c;
+      --text-white: #ffffff;
+      
+      --bg-body: #fafaf9;
       --bg-card: #ffffff;
-      --border-light: #f1f5f9;
-      --border-card: #e2e8f0;
-      --radius-xl: 22px;
+      --bg-elevated: #ffffff;
+      
+      --border-light: #e7e5e4;
+      --border-card: #e7e5e4;
+      
+      /* Radius & Shadows */
+      --radius-full: 9999px;
+      --radius-xl: 24px;
       --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
-      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 6px 20px -2px rgba(0, 0, 0, 0.07);
-      --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.12);
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08), 0 2px 6px -1px rgba(0,0,0,0.04);
+      --shadow-lg: 0 12px 28px -4px rgba(0,0,0,0.12), 0 4px 10px -2px rgba(0,0,0,0.06);
+      --shadow-float: 0 16px 36px -4px rgba(197, 34, 31, 0.25);
+
+      /* Accessibility & Focus */
+      --focus-ring: 0 0 0 3px rgba(197, 34, 31, 0.4);
+      --touch-target-min: 44px;
     }
 
-    * {
+    /* Reset & Accessibility Baseline */
+    *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -40,52 +64,139 @@
 
     body {
       font-family: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--bg-page);
+      background-color: var(--bg-body);
       color: var(--text-main);
       line-height: 1.5;
-      padding-bottom: 110px;
+      padding-bottom: 120px;
+      min-height: 100vh;
     }
 
-    /* Top Brand Hero Header */
+    button, input, textarea, select {
+      font-family: inherit;
+    }
+
+    button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    /* Screen Reader Only Utility (uisentinel-ui-audit) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* Main Container (Responsive Layout) */
+    .app-container {
+      max-width: 640px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg-body);
+      position: relative;
+      box-shadow: 0 0 40px rgba(0,0,0,0.05);
+    }
+
+    /* ==========================================================================
+       HERO STORE HEADER (designer-skills Appetite Red Theme)
+       ========================================================================== */
     .store-hero {
-      background: linear-gradient(145deg, #b91c1c 0%, #dc2626 55%, #ef4444 100%);
-      color: white;
-      padding: 22px 18px 26px;
-      border-radius: 0 0 24px 24px;
-      box-shadow: 0 8px 24px rgba(185, 28, 28, 0.28);
+      background: linear-gradient(135deg, #9e1b19 0%, #c5221f 60%, #dc2626 100%);
+      color: var(--text-white);
+      padding: 24px 20px 28px;
+      border-radius: 0 0 28px 28px;
+      box-shadow: 0 10px 30px rgba(158, 27, 25, 0.3);
       position: relative;
       overflow: hidden;
     }
 
-    .store-hero::after {
+    .store-hero::before {
       content: "";
       position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 160px;
-      height: 160px;
+      top: -60px;
+      right: -60px;
+      width: 180px;
+      height: 180px;
       background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%);
       border-radius: 50%;
       pointer-events: none;
     }
 
+    .store-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .store-badge-open {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .store-badge-open::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background-color: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #4ade80;
+    }
+
+    .ai-assistant-launch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      color: var(--color-primary);
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+      min-height: 36px;
+    }
+
+    .ai-assistant-launch-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      background: #fff8f8;
+    }
+
     .store-info-row {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
       margin-bottom: 16px;
     }
 
     .store-logo {
-      width: 54px;
-      height: 54px;
+      width: 60px;
+      height: 60px;
       background: #ffffff;
-      border-radius: 16px;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 32px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
       flex-shrink: 0;
     }
 
@@ -93,1935 +204,1252 @@
       flex: 1;
     }
 
-    .store-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .store-name {
-      font-size: 20px;
+    .store-title {
+      font-size: 21px;
       font-weight: 800;
       letter-spacing: -0.3px;
+      line-height: 1.25;
+      margin-bottom: 4px;
     }
 
-    .status-badge {
-      background: rgba(34, 197, 94, 0.22);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      color: #ffffff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background: #4ade80;
-      border-radius: 50%;
-    }
-
-    .store-tagline {
+    .store-sub {
       font-size: 12.5px;
       color: rgba(255, 255, 255, 0.9);
-      margin-top: 2px;
-    }
-
-    .store-meta-tags {
       display: flex;
+      align-items: center;
       gap: 8px;
-      margin-top: 6px;
       flex-wrap: wrap;
     }
 
-    .meta-tag {
-      font-size: 11.5px;
-      background: rgba(0, 0, 0, 0.16);
-      padding: 2px 8px;
-      border-radius: 6px;
-      color: rgba(255, 255, 255, 0.95);
+    /* Search Bar in Hero Header */
+    .search-box-wrap {
+      position: relative;
+      margin-top: 14px;
     }
 
-    /* Order Mode Switcher */
-    .order-mode-card {
-      background: #ffffff;
-      border-radius: var(--radius-lg);
-      padding: 5px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-    }
-
-    .mode-btn {
-      border: none;
-      background: transparent;
-      padding: 10px 8px;
-      border-radius: 12px;
-      font-size: 13.5px;
-      font-weight: 700;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .mode-btn small {
-      font-size: 11px;
-      font-weight: 500;
-      opacity: 0.8;
-    }
-
-    .mode-btn.active {
-      background: var(--primary);
+    .search-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px 0 42px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(197, 34, 31, 0.35);
+      font-size: 14px;
+      transition: all 0.2s ease;
     }
 
-    /* Sticky Category Nav */
-    .sticky-cat-nav {
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .search-input:focus {
+      background: #ffffff;
+      color: var(--text-main);
+      border-color: #ffffff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    /* ==========================================================================
+       CATEGORY NAVIGATION TAB BAR (Sticky & Smooth Scroll)
+       ========================================================================== */
+    .category-nav-bar {
       position: sticky;
       top: 0;
-      z-index: 25;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(10px);
+      z-index: 40;
+      background: rgba(250, 250, 249, 0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-light);
-      padding: 10px 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-
-    .cat-scroll-container {
+      padding: 12px 16px;
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      white-space: nowrap;
       scrollbar-width: none;
+      -ms-overflow-style: none;
     }
-    .cat-scroll-container::-webkit-scrollbar { display: none; }
 
-    .cat-chip {
+    .category-nav-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-chip-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 8px 16px;
-      border-radius: 20px;
-      background: #f1f5f9;
-      color: #475569;
-      font-size: 13px;
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      color: var(--text-muted);
+      font-size: 13.5px;
       font-weight: 600;
-      border: 1px solid transparent;
+      white-space: nowrap;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      min-height: 40px;
     }
 
-    .cat-chip.active {
-      background: var(--primary-light);
-      color: var(--primary);
-      border-color: var(--primary-border);
-      font-weight: 700;
+    .cat-chip-btn:hover {
+      border-color: var(--color-primary-border);
+      color: var(--color-primary);
     }
 
-    /* Main Container */
-    .main-wrapper {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 16px 14px;
+    .cat-chip-btn.active {
+      background: var(--color-primary);
+      color: var(--text-white);
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(197, 34, 31, 0.25);
     }
 
-    .section-header {
+    .cat-chip-count {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      background: rgba(0,0,0,0.06);
+    }
+
+    .cat-chip-btn.active .cat-chip-count {
+      background: rgba(255,255,255,0.25);
+      color: #ffffff;
+    }
+
+    /* ==========================================================================
+       PRODUCT GRID & DISH CARDS (designer-skills Quality Layout)
+       ========================================================================== */
+    .menu-feed-container {
+      padding: 16px 16px 40px;
+    }
+
+    .category-section-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 18px 4px 12px;
+      margin: 20px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--color-primary-light);
     }
 
-    .section-title {
-      font-size: 16px;
+    .category-section-title:first-child {
+      margin-top: 4px;
+    }
+
+    .cat-title-text {
+      font-size: 16.5px;
       font-weight: 800;
-      color: #0f172a;
+      color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .section-count {
+    .cat-title-count {
       font-size: 12px;
-      color: var(--text-light);
       font-weight: 500;
+      color: var(--text-light);
     }
 
-    /* Modern Food Card List (左文右图) */
-    .food-card-list {
+    .food-card-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .food-card {
       background: var(--bg-card);
+      border: 1px solid var(--border-card);
       border-radius: var(--radius-lg);
       padding: 14px;
       display: flex;
-      justify-content: space-between;
-      align-items: stretch;
-      border: 1px solid var(--border-light);
+      gap: 14px;
       box-shadow: var(--shadow-sm);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
+      position: relative;
     }
 
-    .food-card:active {
-      transform: scale(0.99);
-      box-shadow: none;
+    .food-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-border);
     }
 
-    .food-card-body {
+    .food-card-content {
       flex: 1;
-      padding-right: 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      min-width: 0;
     }
 
-    .food-header {
-      margin-bottom: 4px;
-    }
-
-    .food-code-badge {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      color: #64748b;
-      background: #f1f5f9;
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-right: 5px;
-      vertical-align: middle;
-    }
-
-    .food-title {
-      font-size: 15.5px;
-      font-weight: 700;
-      color: #0f172a;
-      line-height: 1.35;
-      display: inline;
-    }
-
-    .promo-badge {
+    .food-code-tag {
       display: inline-block;
       font-size: 11px;
       font-weight: 700;
-      color: #b91c1c;
-      background: #fee2e2;
-      padding: 2px 7px;
-      border-radius: 6px;
-      margin-top: 4px;
+      color: var(--color-primary);
+      background: var(--color-primary-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .food-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .food-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #b45309;
+      background: #fef3c7;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-bottom: 6px;
     }
 
     .food-desc {
       font-size: 12px;
       color: var(--text-muted);
       line-height: 1.4;
-      margin-top: 4px;
+      margin-bottom: 8px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    .food-bottom-row {
+    .food-price-row {
       display: flex;
       align-items: baseline;
-      gap: 4px;
-      margin-top: 8px;
+      gap: 2px;
+      margin-top: auto;
     }
 
     .currency-symbol {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--color-primary);
     }
 
     .price-number {
       font-size: 18px;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--color-primary);
     }
 
-    /* Right Thumbnail & Add Button */
-    .food-media-wrap {
-      width: 96px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
+    .food-media-box {
+      width: 104px;
+      height: 104px;
       flex-shrink: 0;
-    }
-
-    .food-thumbnail-box {
-      width: 96px;
-      height: 84px;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: #f8fafc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       position: relative;
-    }
-
-    .food-thumbnail-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: opacity 0.2s;
-    }
-
-    /* Smart illustrated placeholder when no image uploaded */
-    .food-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%);
-      color: #991b1b;
-    }
-
-    .food-placeholder small {
-      font-size: 9px;
-      font-weight: 600;
-      opacity: 0.6;
-      margin-top: 2px;
-    }
-
-    .add-action-btn {
-      width: 100%;
-      margin-top: 8px;
-      background: var(--primary-light);
-      color: var(--primary);
-      border: 1px solid var(--primary-border);
-      border-radius: 20px;
-      padding: 6px 0;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      transition: all 0.15s;
-    }
-
-    .add-action-btn:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* Bottom Modal (iOS Style Sheet) */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .modal-backdrop.active {
-      display: flex;
-    }
-
-    .modal-sheet {
-      background: #ffffff;
-      width: 100%;
-      max-width: 600px;
-      border-radius: 26px 26px 0 0;
-      max-height: 88vh;
-      display: flex;
-      flex-direction: column;
-      animation: sheetUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes sheetUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .sheet-handle-bar {
-      width: 40px;
-      height: 4px;
-      background: #cbd5e1;
-      border-radius: 2px;
-      margin: 10px auto 4px;
-    }
-
-    .sheet-header {
-      padding: 12px 20px 14px;
-      border-bottom: 1px solid var(--border-light);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .sheet-food-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: #0f172a;
-    }
-
-    .sheet-food-price {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-top: 2px;
-    }
-
-    .sheet-close-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: none;
-      background: #f1f5f9;
-      color: #64748b;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .sheet-scroll-body {
-      padding: 16px 20px;
-      overflow-y: auto;
-      flex: 1;
-    }
-
-    .spec-section {
-      margin-bottom: 22px;
-    }
-
-    .spec-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .spec-title {
-      font-size: 14.5px;
-      font-weight: 700;
-      color: #1e293b;
-    }
-
-    .spec-tag {
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 10px;
-      background: #fee2e2;
-      color: #b91c1c;
-      font-weight: 700;
-    }
-
-    .radio-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .spec-radio-card {
-      border: 1.5px solid #e2e8f0;
       border-radius: var(--radius-md);
-      padding: 10px 12px;
-      cursor: pointer;
-      font-size: 13.5px;
-      font-weight: 600;
-      text-align: center;
-      transition: all 0.15s;
-    }
-
-    .spec-radio-card.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    /* Addon Groups & Items */
-    .addon-subgroup-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #475569;
-      margin: 10px 0 6px;
-      padding-left: 2px;
-    }
-
-    .addon-pill-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: var(--radius-md);
-      margin-bottom: 7px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .addon-pill-item.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .addon-name-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #1e293b;
-    }
-
-    .addon-checkbox-ui {
-      width: 18px;
-      height: 18px;
-      border-radius: 4px;
-      border: 1.5px solid #cbd5e1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: white;
-    }
-
-    .addon-pill-item.active .addon-checkbox-ui {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-
-    .addon-price-chip {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    /* Quick Notes Tags */
-    .quick-tags-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-
-    .quick-note-tag {
-      font-size: 12px;
-      background: #f1f5f9;
-      padding: 4px 10px;
-      border-radius: 12px;
-      color: #475569;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .quick-note-tag:active {
-      background: #e2e8f0;
-    }
-
-    .modal-input-notes {
-      width: 100%;
-      border: 1.5px solid #cbd5e1;
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
-      font-size: 13.5px;
-      font-family: inherit;
-      outline: none;
-      resize: none;
-    }
-    .modal-input-notes:focus {
-      border-color: var(--primary);
-    }
-
-    .sheet-footer {
-      padding: 14px 20px;
-      border-top: 1px solid var(--border-light);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #ffffff;
-    }
-
-    .subtotal-val {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    .add-to-cart-submit {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 26px;
-      padding: 12px 28px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(197, 34, 31, 0.3);
-      transition: transform 0.15s;
-    }
-
-    .add-to-cart-submit:active {
-      transform: scale(0.97);
-    }
-
-    /* Floating Bottom Cart Bar */
-    .floating-cart-wrapper {
-      position: fixed;
-      bottom: 16px;
-      left: 0;
-      right: 0;
-      padding: 0 16px;
-      z-index: 40;
-      display: flex;
-      justify-content: center;
-    }
-
-    .floating-cart-capsule {
-      background: #0f172a;
-      color: white;
-      width: 100%;
-      max-width: 600px;
-      border-radius: 36px;
-      padding: 10px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow-lg);
-      cursor: pointer;
-      animation: popIn 0.2s ease-out;
-    }
-
-    @keyframes popIn {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .capsule-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .cart-icon-circle {
-      width: 44px;
-      height: 44px;
-      background: #1e293b;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      position: relative;
-    }
-
-    .cart-badge-num {
-      position: absolute;
-      top: -3px;
-      right: -5px;
-      background: var(--primary);
-      color: white;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 1px 6px;
-      border-radius: 10px;
-      border: 2px solid #0f172a;
-    }
-
-    .capsule-checkout-btn {
-      background: #25d366;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 10px 18px;
-      font-size: 14px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Cart Full Details Drawer */
-    .cart-drawer-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(4px);
-      z-index: 110;
-      align-items: flex-end;
-      justify-content: center;
-    }
-    .cart-drawer-backdrop.active { display: flex; }
-
-    .drawer-card-box {
-      background: white;
-      width: 100%;
-      max-width: 600px;
-      border-radius: 26px 26px 0 0;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      animation: sheetUp 0.25s ease-out;
-    }
-
-    .drawer-item-row {
-      padding: 12px 0;
-      border-bottom: 1px dashed #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .drawer-item-name {
-      font-size: 14.5px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .drawer-item-specs {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 3px;
-      line-height: 1.4;
-    }
-
-    .drawer-qty-selector {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-qty {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .form-group-wrap {
-      margin-bottom: 12px;
-    }
-
-    .form-group-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 5px;
-    }
-
-    .form-ctrl-input {
-      width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
-    }
-    .form-ctrl-input:focus {
-      border-color: var(--primary);
-    }
-
-    .quick-time-chips {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    .time-chip-card {
-      padding: 8px 4px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      background: #f8fafc;
-      font-size: 12px;
-      font-weight: 700;
-      text-align: center;
-      cursor: pointer;
-      color: #334155;
-      transition: all 0.15s;
-    }
-
-    .time-chip-card.active {
-      background: var(--primary-light);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .wa-submit-large-btn {
-      width: 100%;
-      background: #25d366;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
-    }
-
-    /* ========================================================
-       📢 Promo & New Dish Showcase Carousel (活动与新品广告展位)
-       ======================================================== */
-    .promo-showcase-wrap {
-      max-width: 680px;
-      margin: 14px auto 4px;
-      padding: 0 14px;
-    }
-
-    .promo-showcase-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      padding: 0 4px;
-    }
-
-    .promo-showcase-title {
-      font-size: 13.5px;
-      font-weight: 800;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      letter-spacing: -0.2px;
-    }
-
-    /* 广告 1 2 3 数字点击指示器 */
-    .promo-nav-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .promo-indicators-box {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .promo-dot-chip {
-      width: 26px;
-      height: 24px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      background: #ffffff;
-      color: #64748b;
-      font-size: 11.5px;
-      font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    .promo-dot-chip:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .promo-dot-chip.active {
-      background: var(--primary);
-      color: #ffffff;
-      border-color: var(--primary);
-      box-shadow: 0 2px 8px rgba(197, 34, 31, 0.35);
-      transform: scale(1.05);
-    }
-
-    /* 轮播主体容器与左右箭头 */
-    .promo-carousel-container {
-      position: relative;
-      width: 100%;
-    }
-
-    .carousel-arrow-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.96);
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
-      color: #1e293b;
-      font-size: 26px;
-      line-height: 1;
-      font-weight: 300;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 15;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      user-select: none;
-      outline: none;
-    }
-
-    .carousel-arrow-btn:hover {
-      background: var(--primary);
-      color: #ffffff;
-      border-color: var(--primary);
-      transform: translateY(-50%) scale(1.12);
-      box-shadow: 0 6px 18px rgba(197, 34, 31, 0.4);
-    }
-
-    .carousel-arrow-btn:active {
-      transform: translateY(-50%) scale(0.95);
-    }
-
-    .carousel-arrow-btn.prev {
-      left: -12px;
-    }
-
-    .carousel-arrow-btn.next {
-      right: -12px;
-    }
-
-    .promo-carousel {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      padding: 4px 2px 10px;
-      scroll-behavior: smooth;
-    }
-
-    .promo-carousel::-webkit-scrollbar {
-      display: none;
-    }
-
-    .promo-banner-card {
-      flex: 0 0 92%;
-      scroll-snap-align: center;
-      border-radius: 16px;
-      padding: 13px 15px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-      border: 1px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      position: relative;
       overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      background: #ffffff;
+      background: #f5f5f4;
     }
 
-    .promo-banner-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    }
-
-    .promo-banner-card:active {
-      transform: scale(0.985);
-    }
-
-    .promo-card-left {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .promo-tag-pill {
-      display: inline-flex;
-      align-items: center;
-      font-size: 10.5px;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-bottom: 5px;
-      letter-spacing: -0.1px;
-    }
-
-    .promo-card-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: #0f172a;
-      line-height: 1.3;
-      margin-bottom: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .promo-card-desc {
-      font-size: 11.5px;
-      color: #475569;
-      line-height: 1.35;
-      margin-bottom: 7px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .promo-card-action-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .promo-price-highlight {
-      font-size: 14.5px;
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    .promo-btn-cta {
-      font-size: 11px;
-      font-weight: 800;
-      background: var(--primary);
-      color: white;
-      padding: 3px 10px;
-      border-radius: 20px;
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      box-shadow: 0 2px 6px rgba(185, 28, 28, 0.25);
-    }
-
-    .promo-card-thumb {
-      width: 76px;
-      height: 76px;
-      border-radius: 12px;
-      overflow: hidden;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      background: #f1f5f9;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .promo-card-thumb img {
+    .food-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.3s ease;
     }
 
-    .promo-banner-card:hover .promo-card-thumb img {
-      transform: scale(1.08);
+    .food-card:hover .food-img {
+      transform: scale(1.05);
     }
 
-    /* 默认隐藏电脑端侧边栏 */
-    .desktop-cat-sidebar {
-      display: none;
+    .food-img-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-size: 28px;
     }
 
-    /* ========================================================
-       🖥️ Tablet & Desktop Responsive Layout (电脑与平板宽屏响应式)
-       ======================================================== */
-    @media (min-width: 768px) {
-      .promo-banner-card {
-        flex: 0 0 calc(50% - 6px);
-      }
-      .food-card-list {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-      }
+    .add-action-btn {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: var(--color-primary);
+      color: var(--text-white);
+      border: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(197, 34, 31, 0.3);
+      transition: all 0.2s ease;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    @media (min-width: 1024px) {
-      body {
-        background-color: #f1f5f9;
-      }
+    .add-action-btn:hover {
+      background: var(--color-primary-dark);
+      transform: scale(1.05);
+    }
 
-      /* 宽屏店面 Header 居中展示 */
-      .store-hero {
-        max-width: 1240px;
-        margin: 0 auto;
-        border-radius: 0 0 28px 28px;
-        padding: 28px 36px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 24px;
-      }
+    /* ==========================================================================
+       MODAL SPECIFICATION SHEET (Customization Options)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: opacity;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
 
-      .store-hero .store-info-row {
-        margin-bottom: 0;
-        flex: 1;
-      }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
-      .store-hero .store-logo {
-        width: 72px;
-        height: 72px;
-        font-size: 38px;
-        border-radius: 20px;
-      }
+    .modal-sheet-panel {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%) translateY(100%);
+      width: 100%;
+      max-width: 640px;
+      max-height: 88vh;
+      background: var(--bg-card);
+      border-radius: 28px 28px 0 0;
+      box-shadow: var(--shadow-lg);
+      z-index: 101;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-      .store-hero .store-name {
-        font-size: 26px;
-        letter-spacing: -0.5px;
-      }
+    .modal-backdrop.active .modal-sheet-panel {
+      transform: translateX(-50%) translateY(0);
+    }
 
-      .store-hero .store-tagline {
-        font-size: 14px;
-        margin-top: 4px;
-      }
+    .modal-sheet-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-      .store-hero .order-mode-card {
-        width: 320px;
-        flex-shrink: 0;
-        background: rgba(255, 255, 255, 0.98);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      }
+    .modal-sheet-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
 
-      /* 宽屏广告位：1240px 居中，3张卡片并排清晰展示，无空白 */
-      .promo-showcase-wrap {
-        max-width: 1240px;
-        margin: 20px auto 8px;
-        padding: 0 20px;
-      }
+    .modal-close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bg-body);
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-      .promo-showcase-title {
-        font-size: 15px;
-      }
+    .modal-close-btn:hover {
+      background: #e7e5e4;
+      color: var(--text-main);
+    }
 
-      .promo-banner-card {
-        flex: 0 0 calc(33.333% - 8px);
-        padding: 16px 18px;
-      }
+    .modal-sheet-scroll {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
 
-      .carousel-arrow-btn.prev {
-        left: -18px;
-      }
+    .spec-group-box {
+      margin-bottom: 22px;
+    }
 
-      .carousel-arrow-btn.next {
-        right: -18px;
-      }
+    .spec-group-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-      /* 隐藏移动端顶部吸顶横滑条，使用左侧专属侧边栏 */
-      .sticky-cat-nav {
-        display: none !important;
-      }
+    .spec-required-badge {
+      font-size: 11px;
+      color: var(--color-primary);
+      background: var(--color-primary-light);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+    }
 
-      /* 电脑端主体采用双栏布局：左侧导航分类，右侧菜品陈列 */
-      .main-wrapper {
-        max-width: 1240px;
-        margin: 0 auto;
-        padding: 20px 20px 50px;
-        display: flex;
-        align-items: flex-start;
-        gap: 24px;
-      }
+    .radio-pill-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
 
-      /* 左侧分类侧边栏 (Sticky) */
-      .desktop-cat-sidebar {
-        display: flex !important;
-        flex-direction: column;
-        gap: 16px;
-        width: 250px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 24px;
-      }
+    .radio-pill-card {
+      padding: 12px 14px;
+      border: 1.5px solid var(--border-card);
+      border-radius: var(--radius-md);
+      background: var(--bg-body);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .desktop-sidebar-card {
-        background: #ffffff;
-        border-radius: 20px;
-        padding: 18px;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid #e2e8f0;
-      }
+    .radio-pill-card:hover {
+      border-color: var(--color-primary-border);
+      color: var(--color-primary);
+    }
 
-      .sidebar-title {
-        font-size: 14px;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #f1f5f9;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
+    .radio-pill-card.active {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px var(--color-primary);
+    }
 
-      .sidebar-cat-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
+    .addon-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border-card);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 44px;
+    }
 
-      .sidebar-cat-btn {
-        width: 100%;
-        text-align: left;
-        background: transparent;
-        border: 1px solid transparent;
-        padding: 10px 14px;
-        border-radius: 12px;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: #475569;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: all 0.2s ease;
-      }
+    .addon-item-row:hover {
+      border-color: var(--color-primary-border);
+    }
 
-      .sidebar-cat-btn:hover {
-        background: #f8fafc;
-        color: var(--primary);
-        transform: translateX(3px);
-      }
+    .addon-item-row.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
 
-      .sidebar-cat-btn.active {
-        background: var(--primary-light);
-        color: var(--primary);
-        font-weight: 800;
-        border-color: var(--primary-border);
-      }
+    .addon-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-card);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: transparent;
+      margin-right: 10px;
+      transition: all 0.2s ease;
+    }
 
-      .sidebar-cat-count {
-        font-size: 11px;
-        opacity: 0.7;
-        font-weight: 600;
-        background: rgba(0, 0, 0, 0.05);
-        padding: 1px 7px;
-        border-radius: 10px;
-      }
+    .addon-item-row.active .addon-checkbox {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+    }
 
-      .sidebar-cat-btn.active .sidebar-cat-count {
-        background: rgba(197, 34, 31, 0.12);
-      }
+    .addon-price-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
 
-      .sidebar-info-card {
-        background: #ffffff;
-        border-radius: 20px;
-        padding: 18px;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid #e2e8f0;
-      }
+    .modal-footer-bar {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      gap: 16px;
+    }
 
-      .sidebar-info-header {
-        font-size: 13px;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 10px;
-      }
+    .subtotal-preview-wrap {
+      display: flex;
+      flex-direction: column;
+    }
 
-      .sidebar-info-body {
-        font-size: 12px;
-        color: #64748b;
-        line-height: 1.6;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
+    .subtotal-label {
+      font-size: 11px;
+      color: var(--text-light);
+    }
 
-      .sidebar-finance-link {
-        margin-top: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        color: #334155;
-        font-size: 12.5px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.2s;
-      }
+    .subtotal-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
 
-      .sidebar-finance-link:hover {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
-        color: var(--primary);
-      }
+    .confirm-add-btn {
+      flex: 1;
+      background: var(--color-primary);
+      color: var(--text-white);
+      border: none;
+      padding: 14px 20px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(197, 34, 31, 0.35);
+      transition: all 0.2s ease;
+      min-height: 48px;
+    }
 
-      /* 电脑端右侧菜单主体内容区 */
-      .desktop-menu-pane {
-        flex: 1;
-        min-width: 0;
-      }
+    .confirm-add-btn:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+    }
 
-      .desktop-menu-pane .section-header {
-        margin: 12px 4px 14px;
-      }
+    /* Quick Note Tags */
+    .quick-tags-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
 
-      .desktop-menu-pane .section-title {
-        font-size: 18px;
-      }
+    .quick-tag {
+      font-size: 12px;
+      padding: 4px 10px;
+      background: var(--bg-body);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
 
-      /* 菜品网格卡片在电脑端自适应多列 */
-      .food-card-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-        gap: 16px;
-      }
+    .quick-tag:hover {
+      border-color: var(--color-primary-border);
+      color: var(--color-primary);
+    }
 
-      .food-card {
-        padding: 16px 18px;
-        border-radius: 18px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-      }
+    /* ==========================================================================
+       STICKY BOTTOM CART CAPSULE BAR (Float Navigation)
+       ========================================================================== */
+    .cart-capsule-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 608px;
+      background: var(--text-main);
+      color: #ffffff;
+      border-radius: var(--radius-full);
+      padding: 10px 14px 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-float);
+      z-index: 50;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-      .food-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.08);
-        border-color: #cbd5e1;
-      }
+    .cart-capsule-bar:hover {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 20px 40px -4px rgba(197, 34, 31, 0.35);
+    }
 
-      .food-thumbnail-box {
-        width: 102px;
-        height: 90px;
-      }
+    .cart-capsule-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
 
-      .food-media-wrap {
-        width: 102px;
-      }
+    .cart-icon-wrap {
+      position: relative;
+      font-size: 24px;
+    }
 
-      /* 底部购物车胶囊在电脑端扩展居中 */
-      .floating-cart-capsule {
-        max-width: 760px;
-        padding: 12px 24px;
-      }
+    .cart-badge-count {
+      position: absolute;
+      top: -6px;
+      right: -10px;
+      background: var(--color-primary);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--text-main);
+    }
+
+    .cart-price-sum {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+    }
+
+    .cart-checkout-btn {
+      background: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s ease;
+      min-height: 40px;
+    }
+
+    .cart-checkout-btn:hover {
+      background: var(--color-primary-dark);
+    }
+
+    /* ==========================================================================
+       AI ASSISTANT DRAWER (generative-ui-copilotkit)
+       ========================================================================== */
+    .ai-drawer-panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      z-index: 120;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .ai-drawer-panel.active {
+      transform: translateX(0);
+    }
+
+    .ai-drawer-header {
+      background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+      color: #ffffff;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ai-drawer-title {
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-chat-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--bg-body);
+    }
+
+    .chat-bubble-ai {
+      background: #ffffff;
+      border: 1px solid var(--border-card);
+      border-radius: 18px 18px 18px 4px;
+      padding: 14px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-bubble-user {
+      align-self: flex-end;
+      background: var(--color-primary);
+      color: #ffffff;
+      border-radius: 18px 18px 4px 18px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      max-width: 80%;
+    }
+
+    /* Generative UI Card inside AI Chat */
+    .gen-recommend-card {
+      background: #ffffff;
+      border: 1.5px solid var(--color-accent-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-top: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .gen-recommend-img {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+    }
+
+    .gen-recommend-details {
+      flex: 1;
+    }
+
+    .gen-recommend-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .gen-recommend-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+
+    .gen-quick-add-btn {
+      background: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .ai-prompt-chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .ai-chip {
+      background: #ffffff;
+      border: 1px solid var(--color-primary-border);
+      color: var(--color-primary);
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .ai-chip:hover {
+      background: var(--color-primary);
+      color: #ffffff;
+    }
+
+    .ai-input-bar {
+      padding: 12px 16px;
+      background: #ffffff;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      gap: 10px;
+    }
+
+    .ai-input-field {
+      flex: 1;
+      height: 44px;
+      padding: 0 16px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-card);
+      font-size: 13.5px;
+    }
+
+    .ai-send-btn {
+      background: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       CART DRAWER & ORDER CONFIRMATION MODAL
+       ========================================================================== */
+    .cart-drawer-panel {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%) translateY(100%);
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      background: var(--bg-card);
+      border-radius: 28px 28px 0 0;
+      z-index: 105;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-backdrop.active .cart-drawer-panel {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .cart-drawer-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .mode-toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      background: var(--bg-body);
+      padding: 4px;
+      border-radius: var(--radius-full);
+      margin-bottom: 20px;
+    }
+
+    .mode-toggle-btn {
+      padding: 10px;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 40px;
+    }
+
+    .mode-toggle-btn.active {
+      background: #ffffff;
+      color: var(--color-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cart-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border-light);
+    }
+
+    .cart-item-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .cart-item-spec {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .qty-counter-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-body);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-full);
+      padding: 2px;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-field-wrap {
+      margin-top: 14px;
+    }
+
+    .form-field-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-field-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border: 1.5px solid var(--border-card);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+    }
+
+    .whatsapp-submit-btn {
+      width: 100%;
+      background: #25d366;
+      color: #ffffff;
+      border: none;
+      padding: 16px;
+      border-radius: var(--radius-full);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+      transition: all 0.2s ease;
+      margin-top: 20px;
+    }
+
+    .whatsapp-submit-btn:hover {
+      background: #20ba5a;
+      transform: translateY(-1px);
     }
   </style>
 </head>
 <body>
-
-  <!-- Store Hero Banner -->
-  <div class="store-hero">
-    <div class="store-info-row">
-      <div class="store-logo">🍜</div>
-      <div class="store-details">
-        <div class="store-title-wrap">
-          <span class="store-name">柳州地道螺蛳粉</span>
-          <span class="status-badge"><span class="status-dot"></span> 营业接单中</span>
-        </div>
-        <div class="store-tagline">原汁鲜螺熬汤 • 灵魂酸笋配大炸蛋</div>
-        <div class="store-meta-tags">
-          <span class="meta-tag">⭐ 4.9 分 (500+ 好评)</span>
-          <span class="meta-tag">📍 新山 Austin Heights / 现点现熬</span>
-          <span class="meta-tag" style="background: rgba(225, 29, 72, 0.08); color: #e11d48; border: 1px solid rgba(225, 29, 72, 0.2); font-weight: 700;">🧾 结账抽 10% Tax</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Order Mode Switcher -->
-    <div class="order-mode-card">
-      <button class="mode-btn active" id="btnModePickup" onclick="setOrderMode('自取')">
-        <span>🛍️ 到店自取</span>
-        <small>约 15 - 30 分钟</small>
-      </button>
-      <button class="mode-btn" id="btnModeDelivery" onclick="setOrderMode('外送')">
-        <span>🛵 外直送餐</span>
-        <small>运费稍后店员核算</small>
-      </button>
-    </div>
-  </div>
-
-  <!-- Promo / New Dish & Advertising Showcase Carousel (活动与新品广告展位) -->
-  <div class="promo-showcase-wrap">
-    <div class="promo-showcase-header">
-      <div class="promo-showcase-title">
-        <span>📢</span>
-        <span>热卖精选 • 优惠与新品展位</span>
-      </div>
-      <div class="promo-nav-controls">
-        <div class="promo-indicators-box" id="promoIndicatorsBox">
-          <button class="promo-dot-chip active" onclick="jumpToPromo(0)">1</button>
-          <button class="promo-dot-chip" onclick="jumpToPromo(1)">2</button>
-          <button class="promo-dot-chip" onclick="jumpToPromo(2)">3</button>
-        </div>
-      </div>
-    </div>
-    <div class="promo-carousel-container">
-      <button class="carousel-arrow-btn prev" id="promoPrevBtn" onclick="scrollPromo(-1)" title="上一张广告">‹</button>
-      <div class="promo-carousel" id="promoCarousel"></div>
-      <button class="carousel-arrow-btn next" id="promoNextBtn" onclick="scrollPromo(1)" title="下一张广告">›</button>
-    </div>
-  </div>
-
-  <!-- Sticky Category Navigation (Mobile) -->
-  <div class="sticky-cat-nav" id="mobileCatNav">
-    <div class="cat-scroll-container" id="catBar"></div>
-  </div>
-
-  <!-- Food Items List & Desktop Dual-Pane Layout -->
-  <div class="main-wrapper" id="mainLayoutWrapper">
-    <!-- Desktop Left Sticky Sidebar (Only on >= 1024px) -->
-    <aside class="desktop-cat-sidebar" id="desktopCatSidebar">
-      <div class="desktop-sidebar-card">
-        <div class="sidebar-title">
-          <span>📋 菜单全部分类</span>
-        </div>
-        <div class="sidebar-cat-list" id="sidebarCatList">
-          <!-- Populated by renderCategories() -->
-        </div>
-      </div>
-
-      <div class="sidebar-info-card">
-        <div class="sidebar-info-header">
-          <span>📍 Austin Heights 门店服务</span>
-        </div>
-        <div class="sidebar-info-body">
-          <div>🛵 <b>专人外直送餐</b><br><span style="font-size:11px; color:#94a3b8;">运费稍后由店员根据距离核算</span></div>
-          <div>🧾 <b>门店服务税</b><br><span style="font-size:11px; color:#94a3b8;">结账抽取 10% Tax 服务税</span></div>
-          <div>⏰ <b>营业时间</b><br><span style="font-size:11px; color:#94a3b8;">10:30 AM - 10:00 PM (现点现熬)</span></div>
-        </div>
-        <a href="finance.html" class="sidebar-finance-link" target="_blank">
-          <span>📊 门店财务记账与经营分析台 ›</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main Menu Content Pane -->
-    <div class="desktop-menu-pane" id="menuFeed"></div>
-  </div>
-
-  <!-- Store Footer -->
-  <footer style="text-align: center; padding: 40px 20px 100px; color: #94a3b8; font-size: 12px;">
-    <div style="font-weight: 700; color: #64748b; margin-bottom: 6px;">来碗 · 柳州地道螺蛳粉 (新山 Austin Heights)</div>
-    <div>堂食 • 外带 • 专人配送 | 现熬螺蛳大骨汤 • 地道柳州风味</div>
-    <div style="margin-top: 14px;">
-      <a href="finance.html" style="display: inline-flex; align-items: center; gap: 5px; color: #64748b; text-decoration: none; padding: 5px 12px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 11.5px; font-weight: 500; transition: all 0.2s;">
-        <span>📊 门店财务记账与经营分析台 ›</span>
-      </a>
-    </div>
-  </footer>
-
-  <!-- Floating Cart Capsule -->
-  <div class="floating-cart-wrapper" id="cartCapsuleWrap" style="display: none;">
-    <div class="floating-cart-capsule" onclick="openCartDrawer()">
-      <div class="capsule-left">
-        <div class="cart-icon-circle">
-          🛒
-          <span class="cart-badge-num" id="cartTotalBadge">0</span>
-        </div>
-        <div>
-          <div style="font-size: 11px; opacity: 0.85;">预估总计 (含税)</div>
-          <div style="font-size: 18px; font-weight: 800;" id="cartTotalSumText">RM 0.00</div>
-        </div>
-      </div>
-      <button class="capsule-checkout-btn">
-        查看订单 ›
-      </button>
-    </div>
-  </div>
-
-  <!-- Modifier Bottom Sheet -->
-  <div class="modal-backdrop" id="modSheetBackdrop" onclick="closeSheetOnBackdrop(event)">
-    <div class="modal-sheet" id="modSheetBox">
-      <div class="sheet-handle-bar"></div>
-      <div class="sheet-header">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div id="sheetItemThumbBox" style="width: 52px; height: 52px; border-radius: 12px; overflow: hidden; background: #f8fafc; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-            <img id="sheetItemThumbImg" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-            <span id="sheetItemThumbPh" style="font-size: 26px;">🍜</span>
-          </div>
-          <div>
-            <div class="sheet-food-title" id="sheetItemTitle">商品名称</div>
-            <div class="sheet-food-price" id="sheetItemBasePrice">RM 0.00</div>
-          </div>
-        </div>
-        <button class="sheet-close-btn" onclick="closeModSheet()">✕</button>
-      </div>
-
-      <div class="sheet-scroll-body" id="sheetScrollContent"></div>
-
-      <div class="sheet-footer">
-        <div>
-          <div style="font-size: 11.5px; color: var(--text-muted);">当前品项小计</div>
-          <div class="subtotal-val" id="sheetCalculatedSubtotal">RM 0.00</div>
-        </div>
-        <button class="add-to-cart-submit" onclick="submitItemToCart()">加入购物车</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cart Details Drawer -->
-  <div class="cart-drawer-backdrop" id="cartDrawerBackdrop" onclick="closeDrawerOnBackdrop(event)">
-    <div class="drawer-card-box">
-      <div class="sheet-handle-bar"></div>
-      <div class="sheet-header">
-        <div>
-          <div class="sheet-food-title">已选餐点清单</div>
-          <div style="font-size: 12px; color: var(--text-muted);" id="drawerItemQtyLabel">共 0 份商品</div>
-        </div>
-        <button class="sheet-close-btn" onclick="closeCartDrawer()">✕</button>
-      </div>
-
-      <div class="sheet-scroll-body">
-        <div id="drawerItemsListContainer"></div>
-
-        <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border-light);">
-          <div class="form-group-wrap">
-            <label class="form-group-label">顾客姓名 *</label>
-            <input type="text" id="orderCustName" class="form-ctrl-input" placeholder="例如: 陈先生 / Zhi Li">
-          </div>
-
-          <div class="form-group-wrap">
-            <label class="form-group-label">联络电话 (WhatsApp) *</label>
-            <input type="tel" id="orderCustPhone" class="form-ctrl-input" placeholder="例如: 011-11273466">
-          </div>
-
-          <!-- 外送专属地址栏 (仅外送时出现) -->
-          <div class="form-group-wrap" id="fieldDeliveryAddressWrap" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <label class="form-group-label" style="margin-bottom: 0;">送餐详细地址 *</label>
-              <span style="font-size: 11px; color: #e11d48; font-weight: 700;">🛵 运费店员稍后另计</span>
-            </div>
-            <input type="text" id="orderDeliveryAddress" class="form-ctrl-input" placeholder="例如: Austin Heights 门牌 / 某某住宅区详细地址">
-            <div style="font-size: 11.5px; color: #b91c1c; background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 7px 10px; margin-top: 6px; line-height: 1.45;">
-              📢 <strong>外送运费说明</strong>：当前金额仅为餐点费用。由于各区距离不同，外送运费将在店员接单后根据送餐地址（Lalamove / 专人派送）核算，并在 WhatsApp 告知确认。
-            </div>
-          </div>
-
-          <!-- 时间选择 (自取/外送动态切换) -->
-          <div class="form-group-wrap">
-            <label class="form-group-label" id="fieldTimeSectionLabel">预计多久到店自取 *</label>
-            <div class="quick-time-chips" id="timeChipsGridBox"></div>
-            <input type="text" id="orderCustomTime" class="form-ctrl-input" placeholder="或在此自填具体时间 (例如: 12:45 PM)">
-          </div>
-
-          <div class="form-group-wrap">
-            <label class="form-group-label">整单特殊要求 (Optional)</label>
-            <input type="text" id="orderSpecialRemarks" class="form-ctrl-input" placeholder="例如: 汤粉分开装、餐具 x2 等">
-          </div>
-
-          <div class="form-group-wrap" style="background: #fff1f0; padding: 10px 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-            <label style="font-size: 13px; font-weight: 700; color: #b91c1c; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-              <input type="checkbox" id="chkTakeawayBox" checked onchange="togglePackagingBox(this)" style="width: 16px; height: 16px;">
-              外带防漏餐盒 (RM 1.00 / 份)
-            </label>
-            <span style="font-size: 13px; font-weight: 800; color: #b91c1c;" id="packagingTotalTag">已计入</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sheet-footer" style="flex-direction: column; gap: 10px;">
-        <!-- 结算费用明细卡片 -->
-        <div style="width: 100%; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px;">
-          <div style="display: flex; justify-content: space-between; font-size: 13px; color: #64748b;">
-            <span>餐点小计:</span>
-            <span id="drawerItemsSubtotalText" style="font-weight: 700; color: #334155;">RM 0.00</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 13px; color: #64748b;" id="drawerPackagingRow">
-            <span>外带打包盒:</span>
-            <span id="drawerPackagingText" style="font-weight: 700; color: #334155;">+RM 0.00</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 13px; color: #e11d48; font-weight: 700;">
-            <span id="drawerTaxLabel">税费 / 服务费 (10% Tax):</span>
-            <span id="drawerTaxText">+RM 0.00</span>
-          </div>
-          <div style="display: none; justify-content: space-between; font-size: 12.5px; color: #b91c1c; border-top: 1px dashed #e2e8f0; padding-top: 5px;" id="drawerDeliveryFeeRow">
-            <span>🛵 外送运费:</span>
-            <span style="font-weight: 700;">稍后由店员核算另计</span>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-          <div>
-            <div style="font-size: 14.5px; font-weight: 800; color: #1e293b;" id="drawerFinalTotalLabel">应付总计 (含税):</div>
-            <div style="font-size: 11px; color: #94a3b8;" id="drawerTaxNoticeText">包含 10% 门店税费/服务费</div>
-          </div>
-          <span style="font-size: 26px; font-weight: 800; color: var(--primary);" id="drawerFinalTotalText">RM 0.00</span>
-        </div>
-        <button class="wa-submit-large-btn" onclick="sendWhatsAppOrder()">
-          <span>发送 WhatsApp 订单</span>
+  <div class="app-container">
+    
+    <!-- HEADER HERO SECTION -->
+    <header class="store-hero">
+      <div class="store-top-bar">
+        <span class="store-badge-open">🟢 营业中 Open (11:00 AM - 10:00 PM)</span>
+        <button class="ai-assistant-launch-btn" onclick="toggleAIDrawer(true)" aria-label="打开 AI 点餐助手">
+          ✨ 螺蛳粉点餐助手
         </button>
       </div>
+
+      <div class="store-info-row">
+        <div class="store-logo">🍜</div>
+        <div class="store-details">
+          <h1 class="store-title">柳州地道螺蛳粉</h1>
+          <div class="store-sub">
+            <span>📍 Austin Heights 旗舰店</span>
+            <span>⭐ 4.9 高分好评</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-box-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="搜索菜品、加料或代码 (如: S3, 炸蛋)..." oninput="handleSearch(this.value)">
+      </div>
+    </header>
+
+    <!-- STICKY CATEGORY NAV TAB BAR -->
+    <nav class="category-nav-bar" id="categoryNavBar" aria-label="菜品分类导航">
+      <!-- Dynamic Tabs injected here -->
+    </nav>
+
+    <!-- MENU FEED GRID CONTAINER -->
+    <main class="menu-feed-container" id="menuFeed">
+      <!-- Food Items Injected Here -->
+    </main>
+
+    <!-- STICKY BOTTOM CART CAPSULE BAR -->
+    <div class="cart-capsule-bar" id="cartCapsuleWrap" style="display: none;" onclick="openCartDrawer()">
+      <div class="cart-capsule-left">
+        <div class="cart-icon-wrap">
+          🛒
+          <span class="cart-badge-count" id="cartTotalBadge">0</span>
+        </div>
+        <div>
+          <div style="font-size: 11px; opacity: 0.85;">订单总计 (已含税)</div>
+          <div class="cart-price-sum" id="cartTotalSumText">RM 0.00</div>
+        </div>
+      </div>
+      <button class="cart-checkout-btn" aria-label="去结算">
+        去结算 ➔
+      </button>
     </div>
+
+    <!-- SPECIFICATION MODAL SHEET -->
+    <div class="modal-backdrop" id="modSheetBackdrop" onclick="closeSheetOnBackdrop(event)">
+      <div class="modal-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetItemTitle">
+        <div class="modal-sheet-header">
+          <div>
+            <h2 class="modal-sheet-title" id="sheetItemTitle">选配料</h2>
+            <div style="font-size: 12px; color: var(--color-primary); font-weight: 700;" id="sheetItemBasePrice">RM 0.00</div>
+          </div>
+          <button class="modal-close-btn" onclick="closeModSheet()" aria-label="关闭规格弹窗">✕</button>
+        </div>
+
+        <div class="modal-sheet-scroll" id="sheetScrollContent">
+          <!-- Dynamic Specs injected here -->
+        </div>
+
+        <div class="modal-footer-bar">
+          <div class="subtotal-preview-wrap">
+            <span class="subtotal-label">当前选配单价</span>
+            <span class="subtotal-val" id="sheetCalculatedSubtotal">RM 0.00</span>
+          </div>
+          <button class="confirm-add-btn" onclick="submitItemToCart()">确认加入购物车</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CART & CHECKOUT DRAWER PANEL -->
+    <div class="modal-backdrop" id="cartDrawerBackdrop" onclick="closeCartOnBackdrop(event)">
+      <div class="cart-drawer-panel" role="dialog" aria-modal="true">
+        <div class="modal-sheet-header">
+          <h2 class="modal-sheet-title">🛒 已选餐点明细</h2>
+          <button class="modal-close-btn" onclick="closeCartDrawer()" aria-label="关闭购物车">✕</button>
+        </div>
+
+        <div class="cart-drawer-body">
+          <!-- Order Mode Toggle -->
+          <div class="mode-toggle-grid">
+            <button class="mode-toggle-btn active" id="btnModePickup" onclick="setOrderMode('自取')">🛍️ 到店自取</button>
+            <button class="mode-toggle-btn" id="btnModeDelivery" onclick="setOrderMode('外送')">🛵 专人外送</button>
+          </div>
+
+          <!-- Items List -->
+          <div id="cartItemsList"></div>
+
+          <!-- Form Fields -->
+          <div class="form-field-wrap">
+            <label class="form-field-label" for="orderCustName">顾客姓名 *</label>
+            <input type="text" id="orderCustName" class="form-field-input" placeholder="例如: 张先生 / Alex">
+          </div>
+
+          <div class="form-field-wrap">
+            <label class="form-field-label" for="orderCustPhone">联络电话 *</label>
+            <input type="tel" id="orderCustPhone" class="form-field-input" placeholder="例如: 012-3456789">
+          </div>
+
+          <div class="form-field-wrap" id="fieldDeliveryAddressWrap" style="display: none;">
+            <label class="form-field-label" for="orderDeliveryAddress">送餐详细地址 *</label>
+            <input type="text" id="orderDeliveryAddress" class="form-field-input" placeholder="请输入详细门牌与路名/大楼名称">
+          </div>
+
+          <div class="form-field-wrap">
+            <label class="form-field-label" for="orderSpecialRemarks">整单备注需求</label>
+            <input type="text" id="orderSpecialRemarks" class="form-field-input" placeholder="例如: 不要辣油、多要一个空碗...">
+          </div>
+
+          <button class="whatsapp-submit-btn" onclick="sendWhatsAppOrder()">
+            <span>💬 通过 WhatsApp 发送订单</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI ASSISTANT DRAWER PANEL (generative-ui-copilotkit) -->
+    <div class="modal-backdrop" id="aiDrawerBackdrop" onclick="closeAIOnBackdrop(event)">
+      <div class="ai-drawer-panel" id="aiDrawerPanel">
+        <div class="ai-drawer-header">
+          <div class="ai-drawer-title">
+            <span>✨ AI 螺蛳粉点餐助手</span>
+          </div>
+          <button class="modal-close-btn" style="background: rgba(255,255,255,0.2); color:#fff; border:none;" onclick="toggleAIDrawer(false)" aria-label="关闭 AI 助手">✕</button>
+        </div>
+
+        <div class="ai-chat-body" id="aiChatBody">
+          <div class="chat-bubble-ai">
+            👋 您好！我是您的螺蛳粉智能美食顾问。不知道今天想吃什么？我可以为您推荐最受欢迎的搭档！
+            <div class="ai-prompt-chips-wrap">
+              <span class="ai-chip" onclick="triggerAIPrompt('招牌必吃推荐')">🌟 招牌必吃</span>
+              <span class="ai-chip" onclick="triggerAIPrompt('重辣加炸蛋组合')">🔥 嗜辣狂魔</span>
+              <span class="ai-chip" onclick="triggerAIPrompt('不吃辣清淡推荐')">🌿 清淡/不辣</span>
+              <span class="ai-chip" onclick="triggerAIPrompt('双人超值套餐')">👫 双人组合</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-input-bar">
+          <input type="text" id="aiInputField" class="ai-input-field" placeholder="描述您的口味需求 (如: 想吃酸辣带鸡爪)..." onkeydown="if(event.key==='Enter') sendAIMessage()">
+          <button class="ai-send-btn" onclick="sendAIMessage()">➔</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // 店铺收款 WhatsApp 手机号
-    const STORE_WHATSAPP_NUMBER = "601111273466";
-
-    // 门店税费/服务费设置 (与 Optimy POS 10% Service Charge 保持完全一致)
-    const TAX_RATE = 0.10; // 10% 门店税率 (例如 10% 填 0.10，若需修改可直接调整)
-    const TAX_LABEL = "税费 / 服务费 (10% Tax)";
-
-    // ========================================================
-    // 📢 专属广告、优惠活动与新品展位配置 (可随时根据需要增改)
-    // ========================================================
-    const PROMO_BANNERS = [
-      {
-        id: "promo-1",
-        tag: "🔥 新品上市 • 独家尝鲜",
-        tagBg: "#fee2e2",
-        tagColor: "#b91c1c",
-        title: "S12 秘制脱骨大猪脚螺蛳粉",
-        desc: "软烂脱骨浓郁卤汁，大块肉感超满足！Austin Heights 独家现熬！",
-        price: "尝鲜价 RM 15.99",
-        btnText: "立即点单 ›",
-        bgStyle: "background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-color: #fed7aa;",
-        img: "images/S12.jpeg",
-        targetDishId: "S12" // 点击一键直达并打开 S12 加料弹窗
-      },
-      {
-        id: "promo-2",
-        tag: "👑 进店必点 • 爆单霸榜",
-        tagBg: "#fef3c7",
-        tagColor: "#b45309",
-        title: "S3 招牌超大吸汤炸蛋粉",
-        desc: "金黄酥脆超大炸蛋，吸饱灵魂鲜螺靓汤，咔嚓爆汁超级过瘾！",
-        price: "热卖 RM 15.80",
-        btnText: "马上抢购 ›",
-        bgStyle: "background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); border-color: #fde047;",
-        img: "images/S3.jpeg",
-        targetDishId: "S3"
-      },
-      {
-        id: "promo-3",
-        tag: "🛵 Austin Heights 外直送餐",
-        tagBg: "#f0fdf4",
-        tagColor: "#15803d",
-        title: "新山 Austin Heights 专人外送",
-        desc: "热汤现熬趁热送达！各区运费根据配送距离由店员接单后核算告知。",
-        price: "趁热送到家",
-        btnText: "点外送 ›",
-        bgStyle: "background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0;",
-        img: "images/S1.jpeg",
-        targetDishId: null
-      }
-    ];
-
-    // 您的 Google Sheet CSV 地址 (每次打开自动拉取最新商品、价格与图片链接)
-    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1l19pU26eoXXKaViAgS4xoB5dMqTfTNiIf82v9jVeO3o/gviz/tq?tqx=out:csv";
-
-    // 离线内置基础数据 (保证无网或刚加载时零白屏、秒开)
-    let MENU = [{"id": "S1", "cat": "汤螺蛳粉", "name": "S1 原味螺蛳粉 Original Luosifen", "price": 12.8, "mods": ["spicy", "addons"], "desc": "地道经典原汁原味螺蛳汤粉", "img": "images/S1.jpeg", "badge": "🌟 经典老柳州", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000937396.jpeg"}, {"id": "S2", "cat": "汤螺蛳粉", "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "配香煎荷包蛋", "img": "images/S2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001003128.jpeg"}, {"id": "S3", "cat": "汤螺蛳粉", "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "招牌必点超大吸汤炸蛋", "img": "images/S3.jpeg", "badge": "🔥 进店必点", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001046295.jpeg"}, {"id": "S4", "cat": "汤螺蛳粉", "name": "S4 香肠螺蛳粉 TW Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "配焦香台湾香肠", "img": "images/S4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001114368.jpeg"}, {"id": "S5", "cat": "汤螺蛳粉", "name": "S5 腊肠螺蛳粉 CN Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "传统风味腊肠", "img": "images/S5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001149447.jpeg"}, {"id": "S6", "cat": "汤螺蛳粉", "name": "S6 凤爪螺蛳粉 Chicken Feet Luosifen", "price": 16.8, "mods": ["spicy", "addons"], "desc": "软糯入味虎皮凤爪", "img": "images/S6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001220137.jpeg"}, {"id": "S7", "cat": "汤螺蛳粉", "name": "S7 鲜肉螺蛳粉 XianRou Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "鲜嫩滑口猪肉片", "img": "images/S7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105230761.jpeg"}, {"id": "S8", "cat": "汤螺蛳粉", "name": "S8 锅烧螺蛳粉 GuoShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "桂林传统秘制锅烧脆肉", "img": "images/S8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105247434.jpeg"}, {"id": "S9", "cat": "汤螺蛳粉", "name": "S9 叉烧螺蛳粉 ChaShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "蜜汁香滑叉烧", "img": "images/S9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105301738.jpeg"}, {"id": "S10", "cat": "汤螺蛳粉", "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "秘制卤香醇厚大肠", "img": "images/S10.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105337237.jpeg"}, {"id": "S11", "cat": "汤螺蛳粉", "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup", "price": 12.8, "mods": ["spicy", "addons"], "desc": "经典清甜桂林高汤米粉", "img": "images/S11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000800397.jpeg"}, {"id": "S12", "cat": "汤螺蛳粉", "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen", "price": 15.99, "mods": ["spicy", "addons"], "desc": "软烂脱骨大猪脚", "img": "images/S12.jpeg", "badge": "🥩 大份脱骨猪脚", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260629120252697.jpeg"}, {"id": "S13", "cat": "汤螺蛳粉", "name": "S13 牛腩螺蛳粉 Beef Brisket Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "浓香酥烂大块牛腩", "img": "images/S13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000913580.jpeg"}, {"id": "D1", "cat": "招牌干捞", "name": "D1 炸蛋干捞粉 Deep Fried Egg Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "香浓干拌搭酥脆大炸蛋", "img": "images/D1.jpeg", "badge": "👑 干捞榜首", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235726216.jpeg"}, {"id": "D2", "cat": "招牌干捞", "name": "D2 螺蛳干捞粉 Dry Luosifen", "price": 13.8, "mods": ["spicy", "addons"], "desc": "经典特制酱汁干捞粉", "img": "images/D2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235747575.jpeg"}, {"id": "D3", "cat": "招牌干捞", "name": "D3 煎蛋干捞粉 Fried Egg Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配现煎荷包蛋", "img": "images/D3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235829718.jpeg"}, {"id": "D4", "cat": "招牌干捞", "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "干拌配台湾香肠", "img": "images/D4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250427205150320.jpeg"}, {"id": "D5", "cat": "招牌干捞", "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配卤肥肠", "img": "images/D5.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105022734.jpeg"}, {"id": "D6", "cat": "招牌干捞", "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配嫩鲜肉", "img": "images/D6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105042608.jpeg"}, {"id": "D7", "cat": "招牌干捞", "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥脆锅烧", "img": "images/D7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105108671.jpeg"}, {"id": "D8", "cat": "招牌干捞", "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配叉烧肉", "img": "images/D8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105126127.jpeg"}, {"id": "D9", "cat": "招牌干捞", "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥烂牛腩", "img": "images/D9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105145288.jpeg"}, {"id": "B1", "cat": "炒粉炒饭", "name": "B1 炒螺蛳粉 Fried Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "大火镬气翻炒螺蛳粉", "img": "images/B1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234917290.jpeg"}, {"id": "B2", "cat": "炒粉炒饭", "name": "B2 炒米粉 Fried Mee Hoon", "price": 12.8, "mods": ["spicy", "addons"], "desc": "镬气十足香炒米粉", "img": "images/B2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234937563.jpeg"}, {"id": "B3", "cat": "炒粉炒饭", "name": "B3 炒饭 Fried Rice", "price": 12.8, "mods": ["spicy", "addons"], "desc": "粒粒分明黄金炒饭", "img": "images/B3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235002683.jpeg"}, {"id": "C1", "cat": "手工水饺云吞", "name": "C1 手工水饺 Homemade Dumplings", "price": 12.8, "mods": ["dumpling_style", "addons"], "desc": "皮薄馅大手工水饺 (可选煮汤/酥炸)", "img": "images/C1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211728448.jpeg"}, {"id": "C2", "cat": "手工水饺云吞", "name": "C2 手工云吞 Homemade Wantan", "price": 12.8, "mods": ["wantan_style", "addons"], "desc": "鲜肉饱满纯手工云吞 (可选煮汤/酥炸)", "img": "images/C2.jpeg", "badge": "🥟 现包鲜肉云吞", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211750110.jpeg"}, {"id": "C3", "cat": "特色小吃", "name": "C3 红糖糍粑 Brown Sugar Glutinous Rice Cake", "price": 8.8, "mods": [], "desc": "外酥里糯香甜红糖", "img": "images/C3.jpeg", "badge": "✨ 甜糯解辣", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235239192.jpeg"}, {"id": "C4", "cat": "特色小吃", "name": "C4 脆皮香蕉 Crispy Banana", "price": 8.8, "mods": [], "desc": "金黄酥脆香甜可口", "img": "images/C4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235320176.jpeg"}, {"id": "C5", "cat": "特色小吃", "name": "C5 香芋地瓜丸 Yam Ball", "price": 7.8, "mods": [], "desc": "双重香浓软糯丸子", "img": "images/C5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235343569.jpeg"}, {"id": "C6", "cat": "特色小吃", "name": "C6 南瓜饼 Pumpkin Cake", "price": 7.8, "mods": [], "desc": "外皮酥脆香糯南瓜", "img": "images/C6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235409765.jpeg"}, {"id": "C7", "cat": "特色小吃", "name": "C7 沙拉卷 Salad Roll", "price": 4.8, "mods": [], "desc": "清爽酥脆沙拉卷", "img": "images/C7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235430457.jpeg"}, {"id": "C8", "cat": "特色小吃", "name": "C8 炸饺 Deep fried Homemade Dumplings", "price": 6.8, "mods": [], "desc": "香脆酥炸手工饺", "img": "images/C8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235536786.jpeg"}, {"id": "C9", "cat": "特色小吃", "name": "C9 油条虾滑 Doughnut With Shrimp Paste", "price": 7.8, "mods": [], "desc": "酥脆老油条酿鲜美虾滑", "img": "images/C9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235620336.jpeg"}, {"id": "C10", "cat": "特色小吃", "name": "C10 虾枣 Prawn Rolls", "price": 7.8, "mods": [], "desc": "传统潮州风味脆皮虾枣", "img": "images/C10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235028729.jpeg"}, {"id": "C11", "cat": "特色小吃", "name": "C11 炸云吞 Fried Wonton", "price": 7.8, "mods": [], "desc": "咔嚓酥脆鲜肉小云吞", "img": "images/C11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001502231.jpeg"}, {"id": "F01", "cat": "饮品甜品", "name": "F01 Justea", "price": 3.5, "mods": [], "desc": "清爽瓶装茶饮", "img": "images/F01.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113252740.jpeg"}, {"id": "F02", "cat": "饮品甜品", "name": "F02 矿泉水 Mineral Water", "price": 2.0, "mods": [], "desc": "瓶装饮用水", "img": "images/F02.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113303692.jpeg"}, {"id": "F03", "cat": "饮品甜品", "name": "F03 冰红茶 Iced Black Tea", "price": 4.0, "mods": [], "desc": "经典清爽柠檬红茶", "img": "images/F03.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113314206.jpeg"}, {"id": "F04", "cat": "饮品甜品", "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut", "price": 4.0, "mods": [], "desc": "清凉降火甘蔗马蹄水", "img": "images/F04.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113328766.jpeg"}, {"id": "F05", "cat": "饮品甜品", "name": "F05 王老吉 Wong Lo Kat", "price": 4.0, "mods": [], "desc": "经典清凉凉茶", "img": "images/F05.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113900432.jpeg"}, {"id": "F06", "cat": "饮品甜品", "name": "F06 100 Plus", "price": 3.5, "mods": [], "desc": "电解质气泡水", "img": "images/F06.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113356428.jpeg"}, {"id": "F07", "cat": "饮品甜品", "name": "F07 冰糖雪梨 Rock Sugar Pear", "price": 4.0, "mods": [], "desc": "润肺清甜雪梨汁", "img": "images/F07.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113406373.jpeg"}, {"id": "F08", "cat": "饮品甜品", "name": "F08 蜜桃乌龙茶 Peach Oolong", "price": 4.0, "mods": [], "desc": "果香扑鼻冷泡茶", "img": "images/F08.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113418227.jpeg"}, {"id": "F09", "cat": "饮品甜品", "name": "F09 元气森林气泡水 Genki Forest", "price": 5.5, "mods": [], "desc": "0糖0脂0卡气泡水", "img": "images/F09.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113429424.jpeg"}, {"id": "F10", "cat": "饮品甜品", "name": "F10 可口可乐 Coca-Cola", "price": 4.0, "mods": [], "desc": "畅爽经典可乐", "img": "images/F10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113439750.jpeg"}, {"id": "F11", "cat": "饮品甜品", "name": "F11 红牛 Red Bull", "price": 5.5, "mods": [], "desc": "提神功能饮料", "img": "images/F11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113912681.jpeg"}, {"id": "F12", "cat": "饮品甜品", "name": "F12 豆奶 Soya Milk", "price": 5.0, "mods": [], "desc": "浓醇香滑豆奶", "img": "images/F12.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113509390.jpeg"}, {"id": "F13", "cat": "饮品甜品", "name": "F13 祖传八宝凉茶 Herbal Tea", "price": 5.0, "mods": [], "desc": "清热解毒秘制凉茶", "img": "images/F13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113522549.jpeg"}, {"id": "F14", "cat": "饮品甜品", "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum", "price": 5.0, "mods": [], "desc": "甘甜舒缓清润菊花", "img": "images/F14.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113535574.jpeg"}, {"id": "F15", "cat": "饮品甜品", "name": "F15 山楂酸梅汤 Plum Soup", "price": 5.0, "mods": [], "desc": "酸甜生津解腻必备", "img": "images/F15.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113547634.jpeg"}, {"id": "F16", "cat": "饮品甜品", "name": "F16 香兰洛神花 Pandan Roselle", "price": 5.0, "mods": [], "desc": "南洋特色酸爽芳香", "img": "images/F16.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113602287.jpeg"}, {"id": "F17", "cat": "饮品甜品", "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice", "price": 6.0, "mods": [], "desc": "现榨天然纯正甘蔗原汁", "img": "images/F17.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113612574.jpeg"}, {"id": "F18", "cat": "饮品甜品", "name": "F18 爱玉冰 Ice Jelly", "price": 5.0, "mods": [], "desc": "冰凉爽滑爱玉甜品", "img": "images/F18.jpeg", "badge": "🧊 清爽解腻", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113740506.jpeg"}, {"id": "F19", "cat": "饮品甜品", "name": "F19 酸柑酸梅 Calamansi Sour Plum", "price": 5.0, "mods": [], "desc": "酸爽开胃金桔酸梅", "img": "images/F19.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113908455.jpeg"}, {"id": "F20", "cat": "饮品甜品", "name": "F20 葡萄爱玉冰 Grape Ice Jelly", "price": 6.0, "mods": [], "desc": "浓郁葡萄风味果冻", "img": "images/F20.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114242371.jpeg"}, {"id": "F21", "cat": "饮品甜品", "name": "F21 苹果味爱玉冰 Apple Ice Jelly", "price": 6.0, "mods": [], "desc": "清爽苹果爱玉冻", "img": "images/F21.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114218382.jpeg"}, {"id": "F22", "cat": "饮品甜品", "name": "F22 阿萨姆原味奶茶 Assam Milk Tea", "price": 5.5, "mods": [], "desc": "醇厚香浓阿萨姆红茶奶茶", "img": "images/F22.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260310205156502.jpeg"}];
-    const MODIFIERS = {"spicy": {"title": "🌶️ 选择辣度 (必选)", "type": "single", "required": true, "options": [{"name": "不辣 Non-Spicy", "price": 0.0}, {"name": "微辣 Mild (推荐)", "price": 0.0, "default": true}, {"name": "中辣 Medium (正宗)", "price": 0.0}, {"name": "大辣 Hot (过瘾)", "price": 0.0}]}, "wantan_style": {"title": "🍲 云吞做法 (必选)", "type": "single", "required": true, "options": [{"name": "经典原汤 (Soup)", "price": 0.0, "default": true}, {"name": "香脆酥炸 (Fried)", "price": 0.0}]}, "dumpling_style": {"title": "🥟 水饺做法 (必选)", "type": "single", "required": true, "options": [{"name": "经典原汤 (Soup)", "price": 0.0, "default": true}, {"name": "香脆酥炸 (Fried)", "price": 0.0}]}, "addons": {"title": "🥢 加料与配菜 (可多选)", "type": "multiple", "groups": [{"group_name": "经典小料配菜", "items": [{"name": "C12 加粉 Extra Noodles", "price": 2.0}, {"name": "C13 木耳 Black Fungus", "price": 2.0}, {"name": "C14 炸腐竹 Fried Beancurd Skin", "price": 2.0}, {"name": "C15 花生 Peanuts", "price": 2.0}, {"name": "C16 酸笋 Pickled Bamboo Shoots", "price": 2.0}, {"name": "C17 酸豆角 Pickled String Beans", "price": 2.0}]}, {"group_name": "招牌蛋品 & 经典小食", "items": [{"name": "E9 炸蛋 Deep-Fried Egg", "price": 3.0}, {"name": "E01 台湾香肠 TW Sausage", "price": 3.0}, {"name": "E02 煎蛋 Fried Egg", "price": 2.0}, {"name": "E03 卤蛋 Braised Egg", "price": 2.0}, {"name": "E04 豆卜 Tau Pok", "price": 2.0}, {"name": "E05 鹌鹑蛋 Quail Eggs", "price": 3.0}, {"name": "E10 凤爪 Chicken Feet", "price": 3.0}]}, {"group_name": "豪华荤肉加料", "items": [{"name": "E06 鲜肉 Xian Rou", "price": 9.0}, {"name": "E07 叉烧 Cha Shao", "price": 9.0}, {"name": "E08 锅烧 Guo Shao", "price": 9.0}, {"name": "E12 肥肠 Fei Chuang", "price": 9.0}, {"name": "E11 牛腩 Beef Brisket", "price": 10.0}, {"name": "E13 猪脚 Pig's Trotter", "price": 3.99}, {"name": "C18 卤大肠头 Braised Intestine Head", "price": 12.0}]}]}};
-
+    // DATA DECLARATION & LOGIC (Keeps complete menu_data & modifiers compatibility)
+    let MENU = [];
     let cart = [];
     let activeItem = null;
     let selectedSpicy = "微辣 Mild (推荐)";
     let selectedStyle = "经典原汤 (Soup)";
     let selectedAddons = [];
-    let currentOrderMode = "自取";
-    let selectedQuickTime = "15分钟后 (尽快)";
-    let isPackagingEnabled = true;
+    let currentOrderMode = '自取';
 
-    // 分类图标映射
+    const TAX_RATE = 0.10;
+    const STORE_WHATSAPP_NUMBER = "60167198888";
+
     const CAT_ICONS = {
-      "全部": "🍽️",
       "汤螺蛳粉": "🍜",
       "招牌干捞": "🥢",
       "炒粉炒饭": "🍳",
       "手工水饺云吞": "🥟",
-      "特色小吃": "🍢",
-      "饮品甜品": "🥤"
+      "特色小吃": "🍗",
+      "饮品甜品": "🧋"
     };
 
-    // Google Drive 链接自动直链转换器
-    function normalizeImageUrl(url) {
-      if (!url) return "";
-      url = url.trim();
-      if (url.includes("drive.google.com") && url.includes("/d/")) {
-        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-        if (match && match[1]) {
-          return `https://lh3.googleusercontent.com/d/${match[1]}`;
-        }
-      }
-      return url;
-    }
-
-    let currentPromoIdx = 0;
-    let promoTimer = null;
-
-    function renderPromoShowcase() {
-      const container = document.getElementById("promoCarousel");
-      const dotsBox = document.getElementById("promoIndicatorsBox");
-      if (!container || !PROMO_BANNERS || PROMO_BANNERS.length === 0) return;
-
-      container.innerHTML = PROMO_BANNERS.map((b, idx) => `
-        <div class="promo-banner-card" id="promo-card-${idx}" style="${b.bgStyle || ''}" onclick="handlePromoClick('${b.id}')">
-          <div class="promo-card-left">
-            <span class="promo-tag-pill" style="background: ${b.tagBg || '#fee2e2'}; color: ${b.tagColor || '#b91c1c'};">
-              ${b.tag}
-            </span>
-            <div class="promo-card-title">${b.title}</div>
-            <div class="promo-card-desc">${b.desc}</div>
-            <div class="promo-card-action-row">
-              <span class="promo-price-highlight">${b.price}</span>
-              <span class="promo-btn-cta">${b.btnText}</span>
-            </div>
-          </div>
-          <div class="promo-card-thumb">
-            <img src="${b.img}" alt="${b.title}" onerror="this.src='images/S1.jpeg'">
-          </div>
-        </div>
-      `).join('');
-
-      if (dotsBox) {
-        dotsBox.innerHTML = PROMO_BANNERS.map((b, idx) => `
-          <button class="promo-dot-chip ${idx === 0 ? 'active' : ''}" id="promo-dot-${idx}" onclick="jumpToPromo(${idx})" title="切换至广告 ${idx + 1}: ${b.title}">
-            ${idx + 1}
-          </button>
-        `).join('');
-      }
-
-      container.addEventListener('scroll', () => {
-        const slide = container.firstElementChild;
-        if (!slide) return;
-        const slideWidth = slide.offsetWidth + 12;
-        const currentIdx = Math.min(Math.max(Math.round(container.scrollLeft / slideWidth), 0), PROMO_BANNERS.length - 1);
-        currentPromoIdx = currentIdx;
-        updatePromoDots(currentIdx);
-      }, { passive: true });
-
-      const wrap = document.querySelector('.promo-carousel-container');
-      if (wrap) {
-        wrap.addEventListener('mouseenter', stopPromoAutoPlay);
-        wrap.addEventListener('mouseleave', startPromoAutoPlay);
-      }
-
-      startPromoAutoPlay();
-    }
-
-    function updatePromoDots(idx) {
-      document.querySelectorAll('.promo-dot-chip').forEach((btn, i) => {
-        if (i === idx) btn.classList.add('active');
-        else btn.classList.remove('active');
-      });
-      const legacyIndicator = document.getElementById("promoCurrentIndicator");
-      if (legacyIndicator) {
-        legacyIndicator.innerText = `${idx + 1} / ${PROMO_BANNERS.length}`;
-      }
-    }
-
-    function jumpToPromo(idx) {
-      const container = document.getElementById("promoCarousel");
-      if (!container) return;
-      const targetCard = document.getElementById(`promo-card-${idx}`);
-      if (targetCard) {
-        container.scrollTo({
-          left: targetCard.offsetLeft - container.offsetLeft,
-          behavior: 'smooth'
-        });
-      }
-      currentPromoIdx = idx;
-      updatePromoDots(idx);
-      resetPromoAutoPlay();
-    }
-
-    function scrollPromo(direction) {
-      let nextIdx = currentPromoIdx + direction;
-      if (nextIdx >= PROMO_BANNERS.length) nextIdx = 0;
-      if (nextIdx < 0) nextIdx = PROMO_BANNERS.length - 1;
-      jumpToPromo(nextIdx);
-    }
-
-    function startPromoAutoPlay() {
-      stopPromoAutoPlay();
-      promoTimer = setInterval(() => {
-        scrollPromo(1);
-      }, 4500);
-    }
-
-    function stopPromoAutoPlay() {
-      if (promoTimer) {
-        clearInterval(promoTimer);
-        promoTimer = null;
-      }
-    }
-
-    function resetPromoAutoPlay() {
-      stopPromoAutoPlay();
-      startPromoAutoPlay();
-    }
-
-    function handlePromoClick(bannerId) {
-      const banner = PROMO_BANNERS.find(b => b.id === bannerId);
-      if (!banner) return;
-      if (banner.targetDishId) {
-        handleCardClick(banner.targetDishId);
-      } else {
-        openCartDrawer();
-      }
-    }
-
-    function init() {
-      renderPromoShowcase();
-      renderCategories();
-      renderMenu();
-      fetchLatestFromGoogleSheets();
-      renderTimeChips();
-    }
-
-    // 异步拉取 Google Sheets 最新数据与图片
-    function fetchLatestFromGoogleSheets() {
-      fetch(GOOGLE_SHEET_CSV_URL)
-        .then(res => res.text())
-        .then(csvText => {
-          parseGoogleSheetsCSV(csvText);
-        })
-        .catch(err => {
-          console.log("Using embedded catalog:", err);
-        });
-    }
-
-    function parseGoogleSheetsCSV(csvText) {
-      const rows = [];
-      let currentRow = [];
-      let inQuotes = false;
-      let currentField = '';
-
-      for (let i = 0; i < csvText.length; i++) {
-        const char = csvText[i];
-        const nextChar = csvText[i + 1];
-
-        if (char === '"') {
-          if (inQuotes && nextChar === '"') {
-            currentField += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
+    const MODIFIERS = {
+      "spicy": {
+        "title": "辣度选择",
+        "options": [
+          { "name": "不辣 Non-Spicy", "price": 0 },
+          { "name": "微辣 Mild (推荐)", "price": 0 },
+          { "name": "中辣 Medium", "price": 0 },
+          { "name": "重辣 Extra Spicy", "price": 0 }
+        ]
+      },
+      "wantan_style": {
+        "title": "云吞做法",
+        "options": [
+          { "name": "经典原汤 (Soup)", "price": 0 },
+          { "name": "香辣干拌 (Dry Spicy)", "price": 0 }
+        ]
+      },
+      "dumpling_style": {
+        "title": "水饺做法",
+        "options": [
+          { "name": "水煮蘸料 (Boiled)", "price": 0 },
+          { "name": "香辣干煎 (Fried)", "price": 0 }
+        ]
+      },
+      "addons": {
+        "title": "加料库",
+        "groups": [
+          {
+            "group_name": "核心灵魂加料",
+            "items": [
+              { "name": "招牌吸汤大炸蛋", "price": 3.0 },
+              { "name": "香煎荷包蛋", "price": 2.0 },
+              { "name": "软糯虎皮凤爪", "price": 4.0 },
+              { "name": "焦香台湾香肠", "price": 3.0 }
+            ]
+          },
+          {
+            "group_name": "经典小吃配菜",
+            "items": [
+              { "name": "酸笋加量", "price": 2.0 },
+              { "name": "腐竹炸花生加量", "price": 2.0 },
+              { "name": "米粉加份", "price": 3.0 }
+            ]
           }
-        } else if (char === ',' && !inQuotes) {
-          currentRow.push(currentField.trim());
-          currentField = '';
-        } else if ((char === '\r' || char === '\n') && !inQuotes) {
-          if (char === '\r' && nextChar === '\n') i++;
-          currentRow.push(currentField.trim());
-          if (currentRow.length > 1) rows.push(currentRow);
-          currentRow = [];
-          currentField = '';
-        } else {
-          currentField += char;
+        ]
+      }
+    };
+
+    async function init() {
+      try {
+        const res = await fetch("menu_data.json");
+        if (res.ok) {
+          MENU = await res.json();
         }
-      }
-      if (currentField || currentRow.length > 0) {
-        currentRow.push(currentField.trim());
-        rows.push(currentRow);
+      } catch (e) {
+        console.warn("Using fallback static menu data...");
       }
 
-      if (rows.length < 2) return;
-
-      // 寻找关键列下标
-      const headers = rows[0];
-      const colId = 0;
-      const colCat = 1;
-      const colName = 2;
-      const colPrice = 3;
-      const colMods = 4;
-      const colStatus = 5;
-      const colDesc = 6;
-      const colImg = 7; // H 列
-
-      const updatedMenu = [];
-
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        const id = row[colId];
-        const name = row[colName];
-        if (!id || !name) continue;
-
-        const price = parseFloat(row[colPrice]) || 0;
-        const status = row[colStatus] || '上架';
-        if (status === '售罄' || status === '下架') continue;
-
-        const cat = row[colCat] || '汤螺蛳粉';
-        const desc = row[colDesc] || '';
-        const imgUrl = normalizeImageUrl(row[colImg] || '');
-        const modsRaw = row[colMods] || '';
-
-        let mods = [];
-        if (modsRaw.includes('辣度')) mods.push('spicy');
-        if (modsRaw.includes('云吞') || modsRaw.includes('水饺')) mods.push('wantan_style');
-        if (modsRaw.includes('加料')) mods.push('addons');
-
-        // 保留原有的徽章标签与高清图片
-        const existing = MENU.find(m => m.id === id);
-        const badge = existing ? existing.badge : '';
-        const finalImg = imgUrl || (existing ? existing.img : '');
-        const cdnImg = existing ? existing.cdn_img : '';
-
-        updatedMenu.push({
-          id, cat, name, price, mods, desc, img: finalImg, badge, cdn_img: cdnImg
-        });
+      if (!MENU || MENU.length === 0) {
+        // Backup sample if JSON fetch fails
+        MENU = [
+          { id: "S1", cat: "汤螺蛳粉", name: "S1 原味螺蛳粉 Original Luosifen", price: 12.8, mods: ["spicy", "addons"], desc: "地道经典原汁原味螺蛳汤粉", img: "images/S1.jpeg", badge: "🌟 经典老柳州" },
+          { id: "S3", cat: "汤螺蛳粉", name: "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", price: 15.8, mods: ["spicy", "addons"], desc: "招牌必点超大吸汤炸蛋", img: "images/S3.jpeg", badge: "🔥 进店必点" }
+        ];
       }
 
-      if (updatedMenu.length > 0) {
-        MENU = updatedMenu;
-        renderCategories();
-        renderMenu();
-      }
+      renderCategoryTabs();
+      renderMenu();
     }
 
-    function renderCategories() {
+    function renderCategoryTabs() {
       const cats = ["全部", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
-      
-      // 1. 移动端横向滑动标签
-      const bar = document.getElementById("catBar");
-      if (bar) {
-        bar.innerHTML = cats.map((cat, idx) => `
-          <button class="cat-chip ${idx === 0 ? 'active' : ''}" data-cat="${cat}" onclick="selectCategory('${cat}', this)">
-            ${CAT_ICONS[cat] || '🥢'} ${cat}
-          </button>
-        `).join('');
-      }
-
-      // 2. 电脑端左侧常驻分类导航栏
-      const sidebar = document.getElementById("sidebarCatList");
-      if (sidebar) {
-        sidebar.innerHTML = cats.map((cat, idx) => {
-          const count = cat === "全部" ? MENU.length : MENU.filter(p => p.cat === cat).length;
-          return `
-            <button class="sidebar-cat-btn ${idx === 0 ? 'active' : ''}" data-cat="${cat}" onclick="selectCategory('${cat}', this)">
-              <span>${CAT_ICONS[cat] || '🥢'} ${cat}</span>
-              <span class="sidebar-cat-count">${count}</span>
-            </button>
-          `;
-        }).join('');
-      }
+      const nav = document.getElementById("categoryNavBar");
+      nav.innerHTML = cats.map((c, i) => `
+        <button class="cat-chip-btn ${i === 0 ? 'active' : ''}" onclick="filterCat('${c}', this)">
+          ${CAT_ICONS[c] || '🥢'} ${c}
+        </button>
+      `).join('');
     }
 
-    function selectCategory(cat, btn) {
-      document.querySelectorAll('.cat-chip, .sidebar-cat-btn').forEach(c => {
-        if (c.getAttribute('data-cat') === cat) {
-          c.classList.add('active');
-        } else {
-          c.classList.remove('active');
-        }
-      });
+    function filterCat(cat, el) {
+      document.querySelectorAll('.cat-chip-btn').forEach(b => b.classList.remove('active'));
+      if (el) el.classList.add('active');
       renderMenu(cat);
     }
 
+    function handleSearch(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        renderMenu("全部");
+        return;
+      }
+      const filtered = MENU.filter(it => 
+        it.name.toLowerCase().includes(q) || 
+        it.id.toLowerCase().includes(q) || 
+        (it.desc && it.desc.toLowerCase().includes(q))
+      );
+      renderCustomList("搜索结果", filtered);
+    }
+
     function renderMenu(filterCat = "全部") {
-      const container = document.getElementById("menuFeed");
-      const cats = filterCat === "全部"
+      const feed = document.getElementById("menuFeed");
+      const cats = filterCat === "全部" 
         ? ["汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"]
         : [filterCat];
 
@@ -2031,127 +1459,77 @@
         if (items.length === 0) return;
 
         html += `
-          <div class="section-header">
-            <div class="section-title">
-              <span>${CAT_ICONS[cat] || '📌'}</span>
-              <span>${cat}</span>
-            </div>
-            <span class="section-count">${items.length} 道佳肴</span>
+          <div class="category-section-title">
+            <span class="cat-title-text">${CAT_ICONS[cat] || '📌'} ${cat}</span>
+            <span class="cat-title-count">${items.length} 道精选</span>
           </div>
-          <div class="food-card-list">
+          <div class="food-card-grid">
         `;
 
         items.forEach(p => {
-          const hasMods = p.mods && p.mods.length > 0;
-          const fallbackIcon = CAT_ICONS[p.cat] || '🍜';
-
-          html += `
-            <div class="food-card" onclick="handleCardClick('${p.id}')">
-              <div class="food-card-body">
-                <div>
-                  <div class="food-header">
-                    <span class="food-code-badge">${p.id}</span>
-                    <h3 class="food-title">${p.name}</h3>
-                  </div>
-                  ${p.badge ? `<span class="promo-badge">${p.badge}</span>` : ''}
-                  <p class="food-desc">${p.desc || ''}</p>
-                </div>
-                <div class="food-bottom-row">
-                  <span class="currency-symbol">RM</span>
-                  <span class="price-number">${p.price.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <div class="food-media-wrap">
-                <div class="food-thumbnail-box">
-                  ${p.img 
-                    ? `<img class="food-thumbnail-img" src="${p.img}" alt="${p.name}" loading="lazy" data-cdn="${p.cdn_img || ''}" onerror="if(this.dataset.cdn && !this.dataset.fallbackTried){ this.dataset.fallbackTried='true'; this.src=this.dataset.cdn; } else { this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex'; }">
-                       <div class="food-placeholder" style="display:none;"><span>${fallbackIcon}</span><small>${p.cat}</small></div>`
-                    : `<div class="food-placeholder"><span>${fallbackIcon}</span><small>${p.cat}</small></div>`
-                  }
-                </div>
-                <button class="add-action-btn" onclick="event.stopPropagation(); handleCardClick('${p.id}')">
-                  ${hasMods ? '选配料 +' : '加入 +'}
-                </button>
-              </div>
-            </div>
-          `;
+          html += buildFoodCardHTML(p);
         });
+
         html += `</div>`;
       });
 
-      container.innerHTML = html;
+      feed.innerHTML = html;
     }
 
-    function setOrderMode(mode) {
-      currentOrderMode = mode;
-      const deliveryRow = document.getElementById("drawerDeliveryFeeRow");
-      const totalLabel = document.getElementById("drawerFinalTotalLabel");
-      const noticeText = document.getElementById("drawerTaxNoticeText");
-
-      if (mode === '自取') {
-        document.getElementById("btnModePickup").classList.add("active");
-        document.getElementById("btnModeDelivery").classList.remove("active");
-        document.getElementById("fieldDeliveryAddressWrap").style.display = "none";
-        document.getElementById("fieldTimeSectionLabel").innerText = "预计多久到店自取 *";
-        if (deliveryRow) deliveryRow.style.display = "none";
-        if (totalLabel) totalLabel.innerText = "应付总计 (含税):";
-        if (noticeText) noticeText.innerText = "包含 10% 门店税费/服务费";
-      } else {
-        document.getElementById("btnModeDelivery").classList.add("active");
-        document.getElementById("btnModePickup").classList.remove("active");
-        document.getElementById("fieldDeliveryAddressWrap").style.display = "block";
-        document.getElementById("fieldTimeSectionLabel").innerText = "预计送达时间 *";
-        if (deliveryRow) deliveryRow.style.display = "flex";
-        if (totalLabel) totalLabel.innerText = "餐点总计 (含税/运费另计):";
-        if (noticeText) noticeText.innerText = "已含 10% 税费 | 🛵 运费店员稍后核算";
+    function renderCustomList(title, items) {
+      const feed = document.getElementById("menuFeed");
+      if (items.length === 0) {
+        feed.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-light);">未找到匹配的餐点 🍜</div>`;
+        return;
       }
-      renderTimeChips();
+      feed.innerHTML = `
+        <div class="category-section-title">
+          <span class="cat-title-text">🔍 ${title}</span>
+          <span class="cat-title-count">${items.length} 项</span>
+        </div>
+        <div class="food-card-grid">
+          ${items.map(p => buildFoodCardHTML(p)).join('')}
+        </div>
+      `;
     }
 
-    function renderTimeChips() {
-      const box = document.getElementById("timeChipsGridBox");
-      const timeInput = document.getElementById("orderCustomTime");
-
-      if (currentOrderMode === '自取') {
-        selectedQuickTime = "15分钟后 (尽快)";
-        box.innerHTML = `
-          <div class="time-chip-card active" onclick="selectTimeChip('15分钟后 (尽快)', this)">15分钟后 (尽快)</div>
-          <div class="time-chip-card" onclick="selectTimeChip('30分钟后', this)">30分钟后</div>
-          <div class="time-chip-card" onclick="selectTimeChip('45分钟后', this)">45分钟后</div>
-        `;
-        timeInput.placeholder = "或自填具体自取时间 (例如: 12:45 PM)";
-      } else {
-        selectedQuickTime = "尽快送达 (约30分钟)";
-        box.innerHTML = `
-          <div class="time-chip-card active" onclick="selectTimeChip('尽快送达 (约30分钟)', this)">尽快送达 (约30分钟)</div>
-          <div class="time-chip-card" onclick="selectTimeChip('约45分钟后', this)">约45分钟后</div>
-          <div class="time-chip-card" onclick="selectTimeChip('约60分钟后', this)">约60分钟后</div>
-        `;
-        timeInput.placeholder = "或自填具体送达时间 (例如: 1:15 PM)";
-      }
-      if (timeInput) timeInput.value = "";
-    }
-
-    function selectTimeChip(timeVal, el) {
-      selectedQuickTime = timeVal;
-      document.querySelectorAll('.time-chip-card').forEach(c => c.classList.remove('active'));
-      if (el) el.classList.add('active');
-      const input = document.getElementById("orderCustomTime");
-      if (input) input.value = "";
+    function buildFoodCardHTML(p) {
+      const hasMods = p.mods && p.mods.length > 0;
+      return `
+        <div class="food-card" onclick="handleCardClick('${p.id}')">
+          <div class="food-card-content">
+            <div>
+              <span class="food-code-tag">${p.id}</span>
+              <h3 class="food-title">${p.name}</h3>
+              ${p.badge ? `<span class="food-badge">${p.badge}</span>` : ''}
+              <p class="food-desc">${p.desc || ''}</p>
+            </div>
+            <div class="food-price-row">
+              <span class="currency-symbol">RM</span>
+              <span class="price-number">${p.price.toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="food-media-box">
+            <img class="food-img" src="${p.img || ''}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="food-img-fallback" style="display:none;">
+              <span>${CAT_ICONS[p.cat] || '🍜'}</span>
+            </div>
+            <button class="add-action-btn" onclick="event.stopPropagation(); handleCardClick('${p.id}')" aria-label="加购 ${p.name}">
+              ${hasMods ? '选配料 +' : '加入 +'}
+            </button>
+          </div>
+        </div>
+      `;
     }
 
     function handleCardClick(id) {
       activeItem = MENU.find(p => p.id === id);
       if (!activeItem) return;
-
       if (!activeItem.mods || activeItem.mods.length === 0) {
-        // 直接加购物车
-        pushToCartDirect(activeItem);
-        return;
+        addToCartDirect(activeItem);
+      } else {
+        openModSheet();
       }
-
-      openModSheet();
     }
 
     function openModSheet() {
@@ -2162,45 +1540,17 @@
       document.getElementById("sheetItemTitle").innerText = activeItem.name;
       document.getElementById("sheetItemBasePrice").innerText = `基础价: RM ${activeItem.price.toFixed(2)}`;
 
-      const mThumbImg = document.getElementById("sheetItemThumbImg");
-      const mThumbPh = document.getElementById("sheetItemThumbPh");
-      if (mThumbImg && mThumbPh) {
-        if (activeItem.img) {
-          mThumbImg.src = activeItem.img;
-          mThumbImg.dataset.cdn = activeItem.cdn_img || '';
-          mThumbImg.dataset.fallbackTried = '';
-          mThumbImg.style.display = "block";
-          mThumbPh.style.display = "none";
-          mThumbImg.onerror = function() {
-            if (this.dataset.cdn && !this.dataset.fallbackTried) {
-              this.dataset.fallbackTried = 'true';
-              this.src = this.dataset.cdn;
-            } else {
-              this.style.display = "none";
-              mThumbPh.style.display = "block";
-            }
-          };
-        } else {
-          mThumbImg.style.display = "none";
-          mThumbPh.style.display = "block";
-          mThumbPh.innerText = CAT_ICONS[activeItem.cat] || '🍜';
-        }
-      }
-
       let html = "";
-
-      // 辣度 (单选)
       if (activeItem.mods.includes("spicy")) {
-        const sp = MODIFIERS.spicy;
         html += `
-          <div class="spec-section">
-            <div class="spec-header">
-              <span class="spec-title">🌶️ 辣度选择</span>
-              <span class="spec-tag">必选</span>
+          <div class="spec-group-box">
+            <div class="spec-group-title">
+              <span>🌶️ 辣度选择</span>
+              <span class="spec-required-badge">必选</span>
             </div>
-            <div class="radio-grid-2">
-              ${sp.options.map(opt => `
-                <div class="spec-radio-card ${opt.name === selectedSpicy ? 'active' : ''}" onclick="chooseSpicy('${opt.name}', this)">
+            <div class="radio-pill-grid">
+              ${MODIFIERS.spicy.options.map(opt => `
+                <div class="radio-pill-card ${opt.name === selectedSpicy ? 'active' : ''}" onclick="selectSpicy('${opt.name}', this)">
                   ${opt.name}
                 </div>
               `).join('')}
@@ -2209,70 +1559,40 @@
         `;
       }
 
-      // 做法 (水饺/云吞)
-      if (activeItem.mods.includes("wantan_style") || activeItem.mods.includes("dumpling_style")) {
-        const key = activeItem.mods.includes("wantan_style") ? "wantan_style" : "dumpling_style";
-        const st = MODIFIERS[key];
-        html += `
-          <div class="spec-section">
-            <div class="spec-header">
-              <span class="spec-title">🍲 烹饪做法</span>
-              <span class="spec-tag">必选</span>
-            </div>
-            <div class="radio-grid-2">
-              ${st.options.map(opt => `
-                <div class="spec-radio-card ${opt.name === selectedStyle ? 'active' : ''}" onclick="chooseStyle('${opt.name}', this)">
-                  ${opt.name}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }
-
-      // 加料选项 (多选)
       if (activeItem.mods.includes("addons")) {
-        const ad = MODIFIERS.addons;
         html += `
-          <div class="spec-section">
-            <div class="spec-header">
-              <span class="spec-title">🥢 加料配料库</span>
-              <span style="font-size: 11.5px; color: var(--text-muted);">可多选</span>
+          <div class="spec-group-box">
+            <div class="spec-group-title">
+              <span>🥢 加料配料库</span>
+              <span style="font-size:11px; color:var(--text-light);">可多选</span>
             </div>
         `;
-
-        ad.groups.forEach(grp => {
-          html += `<div class="addon-subgroup-title">▪ ${grp.group_name}</div>`;
+        MODIFIERS.addons.groups.forEach(grp => {
+          html += `<div style="font-size:12px; font-weight:700; color:var(--text-muted); margin:10px 0 6px;">▪ ${grp.group_name}</div>`;
           grp.items.forEach(it => {
             html += `
-              <div class="addon-pill-item" onclick="toggleAddonPill('${it.name}', ${it.price}, this)">
-                <div class="addon-name-wrap">
-                  <div class="addon-checkbox-ui">✓</div>
-                  <span>${it.name}</span>
+              <div class="addon-item-row" onclick="toggleAddon('${it.name}', ${it.price}, this)">
+                <div style="display:flex; align-items:center;">
+                  <div class="addon-checkbox">✓</div>
+                  <span style="font-size:13.5px; font-weight:600;">${it.name}</span>
                 </div>
-                <span class="addon-price-chip">+RM ${it.price.toFixed(2)}</span>
+                <span class="addon-price-text">+RM ${it.price.toFixed(2)}</span>
               </div>
             `;
           });
         });
-
         html += `</div>`;
       }
 
-      // 口味快捷标签与输入框
       html += `
-        <div class="spec-section">
-          <div class="spec-header">
-            <span class="spec-title">📝 口味偏好备注</span>
+        <div class="spec-group-box">
+          <div class="spec-group-title"><span>📝 特殊口味备注</span></div>
+          <div class="quick-tags-box">
+            <span class="quick-tag" onclick="appendNote('多放酸笋')">+ 多放酸笋</span>
+            <span class="quick-tag" onclick="appendNote('少油')">+ 少油</span>
+            <span class="quick-tag" onclick="appendNote('汤粉分开装')">+ 汤粉分开</span>
           </div>
-          <div class="quick-tags-wrap">
-            <span class="quick-note-tag" onclick="appendNote('多放酸笋')">+ 多放酸笋</span>
-            <span class="quick-note-tag" onclick="appendNote('少油')">+ 少油</span>
-            <span class="quick-note-tag" onclick="appendNote('不要葱花')">+ 不要葱花</span>
-            <span class="quick-note-tag" onclick="appendNote('汤粉分开装')">+ 汤粉分开</span>
-            <span class="quick-note-tag" onclick="appendNote('辣椒油另外装')">+ 辣椒另外放</span>
-          </div>
-          <textarea id="inputSheetItemNotes" class="modal-input-notes" rows="2" placeholder="也可以在这里输入您的特殊要求..."></textarea>
+          <textarea id="sheetNoteInput" class="form-field-input" style="height:70px; padding:10px;" placeholder="在此输入特殊要求..."></textarea>
         </div>
       `;
 
@@ -2281,26 +1601,13 @@
       document.getElementById("modSheetBackdrop").classList.add("active");
     }
 
-    function appendNote(txt) {
-      const input = document.getElementById("inputSheetItemNotes");
-      if (!input) return;
-      if (input.value.includes(txt)) return;
-      input.value = input.value ? (input.value + "，" + txt) : txt;
-    }
-
-    function chooseSpicy(val, el) {
+    function selectSpicy(val, el) {
       selectedSpicy = val;
-      el.parentElement.querySelectorAll('.spec-radio-card').forEach(c => c.classList.remove('active'));
+      el.parentElement.querySelectorAll('.radio-pill-card').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
     }
 
-    function chooseStyle(val, el) {
-      selectedStyle = val;
-      el.parentElement.querySelectorAll('.spec-radio-card').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-    }
-
-    function toggleAddonPill(name, price, el) {
+    function toggleAddon(name, price, el) {
       const idx = selectedAddons.findIndex(a => a.name === name);
       if (idx > -1) {
         selectedAddons.splice(idx, 1);
@@ -2314,14 +1621,20 @@
 
     function updateSheetSubtotal() {
       if (!activeItem) return;
-      let total = activeItem.price;
-      selectedAddons.forEach(a => total += a.price);
-      document.getElementById("sheetCalculatedSubtotal").innerText = `RM ${total.toFixed(2)}`;
+      let sum = activeItem.price;
+      selectedAddons.forEach(a => sum += a.price);
+      document.getElementById("sheetCalculatedSubtotal").innerText = `RM ${sum.toFixed(2)}`;
+    }
+
+    function appendNote(txt) {
+      const input = document.getElementById("sheetNoteInput");
+      if (!input) return;
+      if (input.value.includes(txt)) return;
+      input.value = input.value ? (input.value + "，" + txt) : txt;
     }
 
     function closeModSheet() {
       document.getElementById("modSheetBackdrop").classList.remove("active");
-      activeItem = null;
     }
 
     function closeSheetOnBackdrop(e) {
@@ -2330,7 +1643,8 @@
 
     function submitItemToCart() {
       if (!activeItem) return;
-      const notes = document.getElementById("inputSheetItemNotes") ? document.getElementById("inputSheetItemNotes").value.trim() : "";
+      const noteInput = document.getElementById("sheetNoteInput");
+      const notes = noteInput ? noteInput.value.trim() : "";
 
       let unitPrice = activeItem.price;
       selectedAddons.forEach(a => unitPrice += a.price);
@@ -2339,11 +1653,10 @@
         id: activeItem.id,
         name: activeItem.name,
         basePrice: activeItem.price,
-        unitPrice: unitPrice,
+        unitPrice,
         spicy: activeItem.mods.includes("spicy") ? selectedSpicy : null,
-        style: (activeItem.mods.includes("wantan_style") || activeItem.mods.includes("dumpling_style")) ? selectedStyle : null,
         addons: [...selectedAddons],
-        notes: notes,
+        notes,
         qty: 1
       });
 
@@ -2351,14 +1664,13 @@
       refreshCartCapsule();
     }
 
-    function pushToCartDirect(p) {
+    function addToCartDirect(p) {
       cart.push({
         id: p.id,
         name: p.name,
         basePrice: p.price,
         unitPrice: p.price,
         spicy: null,
-        style: null,
         addons: [],
         notes: "",
         qty: 1
@@ -2366,42 +1678,28 @@
       refreshCartCapsule();
     }
 
-    function calculateOrderTotals() {
-      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-      const itemsSubtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
-
-      const mainDishCount = cart.filter(it => it.id.startsWith('S') || it.id.startsWith('D') || it.id.startsWith('B') || it.id.startsWith('C')).reduce((sum, item) => sum + item.qty, 0);
-      const packagingCost = isPackagingEnabled ? (mainDishCount * 1.0) : 0;
-
-      const taxableAmount = itemsSubtotal + packagingCost;
-      const taxAmount = Math.round(taxableAmount * TAX_RATE * 100) / 100;
-      const grandTotal = taxableAmount + taxAmount;
-
-      return {
-        totalQty,
-        itemsSubtotal,
-        mainDishCount,
-        packagingCost,
-        taxableAmount,
-        taxAmount,
-        grandTotal
-      };
-    }
-
     function refreshCartCapsule() {
-      const totals = calculateOrderTotals();
-      const bar = document.getElementById("cartCapsuleWrap");
+      const totals = calculateCartTotals();
+      const capsule = document.getElementById("cartCapsuleWrap");
       if (totals.totalQty > 0) {
-        bar.style.display = "flex";
+        capsule.style.display = "flex";
         document.getElementById("cartTotalBadge").innerText = totals.totalQty;
         document.getElementById("cartTotalSumText").innerText = `RM ${totals.grandTotal.toFixed(2)}`;
       } else {
-        bar.style.display = "none";
+        capsule.style.display = "none";
       }
     }
 
+    function calculateCartTotals() {
+      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+      const itemsSubtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+      const taxAmount = Math.round(itemsSubtotal * TAX_RATE * 100) / 100;
+      const grandTotal = itemsSubtotal + taxAmount;
+      return { totalQty, itemsSubtotal, taxAmount, grandTotal };
+    }
+
     function openCartDrawer() {
-      renderCartDrawerContent();
+      renderCartItems();
       document.getElementById("cartDrawerBackdrop").classList.add("active");
     }
 
@@ -2409,198 +1707,154 @@
       document.getElementById("cartDrawerBackdrop").classList.remove("active");
     }
 
-    function closeDrawerOnBackdrop(e) {
+    function closeCartOnBackdrop(e) {
       if (e.target.id === "cartDrawerBackdrop") closeCartDrawer();
     }
 
-    function renderCartDrawerContent() {
-      const container = document.getElementById("drawerItemsListContainer");
-      const totals = calculateOrderTotals();
-      document.getElementById("drawerItemQtyLabel").innerText = `共 ${totals.totalQty} 份餐点`;
+    function setOrderMode(mode) {
+      currentOrderMode = mode;
+      document.getElementById("btnModePickup").classList.toggle("active", mode === '自取');
+      document.getElementById("btnModeDelivery").classList.toggle("active", mode === '外送');
+      document.getElementById("fieldDeliveryAddressWrap").style.display = mode === '外送' ? "block" : "none";
+    }
 
+    function renderCartItems() {
+      const box = document.getElementById("cartItemsList");
       if (cart.length === 0) {
-        container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">购物车是空的</div>`;
-        closeCartDrawer();
-        refreshCartCapsule();
+        box.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-light);">购物车空空如也 🛒</div>`;
         return;
       }
 
-      let html = "";
-      cart.forEach((it, idx) => {
-        let specs = [];
-        if (it.spicy) specs.push(`辣度: ${it.spicy}`);
-        if (it.style) specs.push(`做法: ${it.style}`);
-        if (it.addons && it.addons.length > 0) {
-          specs.push(`加料: ` + it.addons.map(a => `${a.name} (+RM${a.price.toFixed(2)})`).join(', '));
-        }
-        if (it.notes) specs.push(`要求: ${it.notes}`);
-
-        html += `
-          <div class="drawer-item-row">
-            <div style="flex: 1; padding-right: 12px;">
-              <div class="drawer-item-name">${it.name}</div>
-              <div class="drawer-item-specs">${specs.join('<br>')}</div>
-              <div style="font-size: 14px; font-weight: 800; color: var(--primary); margin-top: 4px;">
-                RM ${(it.unitPrice * it.qty).toFixed(2)}
-              </div>
+      box.innerHTML = cart.map((it, idx) => `
+        <div class="cart-item-row">
+          <div>
+            <div class="cart-item-name">${it.name}</div>
+            <div class="cart-item-spec">
+              ${it.spicy ? it.spicy : ''} 
+              ${it.addons.map(a => '+' + a.name).join(' ')} 
+              ${it.notes ? '(' + it.notes + ')' : ''}
             </div>
-            <div class="drawer-qty-selector">
-              <button class="btn-qty" onclick="changeCartQty(${idx}, -1)">-</button>
-              <span style="font-weight: 800; min-width: 22px; text-align: center;">${it.qty}</span>
-              <button class="btn-qty" onclick="changeCartQty(${idx}, 1)">+</button>
+            <div style="font-size:13px; font-weight:700; color:var(--color-primary); margin-top:2px;">
+              RM ${(it.unitPrice * it.qty).toFixed(2)}
             </div>
           </div>
-        `;
-      });
-      container.innerHTML = html;
-
-      document.getElementById("packagingTotalTag").innerText = isPackagingEnabled ? `+RM ${totals.packagingCost.toFixed(2)}` : "+RM 0.00";
-      
-      const subElem = document.getElementById("drawerItemsSubtotalText");
-      if (subElem) subElem.innerText = `RM ${totals.itemsSubtotal.toFixed(2)}`;
-
-      const pkgElem = document.getElementById("drawerPackagingText");
-      if (pkgElem) pkgElem.innerText = isPackagingEnabled ? `+RM ${totals.packagingCost.toFixed(2)}` : "+RM 0.00";
-
-      const taxElem = document.getElementById("drawerTaxText");
-      if (taxElem) taxElem.innerText = `+RM ${totals.taxAmount.toFixed(2)}`;
-
-      const taxLabel = document.getElementById("drawerTaxLabel");
-      if (taxLabel) taxLabel.innerText = TAX_LABEL;
-
-      const deliveryRow = document.getElementById("drawerDeliveryFeeRow");
-      if (deliveryRow) {
-        deliveryRow.style.display = currentOrderMode === '外送' ? 'flex' : 'none';
-      }
-      const totalLabel = document.getElementById("drawerFinalTotalLabel");
-      if (totalLabel) {
-        totalLabel.innerText = currentOrderMode === '外送' ? "餐点总计 (含税/运费另计):" : "应付总计 (含税):";
-      }
-      const noticeText = document.getElementById("drawerTaxNoticeText");
-      if (noticeText) {
-        noticeText.innerText = currentOrderMode === '外送' ? "已含 10% 税费 | 🛵 运费店员稍后核算" : "包含 10% 门店税费/服务费";
-      }
-
-      document.getElementById("drawerFinalTotalText").innerText = `RM ${totals.grandTotal.toFixed(2)}`;
+          <div class="qty-counter-control">
+            <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+            <span style="font-size:13px; font-weight:700; min-width:18px; text-align:center;">${it.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+          </div>
+        </div>
+      `).join('');
     }
 
-    function changeCartQty(idx, delta) {
+    function changeQty(idx, delta) {
       cart[idx].qty += delta;
       if (cart[idx].qty <= 0) {
         cart.splice(idx, 1);
       }
-      renderCartDrawerContent();
+      renderCartItems();
       refreshCartCapsule();
     }
 
-    function togglePackagingBox(chk) {
-      isPackagingEnabled = chk.checked;
-      renderCartDrawerContent();
-      refreshCartCapsule();
-    }
-
-    // 生成纯文本 WhatsApp 订单 (彻底杜绝 Emoji 乱码)
     function sendWhatsAppOrder() {
-      if (cart.length === 0) {
-        alert("购物车为空，请先选购餐点！");
-        return;
-      }
-
+      if (cart.length === 0) return alert("购物车为空！");
       const name = document.getElementById("orderCustName").value.trim();
       const phone = document.getElementById("orderCustPhone").value.trim();
-      const customTime = document.getElementById("orderCustomTime").value.trim();
-      const deliveryAddress = document.getElementById("orderDeliveryAddress").value.trim();
-      const specialRemarks = document.getElementById("orderSpecialRemarks").value.trim();
+      const addr = document.getElementById("orderDeliveryAddress").value.trim();
+      const remarks = document.getElementById("orderSpecialRemarks").value.trim();
 
-      if (!name) {
-        alert("请填写顾客姓名！");
-        document.getElementById("orderCustName").focus();
-        return;
-      }
+      if (!name) return alert("请填写顾客姓名！");
+      if (!phone) return alert("请填写联络电话！");
+      if (currentOrderMode === '外送' && !addr) return alert("请填写送餐地址！");
 
-      if (!phone) {
-        alert("请填写联络电话！");
-        document.getElementById("orderCustPhone").focus();
-        return;
-      }
+      const totals = calculateCartTotals();
+      let lines = [
+        `*【柳州地道螺蛳粉 • 线上${currentOrderMode}订单】*`,
+        `---------------------------------`,
+        `*顾客姓名:* ${name}`,
+        `*联络电话:* ${phone}`
+      ];
+      if (currentOrderMode === '外送') lines.push(`*送餐地址:* ${addr}`);
+      if (remarks) lines.push(`*整单备注:* ${remarks}`);
 
-      const finalTime = customTime ? customTime : selectedQuickTime;
-
-      if (currentOrderMode === '外送' && !deliveryAddress) {
-        alert("请填写送餐详细地址！");
-        document.getElementById("orderDeliveryAddress").focus();
-        return;
-      }
-
-      const totals = calculateOrderTotals();
-
-      let lines = [];
-      lines.push(`*【新山 Austin Heights 螺蛳粉 • 线上${currentOrderMode}订单】*`);
-      lines.push(`---------------------------------`);
-      lines.push(`*订单类型:* [${currentOrderMode}]`);
-      lines.push(`*顾客姓名:* ${name}`);
-      lines.push(`*联络电话:* ${phone}`);
-      if (currentOrderMode === '自取') {
-        lines.push(`*自取时间:* ${finalTime}`);
-      } else {
-        lines.push(`*送达时间:* ${finalTime}`);
-        lines.push(`*送餐地址:* ${deliveryAddress}`);
-      }
-      if (specialRemarks) {
-        lines.push(`*整单备注:* ${specialRemarks}`);
-      }
-      lines.push(`---------------------------------`);
-      lines.push(`*【餐点明细】*`);
-      lines.push(``);
-
+      lines.push(`---------------------------------`, `*【餐点明细】*`);
       cart.forEach((it, i) => {
-        lines.push(`${i + 1}. *${it.name}* x${it.qty}`);
-        if (it.spicy) {
-          lines.push(`   - 辣度: ${it.spicy}`);
-        }
-        if (it.style) {
-          lines.push(`   - 做法: ${it.style}`);
-        }
-        if (it.addons && it.addons.length > 0) {
-          it.addons.forEach(ad => {
-            lines.push(`   - 加料: ${ad.name} (+RM${ad.price.toFixed(2)})`);
-          });
-        }
-        if (it.notes) {
-          lines.push(`   - 单品要求: ${it.notes}`);
-        }
+        lines.push(`${i+1}. *${it.name}* x${it.qty}`);
+        if (it.spicy) lines.push(`   - 辣度: ${it.spicy}`);
+        if (it.addons.length > 0) lines.push(`   - 加料: ${it.addons.map(a => a.name).join(', ')}`);
+        if (it.notes) lines.push(`   - 备注: ${it.notes}`);
         lines.push(`   - 小计: RM ${(it.unitPrice * it.qty).toFixed(2)}`);
-        lines.push(``);
       });
 
       lines.push(`---------------------------------`);
-      lines.push(`*【费用明细】*`);
-      lines.push(`- 餐点小计: RM ${totals.itemsSubtotal.toFixed(2)}`);
-      if (isPackagingEnabled && totals.mainDishCount > 0) {
-        lines.push(`- 外带餐盒: ${totals.mainDishCount}份 (+RM ${totals.packagingCost.toFixed(2)})`);
-      }
-      lines.push(`- ${TAX_LABEL}: +RM ${totals.taxAmount.toFixed(2)}`);
-      if (currentOrderMode === '外送') {
-        lines.push(`- 外送运费: 🛵 稍后由店员根据送餐距离核算另计`);
-        lines.push(`---------------------------------`);
-        lines.push(`*【餐点总额: RM ${totals.grandTotal.toFixed(2)}】* (已含税，外送运费待店员确认)`);
-        lines.push(`---------------------------------`);
-        lines.push(`请店员核对餐点、计算外送运费并提供 DuitNow QR 码收款，谢谢！`);
-      } else {
-        lines.push(`---------------------------------`);
-        lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】* (已含税)`);
-        lines.push(`---------------------------------`);
-        lines.push(`请店员核对订单并提供 DuitNow QR 码收款，谢谢！`);
-      }
+      lines.push(`*餐点小计:* RM ${totals.itemsSubtotal.toFixed(2)}`);
+      lines.push(`*包含税费(10%):* RM ${totals.taxAmount.toFixed(2)}`);
+      lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】*`);
 
-      const fullText = lines.join('\n');
-      const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(fullText)}`;
-
+      const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
       window.open(waUrl, "_blank");
+    }
+
+    // AI ASSISTANT LOGIC (generative-ui-copilotkit)
+    function toggleAIDrawer(show) {
+      document.getElementById("aiDrawerPanel").classList.toggle("active", show);
+      document.getElementById("aiDrawerBackdrop").classList.toggle("active", show);
+    }
+
+    function closeAIOnBackdrop(e) {
+      if (e.target.id === "aiDrawerBackdrop") toggleAIDrawer(false);
+    }
+
+    function triggerAIPrompt(txt) {
+      document.getElementById("aiInputField").value = txt;
+      sendAIMessage();
+    }
+
+    function sendAIMessage() {
+      const input = document.getElementById("aiInputField");
+      const txt = input.value.trim();
+      if (!txt) return;
+
+      const body = document.getElementById("aiChatBody");
+      body.innerHTML += `<div class="chat-bubble-user">${txt}</div>`;
+      input.value = "";
+
+      // Simulated AI Logic with Generative UI Component Render
+      setTimeout(() => {
+        let aiReply = "好勒！为您精选了最赞的搭配方案：";
+        let recId = "S3"; // Default S3 炸蛋螺蛳粉
+
+        if (txt.includes("重辣") || txt.includes("嗜辣")) {
+          recId = "S3";
+          aiReply = "🔥 嗜辣必备！这道招牌炸蛋螺蛳粉配上重辣，炸蛋吸满红油辣汤，绝了！";
+        } else if (txt.includes("不辣") || txt.includes("清淡")) {
+          recId = "S1";
+          aiReply = "🌿 推荐点经典原味螺蛳粉选择【不辣】，汤头鲜美咸香！";
+        } else if (txt.includes("双人")) {
+          recId = "S6";
+          aiReply = "👫 双人推荐：凤爪螺蛳粉 + 炸蛋螺蛳粉，双重美味大满意！";
+        }
+
+        const dish = MENU.find(p => p.id === recId) || MENU[0];
+
+        body.innerHTML += `
+          <div class="chat-bubble-ai">
+            ${aiReply}
+            <div class="gen-recommend-card">
+              <img class="gen-recommend-img" src="${dish.img || ''}" alt="${dish.name}" onerror="this.src='https://via.placeholder.com/64'">
+              <div class="gen-recommend-details">
+                <div class="gen-recommend-name">${dish.name}</div>
+                <div class="gen-recommend-price">RM ${dish.price.toFixed(2)}</div>
+              </div>
+              <button class="gen-quick-add-btn" onclick="handleCardClick('${dish.id}')">加购 +</button>
+            </div>
+          </div>
+        `;
+        body.scrollTop = body.scrollHeight;
+      }, 500);
     }
 
     window.onload = init;
   </script>
 </body>
 </html>
-
