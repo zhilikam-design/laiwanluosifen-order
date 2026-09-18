@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>柳州地道螺蛳粉 • 在线自助点餐</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -352,7 +355,7 @@
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
       position: relative;
-      height: 148px; /* Fixed Uniform Height across all cards */
+      height: 148px !important; /* Fixed Uniform Height across all cards */
       align-items: stretch;
     }
 
@@ -447,29 +450,31 @@
     }
 
     /* RIGHT COLUMN: Image on Top (Fixed 96x80px), Button Below (Not Overlapping) */
-    .food-right-col {
-      width: 96px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
+    .food-right-col, .food-media-wrap {
+      width: 96px !important;
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex-shrink: 0 !important;
+      position: relative !important;
     }
 
-    .food-media-box {
-      width: 96px;
-      height: 80px; /* Uniform exact image size */
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: #f5f5f4;
-      position: relative;
+    .food-media-box, .food-thumbnail-box {
+      width: 96px !important;
+      height: 80px !important; /* Uniform exact image size */
+      border-radius: var(--radius-md) !important;
+      overflow: hidden !important;
+      background: #f5f5f4 !important;
+      position: relative !important;
+      flex-shrink: 0 !important;
     }
 
-    .food-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .food-img, .food-thumbnail-img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
       transition: transform 0.3s ease;
     }
 
@@ -489,29 +494,36 @@
       font-size: 26px;
     }
 
-    /* RED BUTTON IS NOW LOCATED BELOW THE IMAGE (NO OVERLAP) */
+    /* FORCED NON-OVERLAPPING BUTTON STYLES WITH !IMPORTANT OVERRIDES */
     .add-action-btn {
-      width: 100%;
-      background: var(--color-primary);
-      color: var(--text-white);
-      border: none;
-      padding: 6px 0;
-      border-radius: var(--radius-full);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(197, 34, 31, 0.25);
-      transition: all 0.2s ease;
-      min-height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
+      position: relative !important;
+      bottom: auto !important;
+      right: auto !important;
+      top: auto !important;
+      left: auto !important;
+      margin-top: 4px !important;
+      width: 100% !important;
+      background: var(--color-primary) !important;
+      color: #ffffff !important;
+      border: none !important;
+      padding: 6px 0 !important;
+      border-radius: var(--radius-full) !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      box-shadow: 0 3px 8px rgba(197, 34, 31, 0.25) !important;
+      transition: all 0.2s ease !important;
+      min-height: 32px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 2px !important;
+      z-index: 2 !important;
     }
 
     .add-action-btn:hover {
-      background: var(--color-primary-dark);
-      transform: scale(1.02);
+      background: var(--color-primary-dark) !important;
+      transform: scale(1.02) !important;
     }
 
     /* ==========================================================================
@@ -1397,7 +1409,7 @@
 
     async function init() {
       try {
-        const res = await fetch("menu_data.json");
+        const res = await fetch("menu_data.json?v=" + Date.now());
         if (res.ok) {
           MENU = await res.json();
         }
@@ -1793,7 +1805,7 @@
       lines.push(`*包含税费(10%):* RM ${totals.taxAmount.toFixed(2)}`);
       lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】*`);
 
-      const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
+      const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\\n'))}`;
       window.open(waUrl, "_blank");
     }
 
