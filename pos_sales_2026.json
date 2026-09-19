@@ -6775,6 +6775,32 @@
       "netsales": "732.20",
       "grossSales": "667.93",
       "name": "Liu zhou Luosifen"
+    },
+    {
+      "sales_id": 216138,
+      "branch_id": "118",
+      "total_amount": "887.10",
+      "tax": "0.00",
+      "tax_detail": "{}",
+      "charge": "60.47",
+      "charge_detail": "{\"Service Charge\": 60.47}",
+      "promotion": "0.00",
+      "promotion_detail": "{}",
+      "rounding": "0.02",
+      "total_bill": "25",
+      "average_pax": "0.00",
+      "average_spending_per_pax": "0.00",
+      "date": "2026-09-18",
+      "payment_method": "",
+      "payment_method_sales": "",
+      "type": 1,
+      "tangent_sync": 3,
+      "created_at": "2026-09-18 23:34:12",
+      "updated_at": "",
+      "soft_delete": "",
+      "netsales": "887.10",
+      "grossSales": "826.61",
+      "name": "Liu zhou Luosifen"
     }
   ]
 }
