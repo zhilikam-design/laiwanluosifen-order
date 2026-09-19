@@ -4,9 +4,753 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>来碗 · 餐饮门店智能财务管理与经营分析系统</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.tailwindcss.com">
+    // -------------------------------------------------------------
+    // TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC)
+    // -------------------------------------------------------------
+    let activeMenuCatFilter = "ALL";
+
+    function initMenuManager() {
+      const savedPat = localStorage.getItem('laiwan_github_pat') || "";
+      const inp = document.getElementById('inp-github-pat');
+      if (inp) inp.value = savedPat;
+      updatePatStatusBadge(savedPat);
+
+      const localMenu = localStorage.getItem('laiwan_menu_data');
+      if (localMenu) {
+        try {
+          const parsed = JSON.parse(localMenu);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            CATALOG_DATA = parsed;
+          }
+        } catch(e) {}
+      }
+
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuCatPills() {
+      const categories = ["ALL", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
+      const box = document.getElementById('menu-mgr-cat-pills');
+      if (!box) return;
+      box.innerHTML = categories.map(cat => {
+        const label = cat === 'ALL' ? '全部菜品 (58)' : cat;
+        const isActive = activeMenuCatFilter === cat;
+        const activeClass = isActive 
+          ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20' 
+          : 'bg-slate-800/40 text-slate-400 hover:text-white border border-slate-700/50';
+        return `<button onclick="setMenuCatFilter('${cat}')" class="text-xs px-3 py-1.5 rounded-xl whitespace-nowrap transition ${activeClass}">${label}</button>`;
+      }).join('');
+    }
+
+    function setMenuCatFilter(cat) {
+      activeMenuCatFilter = cat;
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuManagerList() {
+      const grid = document.getElementById('menu-mgr-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const searchKw = (document.getElementById('menu-mgr-search')?.value || '').toLowerCase().trim();
+
+      const filtered = CATALOG_DATA.filter(dish => {
+        const mCat = activeMenuCatFilter === 'ALL' || dish.cat === activeMenuCatFilter;
+        const mKw = !searchKw || dish.id.toLowerCase().includes(searchKw) || dish.name.toLowerCase().includes(searchKw);
+        return mCat && mKw;
+      });
+
+      const countPill = document.getElementById('menu-mgr-count-pill');
+      if (countPill) countPill.innerText = `${filtered.length} 道`;
+
+      filtered.forEach(dish => {
+        const isStock = dish.in_stock !== false;
+        const imgSrc = dish.cdn_img || dish.img || 'images/logo.png';
+        const card = document.createElement('div');
+        card.className = "fin-card rounded-2xl p-4 flex flex-col justify-between space-y-3 relative border hover:border-emerald-500/40 transition";
+        card.innerHTML = `
+          <div class="flex items-start gap-3">
+            <img src="${imgSrc}" alt="${dish.name}" class="w-14 h-14 rounded-xl object-cover border flex-shrink-0" style="border-color: var(--border-subtle);" onerror="this.src='images/logo.png'">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1 mb-1">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 mono">${dish.id}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-md border" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">${dish.cat}</span>
+              </div>
+              <input type="text" value="${escapeHtml(dish.name)}" onchange="updateDishField('${dish.id}', 'name', this.value)" class="text-xs font-bold border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">售价 (RM):</label>
+              <div class="flex items-center gap-1">
+                <button onclick="adjDishPrice('${dish.id}', -1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">-</button>
+                <input type="number" step="0.10" value="${dish.price}" onchange="updateDishField('${dish.id}', 'price', parseFloat(this.value)||0)" class="text-xs font-black mono text-emerald-500 border rounded-lg px-2 py-1 w-full text-center focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
+                <button onclick="adjDishPrice('${dish.id}', 1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">+</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">热销角标 (Badge):</label>
+              <input type="text" value="${escapeHtml(dish.badge || '')}" placeholder="如: 🔥 进店必点" onchange="updateDishField('${dish.id}', 'badge', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">菜品描述 (Description):</label>
+            <input type="text" value="${escapeHtml(dish.desc || '')}" placeholder="菜品短句描述..." onchange="updateDishField('${dish.id}', 'desc', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+          </div>
+
+          <div class="pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--border-subtle);">
+            <span class="font-semibold text-[11px]" style="color: var(--text-muted);">上下架状态:</span>
+            <button onclick="toggleDishStock('${dish.id}')" class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isStock ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'}">
+              <span>${isStock ? '🟢 正常在售' : '🔴 售罄下架'}</span>
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function updateDishField(id, field, value) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish[field] = value;
+        localStorage.setItem('laiwan_menu_data', JSON.stringify(CATALOG_DATA));
+        renderDishesTable();
+      }
+    }
+
+    function adjDishPrice(id, delta) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.price = Math.max(0, +(dish.price + delta).toFixed(2));
+        updateDishField(id, 'price', dish.price);
+        renderMenuManagerList();
+      }
+    }
+
+    function toggleDishStock(id) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.in_stock = dish.in_stock === false ? true : false;
+        updateDishField(id, 'in_stock', dish.in_stock);
+        renderMenuManagerList();
+      }
+    }
+
+    function onPatInputChange() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      updatePatStatusBadge(pat);
+    }
+
+    function saveGithubToken() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      localStorage.setItem('laiwan_github_pat', pat);
+      updatePatStatusBadge(pat);
+      alert('✅ GitHub Token (PAT) 已成功保存到本地浏览器缓存！');
+    }
+
+    function togglePatVisibility() {
+      const inp = document.getElementById('inp-github-pat');
+      if (inp.type === 'password') inp.type = 'text'; else inp.type = 'password';
+    }
+
+    function updatePatStatusBadge(pat) {
+      const badge = document.getElementById('pat-status-badge');
+      if (!badge) return;
+      if (pat && pat.length > 10) {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 font-medium flex items-center gap-1';
+        badge.innerHTML = '<span>✅ Token 已配置</span>';
+      } else {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium';
+        badge.innerHTML = '⚠️ 未配置 Token (发布需配置)';
+      }
+    }
+
+    async function saveAndDeployMenuToGitHub() {
+      let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
+      if (!pat) {
+        pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');
+        if (!pat) return;
+        localStorage.setItem('laiwan_github_pat', pat.trim());
+        document.getElementById('inp-github-pat').value = pat.trim();
+        updatePatStatusBadge(pat.trim());
+      }
+
+      const btn = document.getElementById('btn-deploy-menu');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="rotate-cw" class="w-4 h-4 animate-spin"></i> <span>正在发布更新到 GitHub...</span>`;
+        lucide.createIcons();
+      }
+
+      try {
+        const repoOwner = 'zhilikam-design';
+        const repoName = 'laiwanluosifen-order';
+        const filePath = 'menu_data.json';
+        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        if (!getRes.ok && getRes.status !== 404) {
+          throw new Error(`无法获取 GitHub 文件信息 (HTTP ${getRes.status})。请检查 PAT 权限。`);
+        }
+
+        let sha = '';
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        const contentJsonStr = JSON.stringify(CATALOG_DATA, null, 2);
+        const base64Content = window.btoa(unescape(encodeURIComponent(contentJsonStr)));
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify({
+            message: 'Update menu_data.json via Laiwan Finance Menu Manager',
+            content: base64Content,
+            sha: sha
+          })
+        });
+
+        if (!putRes.ok) {
+          const errJson = await putRes.json();
+          throw new Error(errJson.message || `GitHub API 提交失败 (HTTP ${putRes.status})`);
+        }
+
+        alert('🎉 菜单与价格更新已成功发布到 GitHub Pages 在线点餐系统！\n\nGitHub Pages 将在 1-2 分钟内同步完成部署。在点餐前台刷新页面即可看到最新菜品价格与状态！');
+
+      } catch (err) {
+        alert('❌ 菜单发布失败: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          lucide.createIcons();
+        }
+      }
+    }
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    // -------------------------------------------------------------
+    // TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC)
+    // -------------------------------------------------------------
+    let activeMenuCatFilter = "ALL";
+
+    function initMenuManager() {
+      const savedPat = localStorage.getItem('laiwan_github_pat') || "";
+      const inp = document.getElementById('inp-github-pat');
+      if (inp) inp.value = savedPat;
+      updatePatStatusBadge(savedPat);
+
+      const localMenu = localStorage.getItem('laiwan_menu_data');
+      if (localMenu) {
+        try {
+          const parsed = JSON.parse(localMenu);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            CATALOG_DATA = parsed;
+          }
+        } catch(e) {}
+      }
+
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuCatPills() {
+      const categories = ["ALL", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
+      const box = document.getElementById('menu-mgr-cat-pills');
+      if (!box) return;
+      box.innerHTML = categories.map(cat => {
+        const label = cat === 'ALL' ? '全部菜品 (58)' : cat;
+        const isActive = activeMenuCatFilter === cat;
+        const activeClass = isActive 
+          ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20' 
+          : 'bg-slate-800/40 text-slate-400 hover:text-white border border-slate-700/50';
+        return `<button onclick="setMenuCatFilter('${cat}')" class="text-xs px-3 py-1.5 rounded-xl whitespace-nowrap transition ${activeClass}">${label}</button>`;
+      }).join('');
+    }
+
+    function setMenuCatFilter(cat) {
+      activeMenuCatFilter = cat;
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuManagerList() {
+      const grid = document.getElementById('menu-mgr-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const searchKw = (document.getElementById('menu-mgr-search')?.value || '').toLowerCase().trim();
+
+      const filtered = CATALOG_DATA.filter(dish => {
+        const mCat = activeMenuCatFilter === 'ALL' || dish.cat === activeMenuCatFilter;
+        const mKw = !searchKw || dish.id.toLowerCase().includes(searchKw) || dish.name.toLowerCase().includes(searchKw);
+        return mCat && mKw;
+      });
+
+      const countPill = document.getElementById('menu-mgr-count-pill');
+      if (countPill) countPill.innerText = `${filtered.length} 道`;
+
+      filtered.forEach(dish => {
+        const isStock = dish.in_stock !== false;
+        const imgSrc = dish.cdn_img || dish.img || 'images/logo.png';
+        const card = document.createElement('div');
+        card.className = "fin-card rounded-2xl p-4 flex flex-col justify-between space-y-3 relative border hover:border-emerald-500/40 transition";
+        card.innerHTML = `
+          <div class="flex items-start gap-3">
+            <img src="${imgSrc}" alt="${dish.name}" class="w-14 h-14 rounded-xl object-cover border flex-shrink-0" style="border-color: var(--border-subtle);" onerror="this.src='images/logo.png'">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1 mb-1">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 mono">${dish.id}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-md border" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">${dish.cat}</span>
+              </div>
+              <input type="text" value="${escapeHtml(dish.name)}" onchange="updateDishField('${dish.id}', 'name', this.value)" class="text-xs font-bold border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">售价 (RM):</label>
+              <div class="flex items-center gap-1">
+                <button onclick="adjDishPrice('${dish.id}', -1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">-</button>
+                <input type="number" step="0.10" value="${dish.price}" onchange="updateDishField('${dish.id}', 'price', parseFloat(this.value)||0)" class="text-xs font-black mono text-emerald-500 border rounded-lg px-2 py-1 w-full text-center focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
+                <button onclick="adjDishPrice('${dish.id}', 1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">+</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">热销角标 (Badge):</label>
+              <input type="text" value="${escapeHtml(dish.badge || '')}" placeholder="如: 🔥 进店必点" onchange="updateDishField('${dish.id}', 'badge', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">菜品描述 (Description):</label>
+            <input type="text" value="${escapeHtml(dish.desc || '')}" placeholder="菜品短句描述..." onchange="updateDishField('${dish.id}', 'desc', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+          </div>
+
+          <div class="pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--border-subtle);">
+            <span class="font-semibold text-[11px]" style="color: var(--text-muted);">上下架状态:</span>
+            <button onclick="toggleDishStock('${dish.id}')" class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isStock ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'}">
+              <span>${isStock ? '🟢 正常在售' : '🔴 售罄下架'}</span>
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function updateDishField(id, field, value) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish[field] = value;
+        localStorage.setItem('laiwan_menu_data', JSON.stringify(CATALOG_DATA));
+        renderDishesTable();
+      }
+    }
+
+    function adjDishPrice(id, delta) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.price = Math.max(0, +(dish.price + delta).toFixed(2));
+        updateDishField(id, 'price', dish.price);
+        renderMenuManagerList();
+      }
+    }
+
+    function toggleDishStock(id) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.in_stock = dish.in_stock === false ? true : false;
+        updateDishField(id, 'in_stock', dish.in_stock);
+        renderMenuManagerList();
+      }
+    }
+
+    function onPatInputChange() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      updatePatStatusBadge(pat);
+    }
+
+    function saveGithubToken() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      localStorage.setItem('laiwan_github_pat', pat);
+      updatePatStatusBadge(pat);
+      alert('✅ GitHub Token (PAT) 已成功保存到本地浏览器缓存！');
+    }
+
+    function togglePatVisibility() {
+      const inp = document.getElementById('inp-github-pat');
+      if (inp.type === 'password') inp.type = 'text'; else inp.type = 'password';
+    }
+
+    function updatePatStatusBadge(pat) {
+      const badge = document.getElementById('pat-status-badge');
+      if (!badge) return;
+      if (pat && pat.length > 10) {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 font-medium flex items-center gap-1';
+        badge.innerHTML = '<span>✅ Token 已配置</span>';
+      } else {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium';
+        badge.innerHTML = '⚠️ 未配置 Token (发布需配置)';
+      }
+    }
+
+    async function saveAndDeployMenuToGitHub() {
+      let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
+      if (!pat) {
+        pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');
+        if (!pat) return;
+        localStorage.setItem('laiwan_github_pat', pat.trim());
+        document.getElementById('inp-github-pat').value = pat.trim();
+        updatePatStatusBadge(pat.trim());
+      }
+
+      const btn = document.getElementById('btn-deploy-menu');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="rotate-cw" class="w-4 h-4 animate-spin"></i> <span>正在发布更新到 GitHub...</span>`;
+        lucide.createIcons();
+      }
+
+      try {
+        const repoOwner = 'zhilikam-design';
+        const repoName = 'laiwanluosifen-order';
+        const filePath = 'menu_data.json';
+        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        if (!getRes.ok && getRes.status !== 404) {
+          throw new Error(`无法获取 GitHub 文件信息 (HTTP ${getRes.status})。请检查 PAT 权限。`);
+        }
+
+        let sha = '';
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        const contentJsonStr = JSON.stringify(CATALOG_DATA, null, 2);
+        const base64Content = window.btoa(unescape(encodeURIComponent(contentJsonStr)));
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify({
+            message: 'Update menu_data.json via Laiwan Finance Menu Manager',
+            content: base64Content,
+            sha: sha
+          })
+        });
+
+        if (!putRes.ok) {
+          const errJson = await putRes.json();
+          throw new Error(errJson.message || `GitHub API 提交失败 (HTTP ${putRes.status})`);
+        }
+
+        alert('🎉 菜单与价格更新已成功发布到 GitHub Pages 在线点餐系统！\n\nGitHub Pages 将在 1-2 分钟内同步完成部署。在点餐前台刷新页面即可看到最新菜品价格与状态！');
+
+      } catch (err) {
+        alert('❌ 菜单发布失败: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          lucide.createIcons();
+        }
+      }
+    }
+
+  </script>
+  <script src="https://unpkg.com/lucide@latest">
+    // -------------------------------------------------------------
+    // TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC)
+    // -------------------------------------------------------------
+    let activeMenuCatFilter = "ALL";
+
+    function initMenuManager() {
+      const savedPat = localStorage.getItem('laiwan_github_pat') || "";
+      const inp = document.getElementById('inp-github-pat');
+      if (inp) inp.value = savedPat;
+      updatePatStatusBadge(savedPat);
+
+      const localMenu = localStorage.getItem('laiwan_menu_data');
+      if (localMenu) {
+        try {
+          const parsed = JSON.parse(localMenu);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            CATALOG_DATA = parsed;
+          }
+        } catch(e) {}
+      }
+
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuCatPills() {
+      const categories = ["ALL", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
+      const box = document.getElementById('menu-mgr-cat-pills');
+      if (!box) return;
+      box.innerHTML = categories.map(cat => {
+        const label = cat === 'ALL' ? '全部菜品 (58)' : cat;
+        const isActive = activeMenuCatFilter === cat;
+        const activeClass = isActive 
+          ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20' 
+          : 'bg-slate-800/40 text-slate-400 hover:text-white border border-slate-700/50';
+        return `<button onclick="setMenuCatFilter('${cat}')" class="text-xs px-3 py-1.5 rounded-xl whitespace-nowrap transition ${activeClass}">${label}</button>`;
+      }).join('');
+    }
+
+    function setMenuCatFilter(cat) {
+      activeMenuCatFilter = cat;
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuManagerList() {
+      const grid = document.getElementById('menu-mgr-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const searchKw = (document.getElementById('menu-mgr-search')?.value || '').toLowerCase().trim();
+
+      const filtered = CATALOG_DATA.filter(dish => {
+        const mCat = activeMenuCatFilter === 'ALL' || dish.cat === activeMenuCatFilter;
+        const mKw = !searchKw || dish.id.toLowerCase().includes(searchKw) || dish.name.toLowerCase().includes(searchKw);
+        return mCat && mKw;
+      });
+
+      const countPill = document.getElementById('menu-mgr-count-pill');
+      if (countPill) countPill.innerText = `${filtered.length} 道`;
+
+      filtered.forEach(dish => {
+        const isStock = dish.in_stock !== false;
+        const imgSrc = dish.cdn_img || dish.img || 'images/logo.png';
+        const card = document.createElement('div');
+        card.className = "fin-card rounded-2xl p-4 flex flex-col justify-between space-y-3 relative border hover:border-emerald-500/40 transition";
+        card.innerHTML = `
+          <div class="flex items-start gap-3">
+            <img src="${imgSrc}" alt="${dish.name}" class="w-14 h-14 rounded-xl object-cover border flex-shrink-0" style="border-color: var(--border-subtle);" onerror="this.src='images/logo.png'">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1 mb-1">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 mono">${dish.id}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-md border" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">${dish.cat}</span>
+              </div>
+              <input type="text" value="${escapeHtml(dish.name)}" onchange="updateDishField('${dish.id}', 'name', this.value)" class="text-xs font-bold border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">售价 (RM):</label>
+              <div class="flex items-center gap-1">
+                <button onclick="adjDishPrice('${dish.id}', -1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">-</button>
+                <input type="number" step="0.10" value="${dish.price}" onchange="updateDishField('${dish.id}', 'price', parseFloat(this.value)||0)" class="text-xs font-black mono text-emerald-500 border rounded-lg px-2 py-1 w-full text-center focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
+                <button onclick="adjDishPrice('${dish.id}', 1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">+</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">热销角标 (Badge):</label>
+              <input type="text" value="${escapeHtml(dish.badge || '')}" placeholder="如: 🔥 进店必点" onchange="updateDishField('${dish.id}', 'badge', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">菜品描述 (Description):</label>
+            <input type="text" value="${escapeHtml(dish.desc || '')}" placeholder="菜品短句描述..." onchange="updateDishField('${dish.id}', 'desc', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+          </div>
+
+          <div class="pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--border-subtle);">
+            <span class="font-semibold text-[11px]" style="color: var(--text-muted);">上下架状态:</span>
+            <button onclick="toggleDishStock('${dish.id}')" class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isStock ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'}">
+              <span>${isStock ? '🟢 正常在售' : '🔴 售罄下架'}</span>
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function updateDishField(id, field, value) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish[field] = value;
+        localStorage.setItem('laiwan_menu_data', JSON.stringify(CATALOG_DATA));
+        renderDishesTable();
+      }
+    }
+
+    function adjDishPrice(id, delta) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.price = Math.max(0, +(dish.price + delta).toFixed(2));
+        updateDishField(id, 'price', dish.price);
+        renderMenuManagerList();
+      }
+    }
+
+    function toggleDishStock(id) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.in_stock = dish.in_stock === false ? true : false;
+        updateDishField(id, 'in_stock', dish.in_stock);
+        renderMenuManagerList();
+      }
+    }
+
+    function onPatInputChange() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      updatePatStatusBadge(pat);
+    }
+
+    function saveGithubToken() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      localStorage.setItem('laiwan_github_pat', pat);
+      updatePatStatusBadge(pat);
+      alert('✅ GitHub Token (PAT) 已成功保存到本地浏览器缓存！');
+    }
+
+    function togglePatVisibility() {
+      const inp = document.getElementById('inp-github-pat');
+      if (inp.type === 'password') inp.type = 'text'; else inp.type = 'password';
+    }
+
+    function updatePatStatusBadge(pat) {
+      const badge = document.getElementById('pat-status-badge');
+      if (!badge) return;
+      if (pat && pat.length > 10) {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 font-medium flex items-center gap-1';
+        badge.innerHTML = '<span>✅ Token 已配置</span>';
+      } else {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium';
+        badge.innerHTML = '⚠️ 未配置 Token (发布需配置)';
+      }
+    }
+
+    async function saveAndDeployMenuToGitHub() {
+      let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
+      if (!pat) {
+        pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');
+        if (!pat) return;
+        localStorage.setItem('laiwan_github_pat', pat.trim());
+        document.getElementById('inp-github-pat').value = pat.trim();
+        updatePatStatusBadge(pat.trim());
+      }
+
+      const btn = document.getElementById('btn-deploy-menu');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="rotate-cw" class="w-4 h-4 animate-spin"></i> <span>正在发布更新到 GitHub...</span>`;
+        lucide.createIcons();
+      }
+
+      try {
+        const repoOwner = 'zhilikam-design';
+        const repoName = 'laiwanluosifen-order';
+        const filePath = 'menu_data.json';
+        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        if (!getRes.ok && getRes.status !== 404) {
+          throw new Error(`无法获取 GitHub 文件信息 (HTTP ${getRes.status})。请检查 PAT 权限。`);
+        }
+
+        let sha = '';
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        const contentJsonStr = JSON.stringify(CATALOG_DATA, null, 2);
+        const base64Content = window.btoa(unescape(encodeURIComponent(contentJsonStr)));
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify({
+            message: 'Update menu_data.json via Laiwan Finance Menu Manager',
+            content: base64Content,
+            sha: sha
+          })
+        });
+
+        if (!putRes.ok) {
+          const errJson = await putRes.json();
+          throw new Error(errJson.message || `GitHub API 提交失败 (HTTP ${putRes.status})`);
+        }
+
+        alert('🎉 菜单与价格更新已成功发布到 GitHub Pages 在线点餐系统！\n\nGitHub Pages 将在 1-2 分钟内同步完成部署。在点餐前台刷新页面即可看到最新菜品价格与状态！');
+
+      } catch (err) {
+        alert('❌ 菜单发布失败: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          lucide.createIcons();
+        }
+      }
+    }
+
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -206,7 +950,7 @@
           <i data-lucide="file-text" class="w-4 h-4 text-emerald-500"></i>
           <span>损益表 (P&L) 导出打印</span>
         </button>
-        <button onclick="switchTab('menu-manager')" id="nav-btn-menu-manager" class="nav-tab-btn px-3.5 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
+                <button onclick="switchTab('menu-manager')" id="nav-btn-menu-manager" class="nav-tab-btn px-3.5 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="edit-3" class="w-4 h-4 text-emerald-500"></i>
           <span>在线点餐菜单管理 (Sync GitHub)</span>
           <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-500/20 text-emerald-500">Live</span>
@@ -451,7 +1195,2074 @@
 
     </div>
 
-    <!-- TAB 2 to 9, scripts, styles -->
+    <!-- ============================================================ -->
+    <!-- TAB 2: 运营与日常杂支台账 (EXPENSES - 支持单笔修改与删除) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-expenses" class="hidden space-y-6">
+      
+      <!-- 控制与操作栏 -->
+      <div class="fin-card rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+            <i data-lucide="wallet" class="w-5 h-5 text-rose-500"></i>
+            <span>店铺运营与日常杂支流水 (OPEX 台账)</span>
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+            支持对每一笔房租、水电煤气、员工薪资与杂支进行<b>【修改】</b>、<b>【删除】</b>与精准核对
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <!-- 快捷预设按钮 -->
+          <button onclick="applyPresetExpense('rent')" class="text-xs px-3 py-2 rounded-xl border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+            🏢 门市月租 RM3500
+          </button>
+          <button onclick="applyPresetExpense('gas')" class="text-xs px-3 py-2 rounded-xl border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+            🔥 煤气4桶 RM280
+          </button>
+          <button onclick="openAddExpenseModal()" class="text-xs px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-md shadow-rose-600/30 flex items-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>记一笔开支</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 分类统计汇总条 -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="fin-card p-3 rounded-xl">
+          <div class="text-[11px]" style="color: var(--text-muted);">店铺租金 (Rent)</div>
+          <div class="text-base font-bold mono mt-1 text-current" id="cat-sum-rent">RM 0.00</div>
+          <div class="text-[10px]" style="color: var(--text-muted);">Austin Heights</div>
+        </div>
+        <div class="fin-card p-3 rounded-xl">
+          <div class="text-[11px]" style="color: var(--text-muted);">商业电费 (TNB)</div>
+          <div class="text-base font-bold mono mt-1" style="color: var(--accent-amber);" id="cat-sum-tnb">RM 0.00</div>
+          <div class="text-[10px]" style="color: var(--text-muted);">熬汤与冷柜</div>
+        </div>
+        <div class="fin-card p-3 rounded-xl">
+          <div class="text-[11px]" style="color: var(--text-muted);">商业水费 (SAJ)</div>
+          <div class="text-base font-bold mono mt-1" style="color: var(--accent-sky);" id="cat-sum-saj">RM 0.00</div>
+          <div class="text-[10px]" style="color: var(--text-muted);">门市用水</div>
+        </div>
+        <div class="fin-card p-3 rounded-xl">
+          <div class="text-[11px]" style="color: var(--text-muted);">商用煤气 (GAS)</div>
+          <div class="text-base font-bold mono mt-1" style="color: var(--accent-amber);" id="cat-sum-gas">RM 0.00</div>
+          <div class="text-[10px]" style="color: var(--text-muted);">大火翻炒</div>
+        </div>
+        <div class="fin-card p-3 rounded-xl">
+          <div class="text-[11px]" style="color: var(--text-muted);">员工薪资与预支</div>
+          <div class="text-base font-bold mono mt-1" style="color: var(--accent-indigo);" id="cat-sum-wages">RM 0.00</div>
+          <div class="text-[10px]" style="color: var(--text-muted);">全职与兼职</div>
+        </div>
+        <div class="fin-card p-3 rounded-xl">
+          <div class="text-[11px]" style="color: var(--text-muted);">柜台零用金(Petty)</div>
+          <div class="text-base font-bold mono mt-1" style="color: var(--accent-emerald);" id="cat-sum-petty">RM 0.00</div>
+          <div class="text-[10px]" style="color: var(--text-muted);">耗材小件</div>
+        </div>
+      </div>
+
+      <!-- 开销流水表格 (包含修改与删除按钮) -->
+      <div class="fin-card rounded-2xl p-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-secondary);">开销账单明细列表</span>
+            <span id="expenses-count-pill" class="text-xs px-2 py-0.5 rounded-full mono font-semibold" style="background-color: var(--bg-card-subtle); color: var(--text-muted);">0 笔</span>
+          </div>
+
+          <!-- 搜索与类别过滤 -->
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="text" id="filter-expense-keyword" oninput="filterExpensesList()" placeholder="搜索项目明细、单号、经手人..." class="text-xs border rounded-xl px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-1 focus:ring-rose-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            <select id="filter-expense-category" onchange="filterExpensesList()" class="text-xs border rounded-xl px-2.5 py-2 focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+              <option value="ALL">全部类别</option>
+              <option value="店铺租金">店铺租金</option>
+              <option value="水费">水费</option>
+              <option value="电费">电费</option>
+              <option value="煤气费">煤气费</option>
+              <option value="员工薪资与福利">员工薪资与福利</option>
+              <option value="柜台零用金(Petty Cash)">零用金</option>
+              <option value="打包与外卖耗材">打包耗材</option>
+              <option value="杂项维修与维护">维修杂项</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-3">支出日期</th>
+                <th class="py-3 px-3">费用类别</th>
+                <th class="py-3 px-3 font-semibold text-current">项目明细</th>
+                <th class="py-3 px-3 font-bold" style="color: var(--accent-rose);">金额 (RM)</th>
+                <th class="py-3 px-3">付款方式</th>
+                <th class="py-3 px-3">凭证单号</th>
+                <th class="py-3 px-3">经手人</th>
+                <th class="py-3 px-3">备注</th>
+                <th class="py-3 px-3 text-right">操作管理</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-expenses" class="divide-y" style="border-color: var(--border-subtle);">
+              <!-- JS 渲染，每行带修改与删除按钮 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: 每日柜台营收流水 (REVENUE - 支持单笔修改与删除) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-revenue" class="hidden space-y-6">
+      
+      <div class="fin-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+            <i data-lucide="banknote" class="w-5 h-5 text-emerald-500"></i>
+            <span>每日柜台现金与无现金流水实收 (可编辑)</span>
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+            收银交班流水，记账录错可随时点击修改或删除重新核准
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="restoreOfficialRevenueData()" class="text-xs px-3.5 py-2 rounded-xl bg-sky-600/15 hover:bg-sky-600/25 text-sky-600 dark:text-sky-400 border border-sky-500/30 font-semibold flex items-center gap-1.5 transition shadow-sm" title="从 Google Sheet 原表一键恢复被误删的 9月前5天营业收入流水">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>一键恢复原表营收 (9月1~5日)</span>
+          </button>
+          <button onclick="openAddRevenueModal()" class="text-xs px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>录入今日营收</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 营收指标小卡片 -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">已录入柜台总营收</div>
+          <div class="text-2xl font-black mono mt-1 text-emerald-600 dark:text-emerald-400" id="rev-metric-total">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);" id="rev-metric-count">统计 0 天</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">柜台现金实收 (Cash)</div>
+          <div class="text-2xl font-black mono mt-1" style="color: var(--accent-amber);" id="rev-metric-cash">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);" id="rev-metric-cash-ratio">占比 0%</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">扫码/刷卡 (DuitNow/Card)</div>
+          <div class="text-2xl font-black mono mt-1" style="color: var(--accent-sky);" id="rev-metric-card">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);" id="rev-metric-card-ratio">占比 0% (主流)</div>
+        </div>
+      </div>
+
+      <!-- 营收列表 -->
+      <div class="fin-card rounded-2xl p-5">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-4">营业日期</th>
+                <th class="py-3 px-4" style="color: var(--accent-amber);">现金实收 (Cash RM)</th>
+                <th class="py-3 px-4" style="color: var(--accent-sky);">扫码/刷卡 (DuitNow/Card RM)</th>
+                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">当日总实收 (RM)</th>
+                <th class="py-3 px-4">经手员工 / 交班对账备注</th>
+                <th class="py-3 px-4 text-right">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-revenue" class="divide-y mono" style="border-color: var(--border-subtle);">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 4: 供应商进货对账 (SUPPLIERS) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-suppliers" class="hidden space-y-6">
+      
+      <div class="fin-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+            <i data-lucide="truck" class="w-5 h-5 text-amber-500"></i>
+            <span>供应商账单与应付账款对账</span>
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+            生鲜肉类、螺蛳粉干米粉、酸笋原产地调料与外卖包装发票
+          </p>
+        </div>
+
+        <button onclick="openAddSupplierModal()" class="text-xs px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold shadow-md shadow-amber-600/30 flex items-center gap-1.5 transition">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>新增进货账单</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">供应商账单总额</div>
+          <div class="text-2xl font-black mono mt-1 text-current" id="supp-sum-total">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">累计进货对账单</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">未付款 (待付应付款项)</div>
+          <div class="text-2xl font-black mono mt-1" style="color: var(--accent-rose);" id="supp-sum-unpaid">RM 0.00</div>
+          <div class="text-xs mt-1 font-semibold" style="color: var(--accent-rose);">⚠️ 需按期核销结款</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">已结清 (已核销款项)</div>
+          <div class="text-2xl font-black mono mt-1 text-emerald-600 dark:text-emerald-400" id="supp-sum-paid">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--accent-emerald);">已附正式核销收据</div>
+        </div>
+      </div>
+
+      <div class="fin-card rounded-2xl p-5">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-4">进货日期</th>
+                <th class="py-3 px-4">供应商名称</th>
+                <th class="py-3 px-4">供货类别</th>
+                <th class="py-3 px-4">发票/DO单号</th>
+                <th class="py-3 px-4 font-bold" style="color: var(--accent-amber);">账单金额 (RM)</th>
+                <th class="py-3 px-4">付款状态</th>
+                <th class="py-3 px-4">核销收据号</th>
+                <th class="py-3 px-4">主要货物备注</th>
+                <th class="py-3 px-4 text-right">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-suppliers" class="divide-y" style="border-color: var(--border-subtle);">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 5: 外卖平台扣点审计 (DELIVERY) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-delivery" class="hidden space-y-6">
+      
+      <div class="fin-card rounded-2xl p-4 sm:p-5">
+        <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+          <i data-lucide="bike" class="w-5 h-5 text-sky-500"></i>
+          <span>外卖平台月结单抽佣审计与净打款分析</span>
+        </h2>
+        <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+          精确审查 GrabFood、ShopeeFood、Foodpanda 平台实际扣点比例 (31%~33%) 及商家补贴让利损耗
+        </p>
+      </div>
+
+      <!-- 3 大平台卡片 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <div class="fin-card rounded-2xl p-5 border relative overflow-hidden" style="border-color: rgba(16,185,129,0.3);">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold text-xs">GF</span>
+              <div>
+                <h3 class="font-bold text-sm text-current">GrabFood</h3>
+                <span class="text-[10px]" style="color: var(--accent-emerald);">主力平台 (份额 56.8%)</span>
+              </div>
+            </div>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" style="background: rgba(16,185,129,0.15); color: var(--accent-emerald);">实扣 31.9%</span>
+          </div>
+          <div class="space-y-2 text-xs pt-3 border-t mono" style="border-color: var(--border-subtle); color: var(--text-secondary);">
+            <div class="flex justify-between"><span>平台总流水 (Gross):</span> <span class="font-bold text-current">RM 10,500.00</span></div>
+            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span>- RM 3,150.00</span></div>
+            <div class="flex justify-between" style="color: var(--accent-amber);"><span>商家补贴折扣:</span> <span>- RM 200.00</span></div>
+            <div class="flex justify-between font-black text-sm pt-2 border-t text-emerald-600 dark:text-emerald-400" style="border-color: var(--border-subtle);">
+              <span>实际净打款:</span> <span>RM 7,150.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fin-card rounded-2xl p-5 border relative overflow-hidden" style="border-color: rgba(236,72,153,0.3);">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-pink-500 text-white flex items-center justify-center font-bold text-xs">FP</span>
+              <div>
+                <h3 class="font-bold text-sm text-current">Foodpanda</h3>
+                <span class="text-[10px] text-pink-500">次级主力 (份额 25.9%)</span>
+              </div>
+            </div>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" style="background: rgba(236,72,153,0.15); color: #ec4899;">实扣 33.1%</span>
+          </div>
+          <div class="space-y-2 text-xs pt-3 border-t mono" style="border-color: var(--border-subtle); color: var(--text-secondary);">
+            <div class="flex justify-between"><span>平台总流水 (Gross):</span> <span class="font-bold text-current">RM 4,800.00</span></div>
+            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span>- RM 1,440.00</span></div>
+            <div class="flex justify-between" style="color: var(--accent-amber);"><span>商家补贴折扣:</span> <span>- RM 150.00</span></div>
+            <div class="flex justify-between font-black text-sm pt-2 border-t text-pink-600 dark:text-pink-400" style="border-color: var(--border-subtle);">
+              <span>实际净打款:</span> <span>RM 3,210.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fin-card rounded-2xl p-5 border relative overflow-hidden" style="border-color: rgba(249,115,22,0.3);">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs">SF</span>
+              <div>
+                <h3 class="font-bold text-sm text-current">ShopeeFood</h3>
+                <span class="text-[10px] text-orange-500">补充平台 (份额 17.3%)</span>
+              </div>
+            </div>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" style="background: rgba(249,115,22,0.15); color: #f97316;">实扣 31.1%</span>
+          </div>
+          <div class="space-y-2 text-xs pt-3 border-t mono" style="border-color: var(--border-subtle); color: var(--text-secondary);">
+            <div class="flex justify-between"><span>平台总流水 (Gross):</span> <span class="font-bold text-current">RM 3,200.00</span></div>
+            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span>- RM 896.00</span></div>
+            <div class="flex justify-between" style="color: var(--accent-amber);"><span>商家补贴折扣:</span> <span>- RM 100.00</span></div>
+            <div class="flex justify-between font-black text-sm pt-2 border-t text-orange-600 dark:text-orange-400" style="border-color: var(--border-subtle);">
+              <span>实际净打款:</span> <span>RM 2,204.00</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 外卖月结明细列表 -->
+      <div class="fin-card rounded-2xl p-5">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-4">所属月份</th>
+                <th class="py-3 px-4 font-bold text-current">外卖平台</th>
+                <th class="py-3 px-4">平台总销售额 (Gross)</th>
+                <th class="py-3 px-4 text-rose-500">平台总抽佣</th>
+                <th class="py-3 px-4" style="color: var(--accent-amber);">商家补贴</th>
+                <th class="py-3 px-4 font-black text-emerald-600 dark:text-emerald-400">实际净打款到账</th>
+                <th class="py-3 px-4 font-semibold text-cyan-600 dark:text-cyan-400">综合抽佣率</th>
+                <th class="py-3 px-4">月结单 Tax Invoice 备注</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-delivery" class="divide-y mono" style="border-color: var(--border-subtle);">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 6: 58道菜品毛利透视 (DISHES) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-dishes" class="hidden space-y-6">
+      
+      <div class="fin-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+            <i data-lucide="flame" class="w-5 h-5 text-orange-500"></i>
+            <span>58 道菜品核定售价与食材成本毛利排行</span>
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+            测算每一道螺蛳粉、炒粉、小吃与饮品的单份毛利贡献，辅助经营调价
+          </p>
+        </div>
+
+        <input type="text" id="filter-dish-input" oninput="onDishFilter()" placeholder="搜索菜品名称或编号 (S1, S3, S12)..." class="text-xs border rounded-xl px-3.5 py-2 w-full sm:w-64 focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+      </div>
+
+      <div class="fin-card rounded-2xl p-5 overflow-hidden">
+        <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="sticky top-0 z-10 backdrop-blur-md uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-header); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-4">编号</th>
+                <th class="py-3 px-4 font-bold text-current">菜品名称与规格</th>
+                <th class="py-3 px-4">所属分类</th>
+                <th class="py-3 px-4 font-semibold text-current">售价 (RM)</th>
+                <th class="py-3 px-4 font-semibold" style="color: var(--accent-amber);">食材成本估算 (RM)</th>
+                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">单份毛利 (RM)</th>
+                <th class="py-3 px-4 font-bold text-cyan-600 dark:text-cyan-400">毛利率 (%)</th>
+                <th class="py-3 px-4">利润评价</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-dishes" class="divide-y" style="border-color: var(--border-subtle);">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 7: 损益表 (P&L) 导出与打印 (PNL) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-pnl" class="hidden space-y-6">
+      
+      <div class="no-print fin-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+            <i data-lucide="file-spreadsheet" class="w-5 h-5 text-indigo-500"></i>
+            <span>标准餐饮损益报表 (Profit & Loss Statement)</span>
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+            自动聚合当月已录入的实际流水与经营指标，支持一键高保真打印或导出 Excel
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="text-xs px-3.5 py-2 rounded-xl border font-medium transition flex items-center gap-1.5" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            <i data-lucide="printer" class="w-4 h-4 text-indigo-500"></i>
+            <span>打印 / 另存为 PDF</span>
+          </button>
+          <button onclick="exportPnLToExcel()" class="text-xs px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>导出 CSV / Excel</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 高保真 P&L 报表呈现 -->
+      <div class="fin-card rounded-2xl p-6 sm:p-10 max-w-4xl mx-auto shadow-xl">
+        <div class="text-center pb-6 border-b" style="border-color: var(--border-subtle);">
+          <div class="text-2xl font-extrabold tracking-tight text-current">来碗 · 柳州地道螺蛳粉 (新山 Austin Heights)</div>
+          <div class="text-base font-semibold mt-1 text-emerald-600 dark:text-emerald-400">综合营业利润与损失表 (P&L Financial Statement)</div>
+          <div class="text-xs mt-1 mono" style="color: var(--text-muted);" id="pnl-statement-subtitle">
+            核算周期: 2026年 9月 1日 至 2026年 9月 30日 | 币种: MYR (林吉特)
+          </div>
+        </div>
+
+        <div class="mt-6 space-y-6 text-xs sm:text-sm mono text-current">
+          
+          <!-- 板块一: 营业收入 -->
+          <div>
+            <div class="flex justify-between items-center text-xs uppercase tracking-wider font-bold border-b pb-2" style="border-color: var(--border-subtle); color: var(--text-muted);">
+              <span>一、营业收入 (Gross Operating Revenue)</span>
+              <span>金额 (RM)</span>
+            </div>
+            <div class="divide-y pt-2" style="border-color: var(--border-subtle);">
+              <div class="py-1.5 flex justify-between" style="color: var(--text-secondary);">
+                <span>1. 门店柜台实收 (堂食与自取现金+扫码到账)</span>
+                <span class="text-current font-semibold" id="pnl-counter-rev">RM 0.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between" style="color: var(--text-secondary);">
+                <span>2. 外卖平台净打款 (GrabFood / ShopeeFood / Foodpanda)</span>
+                <span class="text-current font-semibold" id="pnl-delivery-rev">RM 0.00</span>
+              </div>
+              <div class="py-2.5 flex justify-between font-bold text-sm text-emerald-600 dark:text-emerald-400 px-3 rounded-xl mt-1" style="background-color: var(--bg-card-subtle);">
+                <span>营业收入总计 (Total Revenue)</span>
+                <span id="pnl-total-rev">RM 0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 板块二: 营业直接成本 (COGS) -->
+          <div>
+            <div class="flex justify-between items-center text-xs uppercase tracking-wider font-bold border-b pb-2" style="border-color: var(--border-subtle); color: var(--text-muted);">
+              <span>二、营业直接成本 (Cost of Goods Sold - COGS)</span>
+              <span>金额 (RM)</span>
+            </div>
+            <div class="divide-y pt-2" style="border-color: var(--border-subtle);">
+              <div class="py-1.5 flex justify-between" style="color: var(--text-secondary);">
+                <span>1. 生鲜肉类与筒骨采购 (南洋生鲜批发)</span>
+                <span class="text-current font-semibold" id="pnl-cogs-meat">RM 4,250.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between" style="color: var(--text-secondary);">
+                <span>2. 柳州干米粉与酸笋专用配料 (柳韵海运)</span>
+                <span class="text-current font-semibold" id="pnl-cogs-dry">RM 4,450.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between" style="color: var(--text-secondary);">
+                <span>3. 巴刹生鲜时蔬与配菜</span>
+                <span class="text-current font-semibold" id="pnl-cogs-veg">RM 1,200.00</span>
+              </div>
+              <div class="py-1.5 flex justify-between" style="color: var(--text-secondary);">
+                <span>4. 外卖专用打包碗与包装耗材</span>
+                <span class="text-current font-semibold" id="pnl-cogs-pack">RM 1,300.00</span>
+              </div>
+              <div class="py-2.5 flex justify-between font-bold text-sm px-3 rounded-xl mt-1" style="background-color: var(--bg-card-subtle); color: var(--accent-amber);">
+                <span>营业直接成本总计 (Total COGS)</span>
+                <span id="pnl-total-cogs">RM 0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 板块三: 毛利润 -->
+          <div class="p-3.5 rounded-xl border flex justify-between items-center font-extrabold text-base" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--accent-emerald);">
+            <span>三、营业毛利润 (Gross Profit)</span>
+            <span class="text-lg" id="pnl-gross-profit">RM 0.00</span>
+          </div>
+
+          <!-- 板块四: 运营管理杂支 (OPEX) -->
+          <div>
+            <div class="flex justify-between items-center text-xs uppercase tracking-wider font-bold border-b pb-2" style="border-color: var(--border-subtle); color: var(--text-muted);">
+              <span>四、店铺运营管理费用 (Operating Expenses - OPEX)</span>
+              <span>金额 (RM)</span>
+            </div>
+            <div class="divide-y pt-2" style="border-color: var(--border-subtle);" id="pnl-opex-breakdown">
+              <!-- JS 动态填入各项实际发生杂支 -->
+            </div>
+            <div class="py-2.5 flex justify-between font-bold text-sm px-3 rounded-xl mt-2" style="background-color: var(--bg-card-subtle); color: var(--accent-rose);">
+              <span>运营杂支总计 (Total OPEX)</span>
+              <span id="pnl-total-opex">RM 0.00</span>
+            </div>
+          </div>
+
+          <!-- 板块五: 净利润 -->
+          <div class="p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row justify-between sm:items-center gap-2" style="background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3);">
+            <div>
+              <span class="text-xs uppercase tracking-wider font-bold" style="color: var(--accent-emerald);">五、当月预估净利润 (Net Operating Profit)</span>
+              <div class="text-2xl sm:text-3xl font-black mt-1 text-emerald-600 dark:text-emerald-400" id="pnl-final-net-profit">
+                RM 0.00
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs" style="color: var(--text-muted);">净利润率 (Margin)</span>
+              <div class="text-xl font-black mono text-emerald-600 dark:text-emerald-400" id="pnl-final-margin">
+                0.0%
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-8 pt-4 border-t text-xs flex justify-between items-center" style="border-color: var(--border-subtle); color: var(--text-muted);">
+          <span>来碗餐饮财务决策系统 · 真实做账版本</span>
+          <span>打印与核验日期: 2026-09-17</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 8: GOOGLE SHEET 联通设置 (SETTINGS) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-settings" class="hidden space-y-6">
+      
+      <div class="fin-card rounded-2xl p-6">
+        <h2 class="text-lg font-bold text-current flex items-center gap-2 mb-2">
+          <i data-lucide="cloud-cog" class="w-5 h-5 text-cyan-500"></i>
+          <span>Google Sheet 双向联动与 Webhook 配置</span>
+        </h2>
+        <p class="text-xs mb-6" style="color: var(--text-muted);">
+          系统当前直接与您的 Google Sheet 绑定。无论在电脑还是手机上记账，数据均保存在本地并可自动写入 Google Sheet！
+        </p>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-semibold text-current mb-1">已连接的 Google Sheet 共享地址:</label>
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" class="border rounded-xl px-3 py-2.5 w-full mono text-xs" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+              <a href="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center gap-1.5 whitespace-nowrap transition">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <span>打开表格</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t" style="border-color: var(--border-subtle);">
+            <label class="block font-semibold text-current mb-1">Google Apps Script Webhook URL (写入端):</label>
+            <p class="text-[11px] mb-2" style="color: var(--text-muted);">配置后，在网页端记账将直接将新的一行写入 Google Sheet 对应的表格中！</p>
+            <div class="flex items-center gap-2">
+              <input type="text" id="cfg-webhook-url" placeholder="例如: https://script.google.com/macros/s/.../exec" class="border rounded-xl px-3 py-2.5 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <button onclick="saveWebhookSettings()" class="px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold whitespace-nowrap transition">
+                保存配置
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t" style="border-color: var(--border-subtle);">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-current">Google Apps Script 复制即用代码:</span>
+              <button onclick="copyAppsScriptCode()" class="text-xs text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span id="copy-status-text">一键复制代码</span>
+              </button>
+            </div>
+            <pre class="p-4 rounded-xl text-[11px] mono overflow-x-auto border max-h-48" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);" id="script-code-block">
+function doPost(e) {
+  try {
+    var json = JSON.parse(e.postData.contents);
+    var sheetName = json.sheetName || '运营与日常杂支';
+    var rowData = json.row;
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) sheet = ss.insertSheet(sheetName);
+    sheet.appendRow(rowData);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Row added' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+            </pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+      <!-- ============================================================ -->
+    <!-- TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-menu-manager" class="hidden space-y-6">
+      
+      <!-- 头部控制栏：GitHub PAT 配置与一键同步按钮 -->
+      <div class="fin-card rounded-2xl p-5 border relative overflow-hidden" style="border-color: rgba(16,185,129,0.3);">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+                <i data-lucide="edit-3" class="w-5 h-5 text-emerald-500"></i>
+                <span>在线点餐菜单与价格管理 (Menu & Price Manager)</span>
+              </h2>
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/15 text-emerald-500">
+                直连 GitHub Pages 前台 (`index.html`)
+              </span>
+            </div>
+            <p class="text-xs mt-1" style="color: var(--text-muted);">
+              店主可在此随时调整 58 道菜品的单价 (RM)、菜品名称、描述、热销角标与上下架状态。修改后点击按钮即可直接一键同步在线点餐前台！
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="saveAndDeployMenuToGitHub()" id="btn-deploy-menu" class="text-xs px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition transform hover:scale-[1.02] active:scale-[0.98]">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>🚀 一键发布菜单到在线点餐系统</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- GitHub PAT 秘钥绑定框 -->
+        <div class="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-3 gap-3 text-xs" style="border-color: var(--border-subtle);">
+          <div class="md:col-span-2 flex items-center gap-2">
+            <span class="font-semibold whitespace-nowrap text-current">GitHub Token (PAT):</span>
+            <input type="password" id="inp-github-pat" placeholder="粘贴您的 Personal Access Token (ghp_...)" oninput="onPatInputChange()" class="border rounded-xl px-3 py-2 w-full mono focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            <button onclick="togglePatVisibility()" class="p-2 border rounded-xl" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);" title="显示/隐藏Token">
+              <i data-lucide="eye" id="pat-eye-icon" class="w-4 h-4 text-slate-400"></i>
+            </button>
+            <button onclick="saveGithubToken()" class="px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold whitespace-nowrap">
+              保存Token
+            </button>
+          </div>
+          <div class="flex items-center justify-end gap-2 text-[11px]" style="color: var(--text-muted);">
+            <span id="pat-status-badge" class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium">⚠️ 未配置 Token (发布需配置)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分类筛选与搜索控制栏 -->
+      <div class="fin-card rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1" id="menu-mgr-cat-pills">
+          <!-- JS populate category pills -->
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <input type="text" id="menu-mgr-search" oninput="renderMenuManagerList()" placeholder="搜索菜品编号、名称..." class="text-xs border rounded-xl px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          <span id="menu-mgr-count-pill" class="text-xs px-2.5 py-2 rounded-xl font-bold mono" style="background-color: var(--bg-card-subtle); color: var(--text-secondary);">58 道</span>
+        </div>
+      </div>
+
+      <!-- 菜品编辑卡片列表 网格 -->
+      <div id="menu-mgr-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- JS 动态渲染 58 道菜品编辑卡片 -->
+      </div>
+
+    </div>
+
   </main>
+
+  <!-- ============================================================ -->
+  <!-- MODAL 1: 记一笔 / 修改开支 (ADD/EDIT EXPENSE MODAL) -->
+  <!-- ============================================================ -->
+  <div id="modal-expense" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="fin-card rounded-2xl p-6 w-full max-w-lg border shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b" style="border-color: var(--border-subtle);">
+        <h3 class="text-base font-bold text-current flex items-center gap-2">
+          <i data-lucide="receipt" class="w-4 h-4 text-rose-500"></i>
+          <span id="modal-expense-title">记一笔日常杂支开销</span>
+        </h3>
+        <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-current">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 快速预设 -->
+      <div class="mb-4" id="expense-preset-box">
+        <label class="text-[11px] mb-1.5 block" style="color: var(--text-muted);">一键预设模板 (点击自动填入):</label>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="fillExpensePreset('rent')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">🏢 门市月租 RM3500</button>
+          <button type="button" onclick="fillExpensePreset('gas')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">🔥 煤气4桶 RM280</button>
+          <button type="button" onclick="fillExpensePreset('tnb')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">💡 TNB电费</button>
+          <button type="button" onclick="fillExpensePreset('saj')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">💧 SAJ水费</button>
+          <button type="button" onclick="fillExpensePreset('wages')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">👨‍🍳 员工薪资预支</button>
+        </div>
+      </div>
+
+      <form id="form-expense" onsubmit="saveExpenseRecord(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="edit-expense-id" value="">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">支出日期</label>
+            <input type="date" id="inp-exp-date" required class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-rose-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">费用类别</label>
+            <select id="inp-exp-cat" required class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-rose-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="店铺租金">店铺租金 (Rent)</option>
+              <option value="电费">电费 (TNB)</option>
+              <option value="水费">水费 (SAJ)</option>
+              <option value="煤气费">煤气费 (Gas)</option>
+              <option value="员工薪资与福利">员工薪资与福利 (Wages)</option>
+              <option value="柜台零用金(Petty Cash)">柜台零用金 (Petty Cash)</option>
+              <option value="打包与外卖耗材">打包与外卖耗材</option>
+              <option value="杂项维修与维护">杂项维修与维护</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">项目明细名称</label>
+            <input type="text" id="inp-exp-name" required placeholder="如: 9月份门市租金" class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-rose-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">支出金额 (RM)</label>
+            <input type="number" step="0.01" id="inp-exp-amount" required placeholder="0.00" class="border rounded-xl px-3 py-2 w-full font-bold mono focus:outline-none focus:ring-1 focus:ring-rose-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--accent-rose);">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">支付方式</label>
+            <select id="inp-exp-payment" class="border rounded-xl px-2.5 py-2 w-full focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="Maybank">Maybank 转账</option>
+              <option value="DuitNow">DuitNow 扫码</option>
+              <option value="柜台现金">柜台现金</option>
+              <option value="TNB Online">TNB Online</option>
+              <option value="JomPAY">JomPAY</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">凭证/收据单号</label>
+            <input type="text" id="inp-exp-ref" placeholder="OR-..." class="border rounded-xl px-2.5 py-2 w-full focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">经手人</label>
+            <input type="text" id="inp-exp-handled" placeholder="店长/老板" class="border rounded-xl px-2.5 py-2 w-full focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1" style="color: var(--text-secondary);">备注说明</label>
+          <input type="text" id="inp-exp-notes" placeholder="对公转账房东、小票已贴存等" class="border rounded-xl px-3 py-2 w-full focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+        </div>
+
+        <div class="pt-3 flex items-center justify-between border-t" style="border-color: var(--border-subtle);">
+          <button type="button" id="btn-delete-expense" onclick="deleteCurrentExpense()" class="hidden px-3.5 py-2 rounded-xl text-rose-600 hover:bg-rose-500/10 font-semibold transition flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>删除该账单</span>
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closeExpenseModal()" class="px-4 py-2 rounded-xl border transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">取消</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition shadow-md shadow-rose-600/30">
+              <span id="btn-expense-submit-text">确认保存</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL 2: 录入/修改每日营收 (ADD/EDIT REVENUE MODAL) -->
+  <!-- ============================================================ -->
+  <div id="modal-revenue" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="fin-card rounded-2xl p-6 w-full max-w-md border shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b" style="border-color: var(--border-subtle);">
+        <h3 class="text-base font-bold text-current flex items-center gap-2">
+          <i data-lucide="banknote" class="w-4 h-4 text-emerald-500"></i>
+          <span id="modal-revenue-title">录入每日柜台实收流水</span>
+        </h3>
+        <button onclick="closeRevenueModal()" class="text-slate-400 hover:text-current">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-revenue" onsubmit="saveRevenueRecord(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="edit-revenue-id" value="">
+
+        <div>
+          <label class="block font-semibold mb-1" style="color: var(--text-secondary);">营业日期</label>
+          <input type="date" id="inp-rev-date" required class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">现金实收 (Cash RM)</label>
+            <input type="number" step="0.01" id="inp-rev-cash" required placeholder="0.00" class="border rounded-xl px-3 py-2 w-full font-bold mono focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--accent-amber);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">扫码/刷卡 (DuitNow RM)</label>
+            <input type="number" step="0.01" id="inp-rev-card" required placeholder="0.00" class="border rounded-xl px-3 py-2 w-full font-bold mono focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--accent-sky);">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1" style="color: var(--text-secondary);">交班员工与对账备注</label>
+          <input type="text" id="inp-rev-notes" placeholder="早晚班交接正常，钱箱已核准" class="border rounded-xl px-3 py-2 w-full focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+        </div>
+
+        <div class="pt-3 flex items-center justify-between border-t" style="border-color: var(--border-subtle);">
+          <button type="button" id="btn-delete-revenue" onclick="deleteCurrentRevenue()" class="hidden px-3.5 py-2 rounded-xl text-rose-600 hover:bg-rose-500/10 font-semibold transition flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>删除流水</span>
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closeRevenueModal()" class="px-4 py-2 rounded-xl border transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">取消</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition shadow-md shadow-emerald-600/30">
+              <span id="btn-revenue-submit-text">保存流水</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC ENGINE -->
+  <script>
+    // 1. 数据常量
+    const SPREADSHEET_ID = "1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o";
+    const GVIZ_BASE = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
+
+    // 2026 年 1~9 月 POS 门店直连真实销售数据 (包含全年月度汇总与 260 天每日明细)
+    const POS_SALES_HISTORY = {"2026-01": {"month": "2026-01", "total_sales": 43800.25, "total_bills": 1092, "aov": 40.11, "total_service_charge": 3663.44, "days_count": 31, "daily_sales": [{"date": "2026-01-01", "total": 1505.85, "bills": 33, "charge": 109.89, "net": 1505.85}, {"date": "2026-01-02", "total": 1524.9, "bills": 34, "charge": 127.23, "net": 1524.9}, {"date": "2026-01-03", "total": 2066.6, "bills": 40, "charge": 179.96, "net": 2066.6}, {"date": "2026-01-04", "total": 1565.7, "bills": 41, "charge": 133.7, "net": 1565.7}, {"date": "2026-01-05", "total": 1443.7, "bills": 35, "charge": 124.68, "net": 1443.7}, {"date": "2026-01-06", "total": 1178.6, "bills": 29, "charge": 90.07, "net": 1178.6}, {"date": "2026-01-07", "total": 662.1, "bills": 19, "charge": 56.24, "net": 662.1}, {"date": "2026-01-08", "total": 1017.7, "bills": 24, "charge": 75.3, "net": 1017.7}, {"date": "2026-01-09", "total": 1282.6, "bills": 33, "charge": 109.14, "net": 1282.6}, {"date": "2026-01-10", "total": 1935.95, "bills": 46, "charge": 168.06, "net": 1935.95}, {"date": "2026-01-11", "total": 1441.6, "bills": 35, "charge": 125.22, "net": 1441.6}, {"date": "2026-01-12", "total": 1283.05, "bills": 37, "charge": 109.69, "net": 1283.05}, {"date": "2026-01-13", "total": 987.15, "bills": 33, "charge": 81.9, "net": 987.15}, {"date": "2026-01-14", "total": 1624.4, "bills": 39, "charge": 140.38, "net": 1624.4}, {"date": "2026-01-15", "total": 1301.5, "bills": 30, "charge": 108.96, "net": 1301.5}, {"date": "2026-01-16", "total": 1692.9, "bills": 47, "charge": 142.93, "net": 1692.9}, {"date": "2026-01-17", "total": 1499.55, "bills": 43, "charge": 122.01, "net": 1499.55}, {"date": "2026-01-18", "total": 1698.85, "bills": 37, "charge": 147.0, "net": 1698.85}, {"date": "2026-01-19", "total": 849.4, "bills": 22, "charge": 71.2, "net": 849.4}, {"date": "2026-01-20", "total": 1606.75, "bills": 44, "charge": 134.44, "net": 1606.75}, {"date": "2026-01-21", "total": 1162.4, "bills": 31, "charge": 88.98, "net": 1162.4}, {"date": "2026-01-22", "total": 1036.85, "bills": 31, "charge": 90.04, "net": 1036.85}, {"date": "2026-01-23", "total": 1372.35, "bills": 35, "charge": 118.91, "net": 1372.35}, {"date": "2026-01-24", "total": 2327.75, "bills": 49, "charge": 200.99, "net": 2327.75}, {"date": "2026-01-25", "total": 2098.95, "bills": 53, "charge": 174.81, "net": 2098.95}, {"date": "2026-01-26", "total": 1272.1, "bills": 31, "charge": 98.6, "net": 1272.1}, {"date": "2026-01-27", "total": 869.7, "bills": 28, "charge": 75.27, "net": 869.7}, {"date": "2026-01-28", "total": 1355.2, "bills": 29, "charge": 114.03, "net": 1355.2}, {"date": "2026-01-29", "total": 949.35, "bills": 23, "charge": 78.65, "net": 949.35}, {"date": "2026-01-30", "total": 1518.25, "bills": 39, "charge": 121.13, "net": 1518.25}, {"date": "2026-01-31", "total": 1668.5, "bills": 42, "charge": 144.03, "net": 1668.5}]}, "2026-02": {"month": "2026-02", "total_sales": 29069.25, "total_bills": 701, "aov": 41.47, "total_service_charge": 2431.57, "days_count": 28, "daily_sales": [{"date": "2026-02-01", "total": 1377.25, "bills": 28, "charge": 113.07, "net": 1377.25}, {"date": "2026-02-02", "total": 1188.85, "bills": 28, "charge": 107.71, "net": 1188.85}, {"date": "2026-02-03", "total": 1098.65, "bills": 27, "charge": 87.72, "net": 1098.65}, {"date": "2026-02-04", "total": 1087.25, "bills": 29, "charge": 94.8, "net": 1087.25}, {"date": "2026-02-05", "total": 939.5, "bills": 26, "charge": 68.47, "net": 939.5}, {"date": "2026-02-06", "total": 1211.25, "bills": 30, "charge": 96.34, "net": 1211.25}, {"date": "2026-02-07", "total": 1723.15, "bills": 39, "charge": 149.63, "net": 1723.15}, {"date": "2026-02-08", "total": 1801.5, "bills": 39, "charge": 159.35, "net": 1801.5}, {"date": "2026-02-09", "total": 1206.15, "bills": 32, "charge": 94.44, "net": 1206.15}, {"date": "2026-02-10", "total": 754.8, "bills": 23, "charge": 63.94, "net": 754.8}, {"date": "2026-02-11", "total": 980.5, "bills": 23, "charge": 85.81, "net": 980.5}, {"date": "2026-02-12", "total": 922.6, "bills": 26, "charge": 78.66, "net": 922.6}, {"date": "2026-02-13", "total": 1771.0, "bills": 37, "charge": 148.06, "net": 1771.0}, {"date": "2026-02-14", "total": 1927.1, "bills": 42, "charge": 170.06, "net": 1927.1}, {"date": "2026-02-15", "total": 1164.75, "bills": 22, "charge": 103.1, "net": 1164.75}, {"date": "2026-02-16", "total": 257.35, "bills": 8, "charge": 15.96, "net": 257.35}, {"date": "2026-02-17", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-18", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-19", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-20", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-21", "total": 1343.75, "bills": 34, "charge": 108.41, "net": 1343.75}, {"date": "2026-02-22", "total": 1068.1, "bills": 27, "charge": 95.57, "net": 1068.1}, {"date": "2026-02-23", "total": 1002.75, "bills": 25, "charge": 82.06, "net": 1002.75}, {"date": "2026-02-24", "total": 970.2, "bills": 25, "charge": 70.03, "net": 970.2}, {"date": "2026-02-25", "total": 1105.45, "bills": 29, "charge": 91.41, "net": 1105.45}, {"date": "2026-02-26", "total": 956.9, "bills": 29, "charge": 78.35, "net": 956.9}, {"date": "2026-02-27", "total": 1505.7, "bills": 32, "charge": 124.5, "net": 1505.7}, {"date": "2026-02-28", "total": 1704.75, "bills": 41, "charge": 144.12, "net": 1704.75}]}, "2026-03": {"month": "2026-03", "total_sales": 44574.15, "total_bills": 1142, "aov": 39.03, "total_service_charge": 3692.21, "days_count": 31, "daily_sales": [{"date": "2026-03-01", "total": 1985.75, "bills": 46, "charge": 173.51, "net": 1985.75}, {"date": "2026-03-02", "total": 1573.7, "bills": 40, "charge": 134.58, "net": 1573.7}, {"date": "2026-03-03", "total": 1138.05, "bills": 27, "charge": 98.79, "net": 1138.05}, {"date": "2026-03-04", "total": 1212.6, "bills": 28, "charge": 109.92, "net": 1212.6}, {"date": "2026-03-05", "total": 967.1, "bills": 28, "charge": 79.45, "net": 967.1}, {"date": "2026-03-06", "total": 1760.3, "bills": 43, "charge": 138.54, "net": 1760.3}, {"date": "2026-03-07", "total": 2455.45, "bills": 59, "charge": 204.59, "net": 2455.45}, {"date": "2026-03-08", "total": 1301.4, "bills": 34, "charge": 115.14, "net": 1301.4}, {"date": "2026-03-09", "total": 531.15, "bills": 18, "charge": 46.03, "net": 531.15}, {"date": "2026-03-10", "total": 1415.1, "bills": 34, "charge": 123.6, "net": 1415.1}, {"date": "2026-03-11", "total": 1241.85, "bills": 36, "charge": 99.6, "net": 1241.85}, {"date": "2026-03-12", "total": 1544.6, "bills": 38, "charge": 131.86, "net": 1544.6}, {"date": "2026-03-13", "total": 1106.5, "bills": 30, "charge": 94.82, "net": 1106.5}, {"date": "2026-03-14", "total": 1153.05, "bills": 33, "charge": 83.35, "net": 1153.05}, {"date": "2026-03-15", "total": 2178.25, "bills": 57, "charge": 179.29, "net": 2178.25}, {"date": "2026-03-16", "total": 1321.45, "bills": 40, "charge": 96.83, "net": 1321.45}, {"date": "2026-03-17", "total": 1219.8, "bills": 33, "charge": 97.64, "net": 1219.8}, {"date": "2026-03-18", "total": 1249.1, "bills": 39, "charge": 102.7, "net": 1249.1}, {"date": "2026-03-19", "total": 1263.6, "bills": 33, "charge": 108.03, "net": 1263.6}, {"date": "2026-03-20", "total": 1870.95, "bills": 45, "charge": 151.34, "net": 1870.95}, {"date": "2026-03-21", "total": 1847.15, "bills": 45, "charge": 142.75, "net": 1847.15}, {"date": "2026-03-22", "total": 1188.4, "bills": 34, "charge": 102.2, "net": 1188.4}, {"date": "2026-03-23", "total": 1873.5, "bills": 49, "charge": 154.83, "net": 1873.5}, {"date": "2026-03-24", "total": 1600.75, "bills": 34, "charge": 121.32, "net": 1600.75}, {"date": "2026-03-25", "total": 1039.0, "bills": 28, "charge": 86.36, "net": 1039.0}, {"date": "2026-03-26", "total": 919.2, "bills": 26, "charge": 80.5, "net": 919.2}, {"date": "2026-03-27", "total": 1722.0, "bills": 38, "charge": 147.12, "net": 1722.0}, {"date": "2026-03-28", "total": 1637.7, "bills": 42, "charge": 140.78, "net": 1637.7}, {"date": "2026-03-29", "total": 1182.2, "bills": 29, "charge": 99.32, "net": 1182.2}, {"date": "2026-03-30", "total": 2169.8, "bills": 49, "charge": 170.4, "net": 2169.8}, {"date": "2026-03-31", "total": 904.7, "bills": 27, "charge": 77.02, "net": 904.7}]}, "2026-04": {"month": "2026-04", "total_sales": 36099.4, "total_bills": 895, "aov": 40.33, "total_service_charge": 2931.46, "days_count": 30, "daily_sales": [{"date": "2026-04-01", "total": 1008.0, "bills": 26, "charge": 82.43, "net": 1008.0}, {"date": "2026-04-02", "total": 928.5, "bills": 23, "charge": 77.3, "net": 928.5}, {"date": "2026-04-03", "total": 1859.85, "bills": 48, "charge": 152.06, "net": 1859.85}, {"date": "2026-04-04", "total": 1858.65, "bills": 38, "charge": 157.18, "net": 1858.65}, {"date": "2026-04-05", "total": 1298.45, "bills": 31, "charge": 106.79, "net": 1298.45}, {"date": "2026-04-06", "total": 1052.35, "bills": 27, "charge": 84.53, "net": 1052.35}, {"date": "2026-04-07", "total": 1220.05, "bills": 34, "charge": 95.63, "net": 1220.05}, {"date": "2026-04-08", "total": 1407.95, "bills": 34, "charge": 113.41, "net": 1407.95}, {"date": "2026-04-09", "total": 819.85, "bills": 22, "charge": 68.49, "net": 819.85}, {"date": "2026-04-10", "total": 1584.05, "bills": 36, "charge": 131.6, "net": 1584.05}, {"date": "2026-04-11", "total": 1739.1, "bills": 45, "charge": 146.84, "net": 1739.1}, {"date": "2026-04-12", "total": 1585.4, "bills": 38, "charge": 129.59, "net": 1585.4}, {"date": "2026-04-13", "total": 1156.7, "bills": 27, "charge": 100.03, "net": 1156.7}, {"date": "2026-04-14", "total": 736.05, "bills": 23, "charge": 47.38, "net": 736.05}, {"date": "2026-04-15", "total": 871.0, "bills": 25, "charge": 70.64, "net": 871.0}, {"date": "2026-04-16", "total": 574.05, "bills": 17, "charge": 43.36, "net": 574.05}, {"date": "2026-04-17", "total": 1251.55, "bills": 31, "charge": 82.39, "net": 1251.55}, {"date": "2026-04-18", "total": 1663.7, "bills": 35, "charge": 136.59, "net": 1663.7}, {"date": "2026-04-19", "total": 1292.05, "bills": 29, "charge": 115.56, "net": 1292.05}, {"date": "2026-04-20", "total": 1147.75, "bills": 30, "charge": 96.7, "net": 1147.75}, {"date": "2026-04-21", "total": 877.0, "bills": 22, "charge": 65.04, "net": 877.0}, {"date": "2026-04-22", "total": 578.5, "bills": 16, "charge": 45.91, "net": 578.5}, {"date": "2026-04-23", "total": 1235.9, "bills": 33, "charge": 108.89, "net": 1235.9}, {"date": "2026-04-24", "total": 1389.2, "bills": 31, "charge": 108.51, "net": 1389.2}, {"date": "2026-04-25", "total": 1632.6, "bills": 42, "charge": 136.64, "net": 1632.6}, {"date": "2026-04-26", "total": 1196.3, "bills": 27, "charge": 97.95, "net": 1196.3}, {"date": "2026-04-27", "total": 661.1, "bills": 15, "charge": 57.75, "net": 661.1}, {"date": "2026-04-28", "total": 1009.65, "bills": 26, "charge": 81.42, "net": 1009.65}, {"date": "2026-04-29", "total": 1208.25, "bills": 31, "charge": 93.62, "net": 1208.25}, {"date": "2026-04-30", "total": 1255.85, "bills": 33, "charge": 97.23, "net": 1255.85}]}, "2026-05": {"month": "2026-05", "total_sales": 33535.6, "total_bills": 837, "aov": 40.07, "total_service_charge": 2714.64, "days_count": 31, "daily_sales": [{"date": "2026-05-01", "total": 1519.6, "bills": 33, "charge": 121.61, "net": 1519.6}, {"date": "2026-05-02", "total": 1294.2, "bills": 35, "charge": 98.14, "net": 1294.2}, {"date": "2026-05-03", "total": 1134.55, "bills": 27, "charge": 95.49, "net": 1134.55}, {"date": "2026-05-04", "total": 518.6, "bills": 17, "charge": 42.53, "net": 518.6}, {"date": "2026-05-05", "total": 630.75, "bills": 22, "charge": 39.42, "net": 630.75}, {"date": "2026-05-06", "total": 1002.6, "bills": 22, "charge": 84.22, "net": 1002.6}, {"date": "2026-05-07", "total": 735.25, "bills": 19, "charge": 56.61, "net": 735.25}, {"date": "2026-05-08", "total": 924.95, "bills": 26, "charge": 74.63, "net": 924.95}, {"date": "2026-05-09", "total": 1418.8, "bills": 29, "charge": 121.34, "net": 1418.8}, {"date": "2026-05-10", "total": 981.75, "bills": 25, "charge": 81.32, "net": 981.75}, {"date": "2026-05-11", "total": 1167.25, "bills": 23, "charge": 93.14, "net": 1167.25}, {"date": "2026-05-12", "total": 724.2, "bills": 20, "charge": 55.3, "net": 724.2}, {"date": "2026-05-13", "total": 757.95, "bills": 24, "charge": 57.71, "net": 757.95}, {"date": "2026-05-14", "total": 882.9, "bills": 22, "charge": 72.89, "net": 882.9}, {"date": "2026-05-15", "total": 992.0, "bills": 26, "charge": 69.2, "net": 992.0}, {"date": "2026-05-16", "total": 2026.7, "bills": 44, "charge": 177.34, "net": 2026.7}, {"date": "2026-05-17", "total": 1476.05, "bills": 33, "charge": 112.97, "net": 1476.05}, {"date": "2026-05-18", "total": 764.85, "bills": 20, "charge": 60.98, "net": 764.85}, {"date": "2026-05-19", "total": 849.3, "bills": 25, "charge": 68.18, "net": 849.3}, {"date": "2026-05-20", "total": 1074.05, "bills": 29, "charge": 94.21, "net": 1074.05}, {"date": "2026-05-21", "total": 688.7, "bills": 17, "charge": 62.24, "net": 688.7}, {"date": "2026-05-22", "total": 1158.3, "bills": 29, "charge": 102.15, "net": 1158.3}, {"date": "2026-05-23", "total": 1396.85, "bills": 36, "charge": 113.4, "net": 1396.85}, {"date": "2026-05-24", "total": 1195.7, "bills": 29, "charge": 102.93, "net": 1195.7}, {"date": "2026-05-25", "total": 862.9, "bills": 22, "charge": 72.16, "net": 862.9}, {"date": "2026-05-26", "total": 1216.5, "bills": 25, "charge": 93.84, "net": 1216.5}, {"date": "2026-05-27", "total": 1136.35, "bills": 29, "charge": 94.49, "net": 1136.35}, {"date": "2026-05-28", "total": 1081.95, "bills": 26, "charge": 90.43, "net": 1081.95}, {"date": "2026-05-29", "total": 1643.95, "bills": 42, "charge": 126.32, "net": 1643.95}, {"date": "2026-05-30", "total": 1366.9, "bills": 34, "charge": 110.54, "net": 1366.9}, {"date": "2026-05-31", "total": 911.2, "bills": 27, "charge": 68.91, "net": 911.2}]}, "2026-06": {"month": "2026-06", "total_sales": 34416.8, "total_bills": 858, "aov": 40.11, "total_service_charge": 2814.98, "days_count": 30, "daily_sales": [{"date": "2026-06-01", "total": 1234.45, "bills": 29, "charge": 106.91, "net": 1234.45}, {"date": "2026-06-02", "total": 1313.45, "bills": 30, "charge": 112.66, "net": 1313.45}, {"date": "2026-06-03", "total": 1400.65, "bills": 34, "charge": 101.51, "net": 1400.65}, {"date": "2026-06-04", "total": 1503.95, "bills": 35, "charge": 122.78, "net": 1503.95}, {"date": "2026-06-05", "total": 778.6, "bills": 21, "charge": 64.94, "net": 778.6}, {"date": "2026-06-06", "total": 1542.8, "bills": 42, "charge": 133.5, "net": 1542.8}, {"date": "2026-06-07", "total": 1487.75, "bills": 27, "charge": 132.2, "net": 1487.75}, {"date": "2026-06-08", "total": 777.1, "bills": 19, "charge": 58.29, "net": 777.1}, {"date": "2026-06-09", "total": 1182.1, "bills": 26, "charge": 97.47, "net": 1182.1}, {"date": "2026-06-10", "total": 1167.45, "bills": 28, "charge": 92.29, "net": 1167.45}, {"date": "2026-06-11", "total": 1193.65, "bills": 30, "charge": 93.97, "net": 1193.65}, {"date": "2026-06-12", "total": 1313.55, "bills": 37, "charge": 110.32, "net": 1313.55}, {"date": "2026-06-13", "total": 1243.9, "bills": 34, "charge": 98.68, "net": 1243.9}, {"date": "2026-06-14", "total": 1442.25, "bills": 35, "charge": 119.25, "net": 1442.25}, {"date": "2026-06-15", "total": 915.5, "bills": 25, "charge": 72.91, "net": 915.5}, {"date": "2026-06-16", "total": 1189.9, "bills": 28, "charge": 87.43, "net": 1189.9}, {"date": "2026-06-17", "total": 1233.95, "bills": 27, "charge": 111.81, "net": 1233.95}, {"date": "2026-06-18", "total": 1089.55, "bills": 32, "charge": 83.92, "net": 1089.55}, {"date": "2026-06-19", "total": 1112.15, "bills": 34, "charge": 87.96, "net": 1112.15}, {"date": "2026-06-20", "total": 1536.9, "bills": 42, "charge": 128.65, "net": 1536.9}, {"date": "2026-06-21", "total": 854.7, "bills": 24, "charge": 66.98, "net": 854.7}, {"date": "2026-06-22", "total": 687.95, "bills": 22, "charge": 52.71, "net": 687.95}, {"date": "2026-06-23", "total": 565.1, "bills": 16, "charge": 45.62, "net": 565.1}, {"date": "2026-06-24", "total": 773.25, "bills": 22, "charge": 64.09, "net": 773.25}, {"date": "2026-06-25", "total": 785.25, "bills": 22, "charge": 64.02, "net": 785.25}, {"date": "2026-06-26", "total": 1067.9, "bills": 25, "charge": 89.97, "net": 1067.9}, {"date": "2026-06-27", "total": 1681.45, "bills": 37, "charge": 149.7, "net": 1681.45}, {"date": "2026-06-28", "total": 1458.2, "bills": 29, "charge": 115.38, "net": 1458.2}, {"date": "2026-06-29", "total": 898.85, "bills": 22, "charge": 66.05, "net": 898.85}, {"date": "2026-06-30", "total": 984.55, "bills": 24, "charge": 83.01, "net": 984.55}]}, "2026-07": {"month": "2026-07", "total_sales": 33078.3, "total_bills": 797, "aov": 41.5, "total_service_charge": 2763.87, "days_count": 31, "daily_sales": [{"date": "2026-07-01", "total": 786.65, "bills": 22, "charge": 64.75, "net": 786.65}, {"date": "2026-07-02", "total": 739.45, "bills": 20, "charge": 56.69, "net": 739.45}, {"date": "2026-07-03", "total": 1309.4, "bills": 30, "charge": 109.31, "net": 1309.4}, {"date": "2026-07-04", "total": 1249.65, "bills": 34, "charge": 103.99, "net": 1249.65}, {"date": "2026-07-05", "total": 1172.1, "bills": 21, "charge": 106.57, "net": 1172.1}, {"date": "2026-07-06", "total": 639.35, "bills": 15, "charge": 49.74, "net": 639.35}, {"date": "2026-07-07", "total": 750.95, "bills": 19, "charge": 64.21, "net": 750.95}, {"date": "2026-07-08", "total": 776.4, "bills": 24, "charge": 53.5, "net": 776.4}, {"date": "2026-07-09", "total": 704.3, "bills": 18, "charge": 59.26, "net": 704.3}, {"date": "2026-07-10", "total": 1400.9, "bills": 32, "charge": 110.08, "net": 1400.9}, {"date": "2026-07-11", "total": 1932.25, "bills": 45, "charge": 154.72, "net": 1932.25}, {"date": "2026-07-12", "total": 1369.35, "bills": 34, "charge": 108.22, "net": 1369.35}, {"date": "2026-07-13", "total": 1143.4, "bills": 32, "charge": 93.23, "net": 1143.4}, {"date": "2026-07-14", "total": 756.8, "bills": 22, "charge": 60.15, "net": 756.8}, {"date": "2026-07-15", "total": 964.9, "bills": 22, "charge": 76.19, "net": 964.9}, {"date": "2026-07-16", "total": 695.7, "bills": 17, "charge": 55.85, "net": 695.7}, {"date": "2026-07-17", "total": 797.6, "bills": 21, "charge": 69.46, "net": 797.6}, {"date": "2026-07-18", "total": 1971.4, "bills": 39, "charge": 176.44, "net": 1971.4}, {"date": "2026-07-19", "total": 817.35, "bills": 18, "charge": 69.98, "net": 817.35}, {"date": "2026-07-20", "total": 1022.75, "bills": 27, "charge": 86.86, "net": 1022.75}, {"date": "2026-07-21", "total": 1453.75, "bills": 34, "charge": 122.09, "net": 1453.75}, {"date": "2026-07-22", "total": 833.65, "bills": 22, "charge": 72.09, "net": 833.65}, {"date": "2026-07-23", "total": 678.3, "bills": 18, "charge": 56.98, "net": 678.3}, {"date": "2026-07-24", "total": 884.2, "bills": 26, "charge": 66.44, "net": 884.2}, {"date": "2026-07-25", "total": 1956.85, "bills": 41, "charge": 166.94, "net": 1956.85}, {"date": "2026-07-26", "total": 1019.0, "bills": 23, "charge": 88.15, "net": 1019.0}, {"date": "2026-07-27", "total": 1160.2, "bills": 23, "charge": 105.48, "net": 1160.2}, {"date": "2026-07-28", "total": 978.3, "bills": 25, "charge": 85.52, "net": 978.3}, {"date": "2026-07-29", "total": 871.45, "bills": 19, "charge": 71.84, "net": 871.45}, {"date": "2026-07-30", "total": 909.65, "bills": 23, "charge": 80.18, "net": 909.65}, {"date": "2026-07-31", "total": 1332.3, "bills": 31, "charge": 118.96, "net": 1332.3}]}, "2026-08": {"month": "2026-08", "total_sales": 37490.75, "total_bills": 904, "aov": 41.47, "total_service_charge": 3146.97, "days_count": 31, "daily_sales": [{"date": "2026-08-01", "total": 1546.25, "bills": 40, "charge": 125.1, "net": 1546.25}, {"date": "2026-08-02", "total": 1358.2, "bills": 30, "charge": 118.88, "net": 1358.2}, {"date": "2026-08-03", "total": 938.75, "bills": 25, "charge": 80.17, "net": 938.75}, {"date": "2026-08-04", "total": 1180.8, "bills": 31, "charge": 92.78, "net": 1180.8}, {"date": "2026-08-05", "total": 656.5, "bills": 19, "charge": 51.32, "net": 656.5}, {"date": "2026-08-06", "total": 845.05, "bills": 19, "charge": 75.57, "net": 845.05}, {"date": "2026-08-07", "total": 1131.0, "bills": 29, "charge": 91.68, "net": 1131.0}, {"date": "2026-08-08", "total": 1591.15, "bills": 38, "charge": 140.07, "net": 1591.15}, {"date": "2026-08-09", "total": 2081.1, "bills": 41, "charge": 186.14, "net": 2081.1}, {"date": "2026-08-10", "total": 1281.0, "bills": 33, "charge": 103.53, "net": 1281.0}, {"date": "2026-08-11", "total": 1003.55, "bills": 27, "charge": 83.37, "net": 1003.55}, {"date": "2026-08-12", "total": 991.65, "bills": 24, "charge": 81.15, "net": 991.65}, {"date": "2026-08-13", "total": 919.35, "bills": 22, "charge": 83.57, "net": 919.35}, {"date": "2026-08-14", "total": 1000.45, "bills": 26, "charge": 78.29, "net": 1000.45}, {"date": "2026-08-15", "total": 2218.05, "bills": 51, "charge": 185.92, "net": 2218.05}, {"date": "2026-08-16", "total": 939.2, "bills": 24, "charge": 75.95, "net": 939.2}, {"date": "2026-08-17", "total": 1225.55, "bills": 29, "charge": 105.76, "net": 1225.55}, {"date": "2026-08-18", "total": 969.9, "bills": 22, "charge": 81.6, "net": 969.9}, {"date": "2026-08-19", "total": 937.85, "bills": 30, "charge": 71.18, "net": 937.85}, {"date": "2026-08-20", "total": 1238.3, "bills": 33, "charge": 102.73, "net": 1238.3}, {"date": "2026-08-21", "total": 1698.4, "bills": 41, "charge": 141.94, "net": 1698.4}, {"date": "2026-08-22", "total": 1229.3, "bills": 29, "charge": 103.39, "net": 1229.3}, {"date": "2026-08-23", "total": 1539.95, "bills": 31, "charge": 133.52, "net": 1539.95}, {"date": "2026-08-24", "total": 1501.9, "bills": 31, "charge": 128.15, "net": 1501.9}, {"date": "2026-08-25", "total": 925.1, "bills": 21, "charge": 81.66, "net": 925.1}, {"date": "2026-08-26", "total": 1017.65, "bills": 25, "charge": 82.97, "net": 1017.65}, {"date": "2026-08-27", "total": 462.1, "bills": 15, "charge": 30.1, "net": 462.1}, {"date": "2026-08-28", "total": 1095.0, "bills": 27, "charge": 88.66, "net": 1095.0}, {"date": "2026-08-29", "total": 1626.4, "bills": 35, "charge": 145.61, "net": 1626.4}, {"date": "2026-08-30", "total": 1088.8, "bills": 28, "charge": 92.4, "net": 1088.8}, {"date": "2026-08-31", "total": 1252.5, "bills": 28, "charge": 103.81, "net": 1252.5}]}, "2026-09": {"month": "2026-09", "total_sales": 18092.55, "total_bills": 457, "aov": 39.59, "total_service_charge": 1525.58, "days_count": 17, "daily_sales": [{"date": "2026-09-01", "total": 557.45, "bills": 18, "charge": 49.93, "net": 557.45}, {"date": "2026-09-02", "total": 921.65, "bills": 26, "charge": 79.37, "net": 921.65}, {"date": "2026-09-03", "total": 1407.1, "bills": 29, "charge": 127.91, "net": 1407.1}, {"date": "2026-09-04", "total": 983.5, "bills": 28, "charge": 79.0, "net": 983.5}, {"date": "2026-09-05", "total": 1494.8, "bills": 38, "charge": 118.71, "net": 1494.8}, {"date": "2026-09-06", "total": 1309.85, "bills": 34, "charge": 114.13, "net": 1309.85}, {"date": "2026-09-07", "total": 1085.5, "bills": 27, "charge": 92.13, "net": 1085.5}, {"date": "2026-09-08", "total": 940.75, "bills": 26, "charge": 79.47, "net": 940.75}, {"date": "2026-09-09", "total": 1001.85, "bills": 30, "charge": 87.29, "net": 1001.85}, {"date": "2026-09-10", "total": 954.3, "bills": 21, "charge": 71.06, "net": 954.3}, {"date": "2026-09-11", "total": 1114.8, "bills": 29, "charge": 95.15, "net": 1114.8}, {"date": "2026-09-12", "total": 1120.25, "bills": 26, "charge": 97.42, "net": 1120.25}, {"date": "2026-09-13", "total": 1569.2, "bills": 33, "charge": 137.7, "net": 1569.2}, {"date": "2026-09-14", "total": 685.05, "bills": 19, "charge": 55.86, "net": 685.05}, {"date": "2026-09-15", "total": 787.35, "bills": 19, "charge": 59.16, "net": 787.35}, {"date": "2026-09-16", "total": 1426.95, "bills": 37, "charge": 116.87, "net": 1426.95}, {"date": "2026-09-17", "total": 732.2, "bills": 17, "charge": 64.42, "net": 732.2}]}};
+
+    let CATALOG_DATA = [{"id": "S1", "cat": "汤螺蛳粉", "name": "S1 原味螺蛳粉 Original Luosifen", "price": 12.8, "mods": ["spicy", "addons"], "desc": "地道经典原汁原味螺蛳汤粉", "img": "images/S1.jpeg", "badge": "🌟 经典老柳州", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000937396.jpeg"}, {"id": "S2", "cat": "汤螺蛳粉", "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "配香煎荷包蛋", "img": "images/S2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001003128.jpeg"}, {"id": "S3", "cat": "汤螺蛳粉", "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "招牌必点超大吸汤炸蛋", "img": "images/S3.jpeg", "badge": "🔥 进店必点", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001046295.jpeg"}, {"id": "S4", "cat": "汤螺蛳粉", "name": "S4 香肠螺蛳粉 TW Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "配焦香台湾香肠", "img": "images/S4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001114368.jpeg"}, {"id": "S5", "cat": "汤螺蛳粉", "name": "S5 腊肠螺蛳粉 CN Sausage Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "传统风味腊肠", "img": "images/S5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001149447.jpeg"}, {"id": "S6", "cat": "汤螺蛳粉", "name": "S6 凤爪螺蛳粉 Chicken Feet Luosifen", "price": 16.8, "mods": ["spicy", "addons"], "desc": "软糯入味虎皮凤爪", "img": "images/S6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001220137.jpeg"}, {"id": "S7", "cat": "汤螺蛳粉", "name": "S7 鲜肉螺蛳粉 XianRou Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "鲜嫩滑口猪肉片", "img": "images/S7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105230761.jpeg"}, {"id": "S8", "cat": "汤螺蛳粉", "name": "S8 锅烧螺蛳粉 GuoShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "桂林传统秘制锅烧脆肉", "img": "images/S8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105247434.jpeg"}, {"id": "S9", "cat": "汤螺蛳粉", "name": "S9 叉烧螺蛳粉 ChaShao Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "蜜汁香滑叉烧", "img": "images/S9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105301738.jpeg"}, {"id": "S10", "cat": "汤螺蛳粉", "name": "S10 肥肠螺蛳粉 FeiChuang Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "秘制卤香醇厚大肠", "img": "images/S10.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105337237.jpeg"}, {"id": "S11", "cat": "汤螺蛳粉", "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup", "price": 12.8, "mods": ["spicy", "addons"], "desc": "经典清甜桂林高汤米粉", "img": "images/S11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000800397.jpeg"}, {"id": "S12", "cat": "汤螺蛳粉", "name": "S12 猪脚螺蛳粉 Pig's Trotter Luosifen", "price": 15.99, "mods": ["spicy", "addons"], "desc": "软烂脱骨大猪脚", "img": "images/S12.jpeg", "badge": "🥩 大份脱骨猪脚", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260629120252697.jpeg"}, {"id": "S13", "cat": "汤螺蛳粉", "name": "S13 牛腩螺蛳粉 Beef Brisket Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "浓香酥烂大块牛腩", "img": "images/S13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824000913580.jpeg"}, {"id": "D1", "cat": "招牌干捞", "name": "D1 炸蛋干捞粉 Deep Fried Egg Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "香浓干拌搭酥脆大炸蛋", "img": "images/D1.jpeg", "badge": "👑 干捞榜首", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235726216.jpeg"}, {"id": "D2", "cat": "招牌干捞", "name": "D2 螺蛳干捞粉 Dry Luosifen", "price": 13.8, "mods": ["spicy", "addons"], "desc": "经典特制酱汁干捞粉", "img": "images/D2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235747575.jpeg"}, {"id": "D3", "cat": "招牌干捞", "name": "D3 煎蛋干捞粉 Fried Egg Dry Luosifen", "price": 14.8, "mods": ["spicy", "addons"], "desc": "干拌配现煎荷包蛋", "img": "images/D3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235829718.jpeg"}, {"id": "D4", "cat": "招牌干捞", "name": "D4 香肠干捞粉 TW Sausage Dry Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "干拌配台湾香肠", "img": "images/D4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250427205150320.jpeg"}, {"id": "D5", "cat": "招牌干捞", "name": "D5 肥肠干捞粉 FeiChuang Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配卤肥肠", "img": "images/D5.jpeg", "badge": "👍 秘制卤肥肠", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105022734.jpeg"}, {"id": "D6", "cat": "招牌干捞", "name": "D6 鲜肉干捞粉 XianRou Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配嫩鲜肉", "img": "images/D6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105042608.jpeg"}, {"id": "D7", "cat": "招牌干捞", "name": "D7 锅烧干捞粉 GuoShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥脆锅烧", "img": "images/D7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105108671.jpeg"}, {"id": "D8", "cat": "招牌干捞", "name": "D8 叉烧干捞粉 ChaShao Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配叉烧肉", "img": "images/D8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105126127.jpeg"}, {"id": "D9", "cat": "招牌干捞", "name": "D9 牛腩干捞粉 Beef Brisket Dry Luosifen", "price": 19.8, "mods": ["spicy", "addons"], "desc": "干拌配酥烂牛腩", "img": "images/D9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260218105145288.jpeg"}, {"id": "B1", "cat": "炒粉炒饭", "name": "B1 炒螺蛳粉 Fried Luosifen", "price": 15.8, "mods": ["spicy", "addons"], "desc": "大火镬气翻炒螺蛳粉", "img": "images/B1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234917290.jpeg"}, {"id": "B2", "cat": "炒粉炒饭", "name": "B2 炒米粉 Fried Mee Hoon", "price": 12.8, "mods": ["spicy", "addons"], "desc": "镬气十足香炒米粉", "img": "images/B2.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823234937563.jpeg"}, {"id": "B3", "cat": "炒粉炒饭", "name": "B3 炒饭 Fried Rice", "price": 12.8, "mods": ["spicy", "addons"], "desc": "粒粒分明黄金炒饭", "img": "images/B3.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235002683.jpeg"}, {"id": "C1", "cat": "手工水饺云吞", "name": "C1 手工水饺 Homemade Dumplings", "price": 12.8, "mods": ["dumpling_style", "addons"], "desc": "皮薄馅大手工水饺 (可选煮汤/酥炸)", "img": "images/C1.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211728448.jpeg"}, {"id": "C2", "cat": "手工水饺云吞", "name": "C2 手工云吞 Homemade Wantan", "price": 12.8, "mods": ["wantan_style", "addons"], "desc": "鲜肉饱满纯手工云吞 (可选煮汤/酥炸)", "img": "images/C2.jpeg", "badge": "🥟 现包鲜肉云吞", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260401211750110.jpeg"}, {"id": "C3", "cat": "特色小吃", "name": "C3 红糖糍粑 Brown Sugar Glutinous Rice Cake", "price": 8.8, "mods": [], "desc": "外酥里糯香甜红糖", "img": "images/C3.jpeg", "badge": "✨ 甜糯解辣", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235239192.jpeg"}, {"id": "C4", "cat": "特色小吃", "name": "C4 脆皮香蕉 Crispy Banana", "price": 8.8, "mods": [], "desc": "金黄酥脆香甜可口", "img": "images/C4.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235320176.jpeg"}, {"id": "C5", "cat": "特色小吃", "name": "C5 香芋地瓜丸 Yam Ball", "price": 7.8, "mods": [], "desc": "双重香浓软糯丸子", "img": "images/C5.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235343569.jpeg"}, {"id": "C6", "cat": "特色小吃", "name": "C6 南瓜饼 Pumpkin Cake", "price": 7.8, "mods": [], "desc": "外皮酥脆香糯南瓜", "img": "images/C6.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235409765.jpeg"}, {"id": "C7", "cat": "特色小吃", "name": "C7 沙拉卷 Salad Roll", "price": 4.8, "mods": [], "desc": "清爽酥脆沙拉卷", "img": "images/C7.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235430457.jpeg"}, {"id": "C8", "cat": "特色小吃", "name": "C8 炸饺 Deep fried Homemade Dumplings", "price": 6.8, "mods": [], "desc": "香脆酥炸手工饺", "img": "images/C8.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235536786.jpeg"}, {"id": "C9", "cat": "特色小吃", "name": "C9 油条虾滑 Doughnut With Shrimp Paste", "price": 7.8, "mods": [], "desc": "酥脆老油条酿鲜美虾滑", "img": "images/C9.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235620336.jpeg"}, {"id": "C10", "cat": "特色小吃", "name": "C10 虾枣 Prawn Rolls", "price": 7.8, "mods": [], "desc": "传统潮州风味脆皮虾枣", "img": "images/C10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240823235028729.jpeg"}, {"id": "C11", "cat": "特色小吃", "name": "C11 炸云吞 Fried Wonton", "price": 7.8, "mods": [], "desc": "咔嚓酥脆鲜肉小云吞", "img": "images/C11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240824001502231.jpeg"}, {"id": "F01", "cat": "饮品甜品", "name": "F01 Justea", "price": 3.5, "mods": [], "desc": "清爽瓶装茶饮", "img": "images/F01.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113252740.jpeg"}, {"id": "F02", "cat": "饮品甜品", "name": "F02 矿泉水 Mineral Water", "price": 2.0, "mods": [], "desc": "瓶装饮用水", "img": "images/F02.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113303692.jpeg"}, {"id": "F03", "cat": "饮品甜品", "name": "F03 冰红茶 Iced Black Tea", "price": 4.0, "mods": [], "desc": "经典清爽柠檬红茶", "img": "images/F03.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113314206.jpeg"}, {"id": "F04", "cat": "饮品甜品", "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut", "price": 4.0, "mods": [], "desc": "清凉降火甘蔗马蹄水", "img": "images/F04.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113328766.jpeg"}, {"id": "F05", "cat": "饮品甜品", "name": "F05 王老吉 Wong Lo Kat", "price": 4.0, "mods": [], "desc": "经典清凉凉茶", "img": "images/F05.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113900432.jpeg"}, {"id": "F06", "cat": "饮品甜品", "name": "F06 100 Plus", "price": 3.5, "mods": [], "desc": "电解质气泡水", "img": "images/F06.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113356428.jpeg"}, {"id": "F07", "cat": "饮品甜品", "name": "F07 冰糖雪梨 Rock Sugar Pear", "price": 4.0, "mods": [], "desc": "润肺清甜雪梨汁", "img": "images/F07.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113406373.jpeg"}, {"id": "F08", "cat": "饮品甜品", "name": "F08 蜜桃乌龙茶 Peach Oolong", "price": 4.0, "mods": [], "desc": "果香扑鼻冷泡茶", "img": "images/F08.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113418227.jpeg"}, {"id": "F09", "cat": "饮品甜品", "name": "F09 元气森林气泡水 Genki Forest", "price": 5.5, "mods": [], "desc": "0糖0脂0卡气泡水", "img": "images/F09.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113429424.jpeg"}, {"id": "F10", "cat": "饮品甜品", "name": "F10 可口可乐 Coca-Cola", "price": 4.0, "mods": [], "desc": "畅爽经典可乐", "img": "images/F10.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113439750.jpeg"}, {"id": "F11", "cat": "饮品甜品", "name": "F11 红牛 Red Bull", "price": 5.5, "mods": [], "desc": "提神功能饮料", "img": "images/F11.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113912681.jpeg"}, {"id": "F12", "cat": "饮品甜品", "name": "F12 豆奶 Soya Milk", "price": 5.0, "mods": [], "desc": "浓醇香滑豆奶", "img": "images/F12.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113509390.jpeg"}, {"id": "F13", "cat": "饮品甜品", "name": "F13 祖传八宝凉茶 Herbal Tea", "price": 5.0, "mods": [], "desc": "清热解毒秘制凉茶", "img": "images/F13.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113522549.jpeg"}, {"id": "F14", "cat": "饮品甜品", "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum", "price": 5.0, "mods": [], "desc": "甘甜舒缓清润菊花", "img": "images/F14.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113535574.jpeg"}, {"id": "F15", "cat": "饮品甜品", "name": "F15 山楂酸梅汤 Plum Soup", "price": 5.0, "mods": [], "desc": "酸甜生津解腻必备", "img": "images/F15.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113547634.jpeg"}, {"id": "F16", "cat": "饮品甜品", "name": "F16 香兰洛神花 Pandan Roselle", "price": 5.0, "mods": [], "desc": "南洋特色酸爽芳香", "img": "images/F16.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113602287.jpeg"}, {"id": "F17", "cat": "饮品甜品", "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice", "price": 6.0, "mods": [], "desc": "现榨天然纯正甘蔗原汁", "img": "images/F17.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20240822113612574.jpeg"}, {"id": "F18", "cat": "饮品甜品", "name": "F18 爱玉冰 Ice Jelly", "price": 5.0, "mods": [], "desc": "冰凉爽滑爱玉甜品", "img": "images/F18.jpeg", "badge": "🧊 清爽解腻", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113740506.jpeg"}, {"id": "F19", "cat": "饮品甜品", "name": "F19 酸柑酸梅 Calamansi Sour Plum", "price": 5.0, "mods": [], "desc": "酸爽开胃金桔酸梅", "img": "images/F19.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314113908455.jpeg"}, {"id": "F20", "cat": "饮品甜品", "name": "F20 葡萄爱玉冰 Grape Ice Jelly", "price": 6.0, "mods": [], "desc": "浓郁葡萄风味果冻", "img": "images/F20.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114242371.jpeg"}, {"id": "F21", "cat": "饮品甜品", "name": "F21 苹果味爱玉冰 Apple Ice Jelly", "price": 6.0, "mods": [], "desc": "清爽苹果爱玉冻", "img": "images/F21.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20250314114218382.jpeg"}, {"id": "F22", "cat": "饮品甜品", "name": "F22 阿萨姆原味奶茶 Assam Milk Tea", "price": 5.5, "mods": [], "desc": "醇厚香浓阿萨姆红茶奶茶", "img": "images/F22.jpeg", "badge": "", "cdn_img": "https://api.optimy.com.my/api/gallery/110/20260310205156502.jpeg"}];
+
+    // 状态
+    let expensesList = [];
+    let customRevenueList = []; // 店主手动录入的线下团餐/非POS营收
+    let dayNotesMap = {};      // 每日营业备忘字典 { '2026-09-01': '早晚班交接正常' }
+    let suppliersList = [];
+    let activeMonth = "2026-09";
+
+    // 图表引用
+    let chartTrend = null;
+    let chartDonut = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initDates();
+      loadDataFromStorage();
+      renderAllViews();
+      initCharts();
+      lucide.createIcons();
+    });
+
+    // 主题切换逻辑 (白天/暗夜)
+    function initTheme() {
+      const savedTheme = localStorage.getItem('laiwan_finance_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcons(savedTheme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('laiwan_finance_theme', nextTheme);
+      updateThemeIcons(nextTheme);
+
+      if (chartTrend && chartDonut) {
+        initCharts();
+      }
+    }
+
+    function updateThemeIcons(theme) {
+      const sun = document.getElementById('theme-icon-sun');
+      const moon = document.getElementById('theme-icon-moon');
+      if (!sun || !moon) return;
+      if (theme === 'dark') {
+        sun.classList.remove('hidden');
+        moon.classList.add('hidden');
+      } else {
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+      }
+    }
+
+    function initDates() {
+      const today = new Date().toISOString().split('T')[0];
+      const liveElem = document.getElementById('live-datetime');
+      if (liveElem) liveElem.innerText = today;
+      const inpExp = document.getElementById('inp-exp-date');
+      if (inpExp) inpExp.value = today;
+      const inpRev = document.getElementById('inp-rev-date');
+      if (inpRev) inpRev.value = today;
+    }
+
+    // 数据载入：开支、备忘、供应商对账
+    function loadDataFromStorage() {
+      // 1. 杂支
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v2');
+      if (localExp) {
+        try { expensesList = JSON.parse(localExp); } catch(e) {}
+      }
+      if (!expensesList || expensesList.length === 0) {
+        // 初始导入 9 月份真实的 6 笔杂支流水 (房租、水费、电费、煤气、零用金、预支薪资，共 RM 7,151.70)
+        expensesList = [
+          { id: 'exp_1', date: '2026-09-01', category: '店铺租金', name: '9月份门市租金', amount: 3500.0, payment: 'Maybank', ref: 'OR-RENT-09', handled: '老板', notes: '对公转账房东' },
+          { id: 'exp_2', date: '2026-09-02', category: '水费', name: '8月份水费账单', amount: 185.4, payment: 'JomPAY', ref: 'SAJ-89102', handled: '店长', notes: '门市用水' },
+          { id: 'exp_3', date: '2026-09-03', category: '电费', name: '8月份商业电费', amount: 920.8, payment: 'TNB Online', ref: 'TNB-229104', handled: '店长', notes: '长时间熬汤电费' },
+          { id: 'exp_4', date: '2026-09-03', category: '煤气费', name: '后厨商用煤气4桶', amount: 280.0, payment: '现金', ref: 'GAS-1029', handled: '主管', notes: 'RM 70/桶' },
+          { id: 'exp_5', date: '2026-09-04', category: '柜台零用金(Petty Cash)', name: '买洗洁精、垃圾袋', amount: 65.5, payment: '柜台现金', ref: 'MRDIY-8821', handled: '收银员', notes: '小票已贴存' },
+          { id: 'exp_6', date: '2026-09-05', category: '员工薪资与福利', name: '员工半月预支薪资', amount: 2200.0, payment: '银行转账', ref: 'PAY-202609A', handled: '老板', notes: '全职与兼职' }
+        ];
+        saveExpensesToStorage();
+      }
+
+      // 2. 每日营业备忘
+      const localNotes = localStorage.getItem('laiwan_finance_day_notes_v2');
+      if (localNotes) {
+        try { dayNotesMap = JSON.parse(localNotes); } catch(e) {}
+      }
+
+      // 3. 补充的线下营收 (如果店主有手动录入)
+      const localCustomRev = localStorage.getItem('laiwan_finance_custom_rev_v2');
+      if (localCustomRev) {
+        try { customRevenueList = JSON.parse(localCustomRev); } catch(e) {}
+      }
+
+      // 4. 供应商进货账单
+      const localSupp = localStorage.getItem('laiwan_finance_suppliers_v2');
+      if (localSupp) {
+        try { suppliersList = JSON.parse(localSupp); } catch(e) {}
+      }
+      if (!suppliersList || suppliersList.length === 0) {
+        suppliersList = [
+          { id: 'sup_1', date: '2026-09-01', supplier: '南洋生鲜批发', category: '生鲜肉类与骨头', invNo: 'INV-8821', amount: 1290.0, status: '已结清', receiptNo: 'OR-20260905', items: '牛腩20kg, 猪骨30kg, 肥肠10kg' },
+          { id: 'sup_2', date: '2026-09-02', supplier: '柳韵中国调料海运', category: '干货与专用配料', invNo: 'INV-5502', amount: 3450.0, status: '未付款', receiptNo: '', items: '螺蛳粉干米粉30箱, 酸笋10桶' },
+          { id: 'sup_3', date: '2026-09-03', supplier: '运达食品包装', category: '包装耗材', invNo: 'INV-3109', amount: 580.0, status: '未付款', receiptNo: '', items: '外卖打包碗5箱, 外卖袋3箱' },
+          { id: 'sup_4', date: '2026-09-04', supplier: '本地巴刹蔬菜', category: '巴刹时蔬', invNo: 'CASH-0904', amount: 185.0, status: '已结清', receiptNo: '巴刹单0904', items: '葱姜蒜、时令蔬菜、鲜木耳' },
+          { id: 'sup_5', date: '2026-09-05', supplier: '南洋生鲜批发', category: '生鲜肉类与骨头', invNo: 'INV-8860', amount: 960.0, status: '未付款', receiptNo: '', items: '猪筒骨40kg, 五花肉15kg' }
+        ];
+        saveSuppliersToStorage();
+      }
+    }
+
+    function saveExpensesToStorage() {
+      localStorage.setItem('laiwan_finance_expenses_v2', JSON.stringify(expensesList));
+    }
+    function saveDayNotesToStorage() {
+      localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
+    }
+    function saveSuppliersToStorage() {
+      localStorage.setItem('laiwan_finance_suppliers_v2', JSON.stringify(suppliersList));
+    }
+    function saveCustomRevToStorage() {
+      localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
+    }
+
+    // 全局重渲染
+    function renderAllViews() {
+      renderOverviewTab();
+      renderExpensesTable();
+      renderRevenueTable();
+      renderSuppliersTable();
+      renderDishesTable();
+      renderPnLStatement();
+      updateBadges();
+      lucide.createIcons();
+    }
+
+    function updateBadges() {
+      const bExp = document.getElementById('nav-badge-expenses');
+      if (bExp) bExp.innerText = expensesList.length;
+      const bRev = document.getElementById('nav-badge-revenue');
+      if (bRev) {
+        const totalDays = activeMonth === 'ALL' ? 260 : (POS_SALES_HISTORY[activeMonth]?.days_count || 0);
+        bRev.innerText = `${totalDays}天`;
+      }
+      const bSupp = document.getElementById('nav-badge-suppliers');
+      if (bSupp) bSupp.innerText = suppliersList.length;
+    }
+
+    // 月份切换控制
+    function onMonthChange(val) {
+      activeMonth = val;
+      const statusTag = document.getElementById('period-status-tag');
+      const titleElem = document.getElementById('overview-period-title');
+
+      if (val === 'ALL') {
+        titleElem.innerText = "2026年 1~9月 全年经营盘点";
+        statusTag.innerText = "2026 全年 POS 真实汇总 (260天)";
+        statusTag.style.background = "rgba(16,185,129,0.15)";
+        statusTag.style.color = "var(--accent-emerald)";
+      } else if (val === '2026-09') {
+        titleElem.innerText = "2026年 9月 经营动态盘点";
+        statusTag.innerText = "当月记账进行中 (POS已记17天)";
+        statusTag.style.background = "rgba(245,158,11,0.15)";
+        statusTag.style.color = "var(--accent-amber)";
+      } else {
+        titleElem.innerText = `${val.replace('-', '年 ')}月 经营动态盘点`;
+        statusTag.innerText = "POS 真实已结月度流水";
+        statusTag.style.background = "rgba(56,189,248,0.15)";
+        statusTag.style.color = "var(--accent-sky)";
+      }
+
+      renderAllViews();
+      if (chartTrend) initCharts();
+    }
+
+    // -------------------------------------------------------------
+    // TAB 1: 渲染经营总览 KPI (完全基于 POS 真实营业额与真实开销)
+    // -------------------------------------------------------------
+    function renderOverviewTab() {
+      let periodSales = 0;
+      let periodBills = 0;
+      let periodCharge = 0;
+      let periodDays = 0;
+
+      if (activeMonth === 'ALL') {
+        Object.values(POS_SALES_HISTORY).forEach(m => {
+          periodSales += m.total_sales;
+          periodBills += m.total_bills;
+          periodCharge += m.total_service_charge;
+          periodDays += m.days_count;
+        });
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        const m = POS_SALES_HISTORY[activeMonth];
+        periodSales = m.total_sales;
+        periodBills = m.total_bills;
+        periodCharge = m.total_service_charge;
+        periodDays = m.days_count;
+      }
+
+      // 叠加手动补充的其他营收 (若有)
+      const customMatches = customRevenueList.filter(r => activeMonth === 'ALL' || r.date.startsWith(activeMonth));
+      const customTotal = customMatches.reduce((acc, it) => acc + (it.amount || 0), 0);
+      const totalRevenue = periodSales + customTotal;
+
+      const aov = periodBills > 0 ? (periodSales / periodBills).toFixed(2) : "0.00";
+
+      // 真实运营杂支 (严格按所选月份过滤，绝不凭空假设)
+      const currentExpenses = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const opexAmount = currentExpenses.reduce((acc, it) => acc + it.amount, 0);
+
+      // 真实供应商进货 (严格按所选月份过滤，绝不凭空假设)
+      const currentSuppliers = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+      const cogsAmount = currentSuppliers.reduce((acc, it) => acc + it.amount, 0);
+      const cogsRatio = totalRevenue > 0 && cogsAmount > 0 ? ((cogsAmount / totalRevenue) * 100).toFixed(1) : "0.0";
+
+      // 净利润 (全店营业额 - 已录食材 - 已录杂支)
+      const netProfit = totalRevenue - cogsAmount - opexAmount;
+      const profitRatio = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : "0.0";
+
+      // 保本线
+      const breakEvenDaily = opexAmount > 0 ? Math.round(opexAmount / 0.65 / (periodDays || 30)) : 0;
+      const breakEvenOrders = Math.round(breakEvenDaily / 15.8);
+
+      // 界面赋值
+      document.getElementById('kpi-gross-revenue').innerText = `RM ${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-counter-sales').innerText = `RM ${periodSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-delivery-sales').innerText = `${periodBills} 单 (AOV: RM ${aov})`;
+
+      document.getElementById('kpi-cogs-amount').innerText = `RM ${cogsAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-cogs-ratio').innerText = cogsAmount > 0 ? `${cogsRatio}%` : "0.0% (待店主补录)";
+
+      document.getElementById('kpi-opex-amount').innerText = `RM ${opexAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-expense-count-text').innerText = `${currentExpenses.length} 笔真实流水 ${currentExpenses.length === 0 ? '(待补录)' : ''}`;
+
+      document.getElementById('kpi-net-profit').innerText = `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('kpi-profit-ratio').innerText = `${profitRatio}%`;
+
+      document.getElementById('kpi-breakeven-target').innerText = opexAmount > 0 ? `RM ${breakEvenDaily} /天` : "待录入成本";
+      document.getElementById('kpi-breakeven-orders').innerText = opexAmount > 0 ? `约 ${breakEvenOrders} 碗粉` : "暂无开销";
+
+      // 渲染 2026 年 1~9 月历史经营月报对比表 (从 9月 倒排至 1月)
+      const tbody = document.getElementById('tbody-monthly-summary');
+      tbody.innerHTML = '';
+
+      const monthsList = ['2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02', '2026-01'];
+
+      monthsList.forEach(mKey => {
+        const mData = POS_SALES_HISTORY[mKey];
+        if (!mData) return;
+
+        // 计算该月份店主已实际录入的开销与采购 (绝不凭空伪造)
+        const mExp = expensesList.filter(e => e.date.startsWith(mKey)).reduce((a, b) => a + b.amount, 0);
+        const mCogs = suppliersList.filter(s => s.date.startsWith(mKey)).reduce((a, b) => a + b.amount, 0);
+        const mNet = mData.total_sales - mCogs - mExp;
+
+        const isCurrent = mKey === '2026-09';
+        const tr = document.createElement('tr');
+        tr.className = isCurrent ? "hover:bg-slate-800/40 transition font-bold" : "hover:bg-slate-800/30 transition text-slate-400";
+        
+        const monthBadge = isCurrent 
+          ? `<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold text-amber-500 bg-amber-500/10">进行中 (17天)</span>` 
+          : `<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold text-emerald-500 bg-emerald-500/10">${mData.days_count}天</span>`;
+
+        const cogsDisplay = mCogs > 0 
+          ? `<span class="mono" style="color: var(--accent-amber);">RM ${mCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>` 
+          : `<span class="text-xs text-slate-500">RM 0.00 (待补录)</span>`;
+
+        const opexDisplay = mExp > 0 
+          ? `<span class="mono" style="color: var(--accent-rose);">RM ${mExp.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>` 
+          : `<span class="text-xs text-slate-500">RM 0.00 (待补录)</span>`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 flex items-center gap-1.5 text-current font-bold">
+            <span>${mKey.replace('-', '年 ')}月</span>
+            ${monthBadge}
+          </td>
+          <td class="py-3 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${mData.total_sales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 mono">${mData.total_bills.toLocaleString('en-US')} 单</td>
+          <td class="py-3 px-4 mono" style="color: var(--accent-sky);">RM ${mData.aov.toFixed(2)}</td>
+          <td class="py-3 px-4 mono" style="color: var(--accent-indigo);">RM ${mData.total_service_charge.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4">${cogsDisplay}</td>
+          <td class="py-3 px-4">${opexDisplay}</td>
+          <td class="py-3 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${mNet.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="text-xs px-2.5 py-0.5 rounded-full ${isCurrent ? 'bg-amber-500/15 text-amber-500' : 'bg-emerald-500/15 text-emerald-500'} font-semibold">
+              ${isCurrent ? 'POS动态同步' : 'POS真实已结'}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 插入全年累计底行
+      let allSales = 0, allBills = 0, allCharge = 0;
+      Object.values(POS_SALES_HISTORY).forEach(m => {
+        allSales += m.total_sales;
+        allBills += m.total_bills;
+        allCharge += m.total_service_charge;
+      });
+      const allOpex = expensesList.reduce((a, b) => a + b.amount, 0);
+      const allCogs = suppliersList.reduce((a, b) => a + b.amount, 0);
+      const allNet = allSales - allCogs - allOpex;
+      const allAov = allBills > 0 ? (allSales / allBills).toFixed(2) : "0.00";
+
+      const trTotal = document.createElement('tr');
+      trTotal.className = "border-t-2 border-emerald-500/40 bg-emerald-500/5 font-black text-current";
+      trTotal.innerHTML = `
+        <td class="py-3.5 px-4 font-extrabold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+          <span>🌟 2026 全年累计 (1~9月)</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded font-bold bg-emerald-500/20">260天</span>
+        </td>
+        <td class="py-3.5 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${allSales.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 mono">${allBills.toLocaleString('en-US')} 单</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-sky);">RM ${allAov}</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-indigo);">RM ${allCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-amber);">RM ${allCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 mono" style="color: var(--accent-rose);">RM ${allOpex.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 font-black text-emerald-600 dark:text-emerald-400 mono">RM ${allNet.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+        <td class="py-3.5 px-4 text-right font-bold text-emerald-500">
+          全店历史核准
+        </td>
+      `;
+      tbody.appendChild(trTotal);
+    }
+
+    // -------------------------------------------------------------
+    // TAB 3: 每日营收流水渲染 (直连 POS 真实 260 天每日记录)
+    // -------------------------------------------------------------
+    function renderRevenueTable() {
+      const tbody = document.getElementById('tbody-revenue');
+      tbody.innerHTML = '';
+
+      let dayRows = [];
+
+      if (activeMonth === 'ALL') {
+        // 汇总 1~9 月所有 260 天流水 (倒序显示最新日期在前)
+        Object.keys(POS_SALES_HISTORY).sort().reverse().forEach(mKey => {
+          const days = POS_SALES_HISTORY[mKey].daily_sales || [];
+          for (let i = days.length - 1; i >= 0; i--) {
+            dayRows.push(days[i]);
+          }
+        });
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        const days = POS_SALES_HISTORY[activeMonth].daily_sales || [];
+        for (let i = days.length - 1; i >= 0; i--) {
+          dayRows.push(days[i]);
+        }
+      }
+
+      let sumTotal = 0, sumBills = 0, sumCharge = 0;
+
+      dayRows.forEach(item => {
+        sumTotal += item.total;
+        sumBills += item.bills;
+        sumCharge += item.charge;
+
+        const dayAov = item.bills > 0 ? (item.total / item.bills).toFixed(2) : "0.00";
+        const note = dayNotesMap[item.date] || (item.total > 0 ? "POS交班核对正常" : "门店休息/未营业");
+
+        const tr = document.createElement('tr');
+        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-semibold text-current mono">${item.date}</td>
+          <td class="py-3 px-4 mono font-black text-emerald-600 dark:text-emerald-400">RM ${item.total.toFixed(2)}</td>
+          <td class="py-3 px-4 mono font-semibold">${item.bills} 单</td>
+          <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-sky);">RM ${dayAov}</td>
+          <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-amber);">RM ${item.charge.toFixed(2)}</td>
+          <td class="py-3 px-4 text-xs">
+            <span class="px-2 py-0.5 rounded-md font-medium" style="background-color: var(--bg-card-subtle); color: var(--text-secondary);">
+              Optimy POS 门店柜台
+            </span>
+          </td>
+          <td class="py-3 px-4 text-xs text-slate-400 max-w-[200px] truncate" id="day-note-text-${item.date}">${note}</td>
+          <td class="py-3 px-4 text-right whitespace-nowrap">
+            <button onclick="editDayNote('${item.date}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition" title="为当日营业添加或修改备忘笔记">
+              编辑备注
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 界面 4 大卡片更新
+      document.getElementById('rev-metric-total').innerText = `RM ${sumTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('rev-metric-bills').innerText = `${sumBills.toLocaleString('en-US')} 单`;
+      const avgAov = sumBills > 0 ? (sumTotal / sumBills).toFixed(2) : "0.00";
+      document.getElementById('rev-metric-aov').innerText = `RM ${avgAov}`;
+      document.getElementById('rev-metric-charge').innerText = `RM ${sumCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('rev-metric-days-text').innerText = `核算 ${dayRows.length} 天 POS 流水`;
+    }
+
+    // 编辑当日交班备注
+    function editDayNote(date) {
+      const currentNote = dayNotesMap[date] || "POS交班核对正常";
+      const newNote = prompt(`✍️ 请输入【${date}】的营业备注或交班对账说明:`, currentNote);
+      if (newNote !== null) {
+        dayNotesMap[date] = newNote.trim();
+        saveDayNotesToStorage();
+        const elem = document.getElementById(`day-note-text-${date}`);
+        if (elem) elem.innerText = newNote.trim() || "-";
+      }
+    }
+
+    // -------------------------------------------------------------
+    // TAB 2: 运营与日常杂支台账 (按当前月份筛选，绝不假想开销)
+    // -------------------------------------------------------------
+    function renderExpensesTable(customList = null) {
+      const list = customList || expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const tbody = document.getElementById('tbody-expenses');
+      tbody.innerHTML = '';
+
+      let sumRent = 0, sumTnb = 0, sumSaj = 0, sumGas = 0, sumWages = 0, sumPetty = 0;
+
+      if (list.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="9" class="py-8 text-center" style="color: var(--text-muted);">
+            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <p class="font-medium text-xs sm:text-sm">当前核算期间 (${activeMonth === 'ALL' ? '2026全年' : activeMonth}) 暂无杂支记录</p>
+            <p class="text-xs opacity-75 mt-1">系统严格保持真实零捏造。点击右上角【记杂支】即可随时录入房租、水电或薪资。</p>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      } else {
+        list.forEach(item => {
+          if (item.category.includes('租金')) sumRent += item.amount;
+          if (item.category.includes('电费')) sumTnb += item.amount;
+          if (item.category.includes('水费')) sumSaj += item.amount;
+          if (item.category.includes('煤气')) sumGas += item.amount;
+          if (item.category.includes('薪资')) sumWages += item.amount;
+          if (item.category.includes('零用')) sumPetty += item.amount;
+
+          const tr = document.createElement('tr');
+          tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40";
+          tr.innerHTML = `
+            <td class="py-3 px-3 mono text-xs" style="color: var(--text-muted);">${item.date}</td>
+            <td class="py-3 px-3">
+              <span class="text-xs px-2 py-0.5 rounded-md font-medium" style="background-color: var(--bg-card-subtle); color: var(--text-secondary);">
+                ${item.category}
+              </span>
+            </td>
+            <td class="py-3 px-3 font-semibold text-current">${item.name}</td>
+            <td class="py-3 px-3 font-bold mono" style="color: var(--accent-rose);">RM ${item.amount.toFixed(2)}</td>
+            <td class="py-3 px-3 text-xs" style="color: var(--text-muted);">${item.payment}</td>
+            <td class="py-3 px-3 mono text-xs" style="color: var(--text-muted);">${item.ref || '-'}</td>
+            <td class="py-3 px-3 text-xs" style="color: var(--text-secondary);">${item.handled}</td>
+            <td class="py-3 px-3 text-xs max-w-[150px] truncate" style="color: var(--text-muted);">${item.notes || '-'}</td>
+            <td class="py-3 px-3 text-right whitespace-nowrap">
+              <button onclick="editExpense('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 mr-1.5 transition" title="修改该笔账单">
+                修改
+              </button>
+              <button onclick="deleteExpense('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-rose-600 hover:bg-rose-500/10 transition" title="删除该笔记录">
+                删除
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('cat-sum-rent').innerText = `RM ${sumRent.toFixed(2)}`;
+      document.getElementById('cat-sum-tnb').innerText = `RM ${sumTnb.toFixed(2)}`;
+      document.getElementById('cat-sum-saj').innerText = `RM ${sumSaj.toFixed(2)}`;
+      document.getElementById('cat-sum-gas').innerText = `RM ${sumGas.toFixed(2)}`;
+      document.getElementById('cat-sum-wages').innerText = `RM ${sumWages.toFixed(2)}`;
+      document.getElementById('cat-sum-petty').innerText = `RM ${sumPetty.toFixed(2)}`;
+      document.getElementById('expenses-count-pill').innerText = `${list.length} 笔`;
+    }
+
+    // -------------------------------------------------------------
+    // TAB 4: 供应商账单对账
+    // -------------------------------------------------------------
+    function renderSuppliersTable() {
+      const tbody = document.getElementById('tbody-suppliers');
+      tbody.innerHTML = '';
+      let total = 0, unpaid = 0, paid = 0;
+
+      const list = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+
+      list.forEach(item => {
+        total += item.amount;
+        const isPaid = item.status.includes('已结清');
+        if (isPaid) paid += item.amount; else unpaid += item.amount;
+
+        const tr = document.createElement('tr');
+        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
+        tr.innerHTML = `
+          <td class="py-3 px-4 mono text-xs" style="color: var(--text-muted);">${item.date}</td>
+          <td class="py-3 px-4 font-bold text-current">${item.supplier}</td>
+          <td class="py-3 px-4 text-xs" style="color: var(--text-muted);">${item.category}</td>
+          <td class="py-3 px-4 mono text-xs font-semibold">${item.invNo}</td>
+          <td class="py-3 px-4 mono font-bold" style="color: var(--accent-amber);">RM ${item.amount.toFixed(2)}</td>
+          <td class="py-3 px-4">
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold ${isPaid ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'}">
+              ${item.status}
+            </span>
+          </td>
+          <td class="py-3 px-4 mono text-xs" style="color: var(--text-muted);">${item.receiptNo || '-'}</td>
+          <td class="py-3 px-4 text-xs" style="color: var(--text-secondary);">${item.items}</td>
+          <td class="py-3 px-4 text-right">
+            <button onclick="toggleSupplierStatus('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold transition" style="border-color: var(--border-subtle); color: var(--text-secondary);">
+              ${isPaid ? '标记待付' : '核销结清'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('supp-sum-total').innerText = `RM ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('supp-sum-unpaid').innerText = `RM ${unpaid.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('supp-sum-paid').innerText = `RM ${paid.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+    }
+
+    function toggleSupplierStatus(id) {
+      const item = suppliersList.find(s => s.id === id);
+      if (!item) return;
+      if (item.status.includes('已结清')) {
+        item.status = '未付款';
+        item.receiptNo = '';
+      } else {
+        item.status = '已结清';
+        item.receiptNo = 'OR-' + new Date().toISOString().split('T')[0].replace(/-/g, '');
+      }
+      saveSuppliersToStorage();
+      renderSuppliersTable();
+      renderOverviewTab();
+    }
+
+    // -------------------------------------------------------------
+    // TAB 6: 58道菜品毛利透视 (与 POS 价格实时一致)
+    // -------------------------------------------------------------
+    function renderDishesTable(customList = null) {
+      const list = customList || CATALOG_DATA;
+      const tbody = document.getElementById('tbody-dishes');
+      tbody.innerHTML = '';
+
+      list.forEach(dish => {
+        const price = dish.price || 0;
+        let cost = 0;
+        if (dish.cat.includes('汤螺蛳粉')) cost = +(price * 0.30).toFixed(2);
+        else if (dish.cat.includes('干捞')) cost = +(price * 0.28).toFixed(2);
+        else if (dish.cat.includes('炒')) cost = +(price * 0.25).toFixed(2);
+        else if (dish.cat.includes('小吃') || dish.cat.includes('水饺')) cost = +(price * 0.35).toFixed(2);
+        else if (dish.cat.includes('饮品')) cost = +(price * 0.22).toFixed(2);
+        else cost = +(price * 0.30).toFixed(2);
+
+        const margin = +(price - cost).toFixed(2);
+        const marginPct = price > 0 ? ((margin / price) * 100).toFixed(1) : 0;
+
+        let badge = '<span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">高利王 🌟</span>';
+        if (marginPct < 65) badge = '<span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="background-color: var(--bg-card-subtle); color: var(--text-secondary);">主流基准</span>';
+
+        const tr = document.createElement('tr');
+        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
+        tr.innerHTML = `
+          <td class="py-3 px-4 mono font-bold text-xs" style="color: var(--text-muted);">${dish.id}</td>
+          <td class="py-3 px-4 font-bold text-current">${dish.name}</td>
+          <td class="py-3 px-4 text-xs" style="color: var(--text-muted);">${dish.cat}</td>
+          <td class="py-3 px-4 mono font-bold text-current">RM ${price.toFixed(2)}</td>
+          <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-amber);">RM ${cost.toFixed(2)}</td>
+          <td class="py-3 px-4 mono font-black text-emerald-600 dark:text-emerald-400">RM ${margin.toFixed(2)}</td>
+          <td class="py-3 px-4 mono font-bold text-cyan-600 dark:text-cyan-400">${marginPct}%</td>
+          <td class="py-3 px-4">${badge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function onDishFilter() {
+      const q = document.getElementById('filter-dish-input').value.toLowerCase().trim();
+      const filtered = CATALOG_DATA.filter(d => 
+        d.name.toLowerCase().includes(q) || d.id.toLowerCase().includes(q) || d.cat.toLowerCase().includes(q)
+      );
+      renderDishesTable(filtered);
+    }
+
+    // -------------------------------------------------------------
+    // TAB 7: 损益表 (P&L) 动态计算与排版 (基于 POS 真实营业与已录成本)
+    // -------------------------------------------------------------
+    function renderPnLStatement() {
+      let totalSales = 0;
+      if (activeMonth === 'ALL') {
+        Object.values(POS_SALES_HISTORY).forEach(m => totalSales += m.total_sales);
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        totalSales = POS_SALES_HISTORY[activeMonth].total_sales;
+      }
+
+      const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+      const totalCogs = currentSupp.reduce((a, b) => a + b.amount, 0);
+
+      const currentExp = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const totalOpex = currentExp.reduce((a, b) => a + b.amount, 0);
+
+      const grossProfit = totalSales - totalCogs;
+      const grossMargin = totalSales > 0 ? ((grossProfit / totalSales) * 100).toFixed(1) : "0.0";
+
+      const netProfit = grossProfit - totalOpex;
+      const netMargin = totalSales > 0 ? ((netProfit / totalSales) * 100).toFixed(1) : "0.0";
+
+      document.getElementById('pnl-counter-rev').innerText = `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('pnl-delivery-rev').innerText = `RM 0.00 (已并入POS实收)`;
+      document.getElementById('pnl-total-rev').innerText = `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+      document.getElementById('pnl-total-cogs').innerText = `RM ${totalCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('pnl-gross-profit').innerText = `RM ${grossProfit.toLocaleString('en-US', {minimumFractionDigits: 2})} (毛利率 ${grossMargin}%)`;
+
+      const opexBox = document.getElementById('pnl-opex-breakdown');
+      opexBox.innerHTML = '';
+      if (currentExp.length === 0) {
+        opexBox.innerHTML = '<div class="py-2 text-xs text-slate-500">当前期间暂无录入杂支，待店主自主补录。</div>';
+      } else {
+        currentExp.forEach((it, idx) => {
+          const row = document.createElement('div');
+          row.className = "py-1.5 flex justify-between text-xs";
+          row.style.color = "var(--text-secondary)";
+          row.innerHTML = `
+            <span>${idx + 1}. ${it.name} [${it.category}]</span>
+            <span class="text-current font-semibold mono">RM ${it.amount.toFixed(2)}</span>
+          `;
+          opexBox.appendChild(row);
+        });
+      }
+
+      document.getElementById('pnl-total-opex').innerText = `RM ${totalOpex.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('pnl-final-net-profit').innerText = `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      document.getElementById('pnl-final-margin').innerText = `${netMargin}%`;
+    }
+
+    // -------------------------------------------------------------
+    // 杂支记账 MODAL & ACTION HANDLERS
+    // -------------------------------------------------------------
+    function openAddExpenseModal() {
+      document.getElementById('modal-expense-title').innerText = "记一笔日常杂支开销";
+      document.getElementById('edit-expense-id').value = "";
+      document.getElementById('btn-expense-submit-text').innerText = "确认保存";
+      document.getElementById('btn-delete-expense').classList.add('hidden');
+      document.getElementById('expense-preset-box').classList.remove('hidden');
+      document.getElementById('form-expense').reset();
+      initDates();
+      document.getElementById('modal-expense').classList.remove('hidden');
+    }
+
+    function closeExpenseModal() {
+      document.getElementById('modal-expense').classList.add('hidden');
+    }
+
+    function editExpense(id) {
+      const item = expensesList.find(x => x.id === id);
+      if (!item) return;
+
+      document.getElementById('modal-expense-title').innerText = "修改该笔杂支开销";
+      document.getElementById('edit-expense-id').value = item.id;
+      document.getElementById('btn-expense-submit-text').innerText = "保存修改";
+      document.getElementById('btn-delete-expense').classList.remove('hidden');
+      document.getElementById('expense-preset-box').classList.add('hidden');
+
+      document.getElementById('inp-exp-date').value = item.date;
+      document.getElementById('inp-exp-cat').value = item.category;
+      document.getElementById('inp-exp-name').value = item.name;
+      document.getElementById('inp-exp-amount').value = item.amount;
+      document.getElementById('inp-exp-payment').value = item.payment;
+      document.getElementById('inp-exp-ref').value = item.ref;
+      document.getElementById('inp-exp-handled').value = item.handled;
+      document.getElementById('inp-exp-notes').value = item.notes;
+
+      document.getElementById('modal-expense').classList.remove('hidden');
+    }
+
+    function saveExpenseRecord(e) {
+      e.preventDefault();
+      const editId = document.getElementById('edit-expense-id').value;
+      const date = document.getElementById('inp-exp-date').value;
+      const category = document.getElementById('inp-exp-cat').value;
+      const name = document.getElementById('inp-exp-name').value.trim();
+      const amount = parseFloat(document.getElementById('inp-exp-amount').value) || 0;
+      const payment = document.getElementById('inp-exp-payment').value;
+      const ref = document.getElementById('inp-exp-ref').value.trim();
+      const handled = document.getElementById('inp-exp-handled').value.trim() || '店长';
+      const notes = document.getElementById('inp-exp-notes').value.trim();
+
+      if (editId) {
+        const idx = expensesList.findIndex(x => x.id === editId);
+        if (idx !== -1) {
+          expensesList[idx] = { id: editId, date, category, name, amount, payment, ref, handled, notes };
+        }
+      } else {
+        const newRecord = {
+          id: 'exp_' + Date.now(),
+          date, category, name, amount, payment, ref, handled, notes
+        };
+        expensesList.unshift(newRecord);
+      }
+
+      saveExpensesToStorage();
+      closeExpenseModal();
+      renderAllViews();
+      if (chartDonut) updateDonutChart();
+      alert(editId ? "✅ 该笔账单修改成功！数据已实时更新。" : "✅ 记账成功！已加入流水并在本地保存。");
+    }
+
+    function deleteExpense(id) {
+      const item = expensesList.find(x => x.id === id);
+      if (!item) return;
+      if (confirm(`⚠️ 确认删除这笔账单吗？\n\n【${item.category}】${item.name}\n金额: RM ${item.amount.toFixed(2)}`)) {
+        expensesList = expensesList.filter(x => x.id !== id);
+        saveExpensesToStorage();
+        renderAllViews();
+        if (chartDonut) updateDonutChart();
+      }
+    }
+
+    function deleteCurrentExpense() {
+      const editId = document.getElementById('edit-expense-id').value;
+      if (editId) {
+        closeExpenseModal();
+        deleteExpense(editId);
+      }
+    }
+
+    function openAddRevenueModal() {
+      const amtStr = prompt("➕ 补录其他线下营业流水\n\n请输入补充金额 (RM):", "500.00");
+      if (!amtStr) return;
+      const amt = parseFloat(amtStr);
+      if (isNaN(amt) || amt <= 0) return alert("请输入有效金额！");
+      const note = prompt("请输入此笔款项备注 (如: 线下团餐预订 / 现金包场):", "线下包场定制螺蛳粉");
+      customRevenueList.unshift({
+        id: 'cust_rev_' + Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        amount: amt,
+        note: note || "其他营业流水"
+      });
+      saveCustomRevToStorage();
+      renderAllViews();
+      alert("✅ 已成功补录该笔营业流水！");
+    }
+
+    function fillExpensePreset(type) {
+      if (type === 'rent') {
+        document.getElementById('inp-exp-cat').value = '店铺租金';
+        document.getElementById('inp-exp-name').value = 'Austin Heights 门市租金';
+        document.getElementById('inp-exp-amount').value = '3500.00';
+        document.getElementById('inp-exp-payment').value = 'Maybank';
+        document.getElementById('inp-exp-notes').value = '对公账户支付房东';
+      } else if (type === 'gas') {
+        document.getElementById('inp-exp-cat').value = '煤气费';
+        document.getElementById('inp-exp-name').value = '商用煤气4桶';
+        document.getElementById('inp-exp-amount').value = '280.00';
+        document.getElementById('inp-exp-payment').value = '柜台现金';
+        document.getElementById('inp-exp-notes').value = 'RM 70/桶 现金货到付款';
+      } else if (type === 'tnb') {
+        document.getElementById('inp-exp-cat').value = '电费';
+        document.getElementById('inp-exp-name').value = 'TNB 商业电费账单';
+        document.getElementById('inp-exp-amount').value = '920.80';
+        document.getElementById('inp-exp-payment').value = 'TNB Online';
+      } else if (type === 'saj') {
+        document.getElementById('inp-exp-cat').value = '水费';
+        document.getElementById('inp-exp-name').value = 'SAJ 商业水费账单';
+        document.getElementById('inp-exp-amount').value = '185.40';
+        document.getElementById('inp-exp-payment').value = 'JomPAY';
+      } else if (type === 'wages') {
+        document.getElementById('inp-exp-cat').value = '员工薪资与福利';
+        document.getElementById('inp-exp-name').value = '员工半月预支薪资';
+        document.getElementById('inp-exp-amount').value = '2200.00';
+        document.getElementById('inp-exp-payment').value = 'Maybank';
+      }
+    }
+
+    function filterExpensesList() {
+      const kw = document.getElementById('filter-expense-keyword').value.toLowerCase().trim();
+      const cat = document.getElementById('filter-expense-category').value;
+      const filtered = expensesList.filter(item => {
+        const mMonth = activeMonth === 'ALL' || item.date.startsWith(activeMonth);
+        const mKw = item.name.toLowerCase().includes(kw) || item.handled.toLowerCase().includes(kw) || item.ref.toLowerCase().includes(kw);
+        const mCat = cat === 'ALL' || item.category === cat;
+        return mMonth && mKw && mCat;
+      });
+      renderExpensesTable(filtered);
+    }
+
+    // 选项卡切换
+    function switchTab(tabId) {
+      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'dishes', 'pnl', 'settings', 'menu-manager'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`nav-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        if (btn && content) {
+          if (t === tabId) {
+            btn.classList.add('active');
+            content.classList.remove('hidden');
+            if (t === 'menu-manager') initMenuManager();
+          } else {
+            btn.classList.remove('active');
+            content.classList.add('hidden');
+          }
+        }
+      });
+      lucide.createIcons();
+    }
+
+    // 图表初始化与刷新
+    function initCharts() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+      const textColor = isDark ? '#94a3b8' : '#475569';
+
+      // 1. 月度对比走势柱状图 (覆盖 2026 年 1~9 月所有 9 个月份的 POS 真实销售)
+      if (chartTrend) chartTrend.destroy();
+      const canvasTrend = document.getElementById('chart-monthly-trend');
+      if (canvasTrend) {
+        const ctxTrend = canvasTrend.getContext('2d');
+        const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'];
+        const labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月 (实时)'];
+        
+        const salesData = months.map(m => POS_SALES_HISTORY[m]?.total_sales || 0);
+        const profitData = months.map(m => {
+          const sales = POS_SALES_HISTORY[m]?.total_sales || 0;
+          const opex = expensesList.filter(e => e.date.startsWith(m)).reduce((a,b)=>a+b.amount, 0);
+          const cogs = suppliersList.filter(s => s.date.startsWith(m)).reduce((a,b)=>a+b.amount, 0);
+          return sales - cogs - opex;
+        });
+
+        chartTrend = new Chart(ctxTrend, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'POS 真实营业额 (RM)',
+                data: salesData,
+                backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                borderRadius: 6
+              },
+              {
+                label: '结余营业净利润 (RM)',
+                data: profitData,
+                backgroundColor: 'rgba(56, 189, 248, 0.85)',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } } }
+            },
+            scales: {
+              x: { ticks: { color: textColor }, grid: { color: gridColor } },
+              y: { ticks: { color: textColor }, grid: { color: gridColor } }
+            }
+          }
+        });
+      }
+
+      // 2. 当月开支结构环形图
+      updateDonutChart();
+    }
+
+    function updateDonutChart() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (chartDonut) chartDonut.destroy();
+      const canvasDonut = document.getElementById('chart-expense-donut');
+      if (!canvasDonut) return;
+      const ctxDonut = canvasDonut.getContext('2d');
+
+      const currentExpenses = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+
+      let rent = 0, wages = 0, utilities = 0, misc = 0;
+      currentExpenses.forEach(it => {
+        if (it.category.includes('租金')) rent += it.amount;
+        else if (it.category.includes('薪资')) wages += it.amount;
+        else if (it.category.includes('水') || it.category.includes('电') || it.category.includes('煤气')) utilities += it.amount;
+        else misc += it.amount;
+      });
+      const cogs = currentSupp.reduce((a, b) => a + b.amount, 0);
+
+      const labels = ['食材采购', '门市租金', '员工薪资', '水电煤气', '其他杂支'];
+      const data = [cogs, rent, wages, utilities, misc];
+      const colors = ['#f59e0b', '#f43f5e', '#6366f1', '#0ea5e9', '#10b981'];
+
+      const totalSpent = data.reduce((a, b) => a + b, 0);
+
+      chartDonut = new Chart(ctxDonut, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: totalSpent > 0 ? data : [1],
+            backgroundColor: totalSpent > 0 ? colors : ['#334155'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '72%',
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      const legendBox = document.getElementById('donut-legend-box');
+      if (legendBox) {
+        legendBox.innerHTML = `
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 食材: RM ${cogs.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> 租金: RM ${rent.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 薪资: RM ${wages.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span> 水电: RM ${utilities.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+        `;
+      }
+    }
+
+    function reloadAndRecalculate() {
+      const spinner = document.getElementById('refresh-spinner') || document.getElementById('pos-sync-icon');
+      if (spinner) spinner.classList.add('animate-spin');
+      setTimeout(() => {
+        renderAllViews();
+        initCharts();
+        if (spinner) spinner.classList.remove('animate-spin');
+        alert("✅ POS 真实营业额与账目已重新核算完毕！");
+      }, 300);
+    }
+
+    function exportPnLToExcel() {
+      let csv = "来碗 · 柳州螺蛳粉 (Austin Heights) - 综合损益表 (P&L)\n";
+      csv += `核算期间: ${activeMonth === 'ALL' ? '2026年 1~9月 全年累计' : activeMonth}\n\n`;
+      csv += "项目类别,项目明细,金额 (RM)\n";
+
+      let periodSales = 0;
+      if (activeMonth === 'ALL') {
+        Object.values(POS_SALES_HISTORY).forEach(m => periodSales += m.total_sales);
+      } else if (POS_SALES_HISTORY[activeMonth]) {
+        periodSales = POS_SALES_HISTORY[activeMonth].total_sales;
+      }
+
+      const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
+      const totalCogs = currentSupp.reduce((a, b) => a + b.amount, 0);
+
+      const currentExp = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const totalOpex = currentExp.reduce((a, b) => a + b.amount, 0);
+
+      const netProfit = periodSales - totalCogs - totalOpex;
+
+      csv += `一、营业收入,Optimy POS 门店实收营业额,${periodSales.toFixed(2)}\n`;
+      csv += `一、营业收入,全店总营业额合计,${periodSales.toFixed(2)}\n\n`;
+
+      csv += `二、营业直接成本,生鲜肉类与食材进货(已录入),${totalCogs.toFixed(2)}\n`;
+      csv += `二、营业直接成本,直接成本合计 (COGS),${totalCogs.toFixed(2)}\n\n`;
+
+      currentExp.forEach(it => {
+        csv += `三、运营日常杂支,${it.name} [${it.category}],${it.amount.toFixed(2)}\n`;
+      });
+      csv += `三、运营日常杂支,运营杂支合计 (OPEX),${totalOpex.toFixed(2)}\n\n`;
+
+      csv += `四、净利润,营业结余净利润,${netProfit.toFixed(2)}\n`;
+
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `来碗螺蛳粉_损益报表_${activeMonth}_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    function saveWebhookSettings() {
+      const val = document.getElementById('cfg-webhook-url').value.trim();
+      localStorage.setItem('laiwan_finance_webhook', val);
+      alert('✅ Webhook URL 已保存到浏览器配置！');
+    }
+
+    function copyAppsScriptCode() {
+      const code = document.getElementById('script-code-block').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const txt = document.getElementById('copy-status-text');
+        txt.innerText = "已复制成功！";
+        setTimeout(() => txt.innerText = "一键复制代码", 2000);
+      });
+    }
+  
+    // -------------------------------------------------------------
+    // TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC)
+    // -------------------------------------------------------------
+    let activeMenuCatFilter = "ALL";
+
+    function initMenuManager() {
+      const savedPat = localStorage.getItem('laiwan_github_pat') || "";
+      const inp = document.getElementById('inp-github-pat');
+      if (inp) inp.value = savedPat;
+      updatePatStatusBadge(savedPat);
+
+      const localMenu = localStorage.getItem('laiwan_menu_data');
+      if (localMenu) {
+        try {
+          const parsed = JSON.parse(localMenu);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            CATALOG_DATA = parsed;
+          }
+        } catch(e) {}
+      }
+
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuCatPills() {
+      const categories = ["ALL", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
+      const box = document.getElementById('menu-mgr-cat-pills');
+      if (!box) return;
+      box.innerHTML = categories.map(cat => {
+        const label = cat === 'ALL' ? '全部菜品 (58)' : cat;
+        const isActive = activeMenuCatFilter === cat;
+        const activeClass = isActive 
+          ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20' 
+          : 'bg-slate-800/40 text-slate-400 hover:text-white border border-slate-700/50';
+        return `<button onclick="setMenuCatFilter('${cat}')" class="text-xs px-3 py-1.5 rounded-xl whitespace-nowrap transition ${activeClass}">${label}</button>`;
+      }).join('');
+    }
+
+    function setMenuCatFilter(cat) {
+      activeMenuCatFilter = cat;
+      renderMenuCatPills();
+      renderMenuManagerList();
+    }
+
+    function renderMenuManagerList() {
+      const grid = document.getElementById('menu-mgr-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const searchKw = (document.getElementById('menu-mgr-search')?.value || '').toLowerCase().trim();
+
+      const filtered = CATALOG_DATA.filter(dish => {
+        const mCat = activeMenuCatFilter === 'ALL' || dish.cat === activeMenuCatFilter;
+        const mKw = !searchKw || dish.id.toLowerCase().includes(searchKw) || dish.name.toLowerCase().includes(searchKw);
+        return mCat && mKw;
+      });
+
+      const countPill = document.getElementById('menu-mgr-count-pill');
+      if (countPill) countPill.innerText = `${filtered.length} 道`;
+
+      filtered.forEach(dish => {
+        const isStock = dish.in_stock !== false;
+        const imgSrc = dish.cdn_img || dish.img || 'images/logo.png';
+        const card = document.createElement('div');
+        card.className = "fin-card rounded-2xl p-4 flex flex-col justify-between space-y-3 relative border hover:border-emerald-500/40 transition";
+        card.innerHTML = `
+          <div class="flex items-start gap-3">
+            <img src="${imgSrc}" alt="${dish.name}" class="w-14 h-14 rounded-xl object-cover border flex-shrink-0" style="border-color: var(--border-subtle);" onerror="this.src='images/logo.png'">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1 mb-1">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 mono">${dish.id}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-md border" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">${dish.cat}</span>
+              </div>
+              <input type="text" value="${escapeHtml(dish.name)}" onchange="updateDishField('${dish.id}', 'name', this.value)" class="text-xs font-bold border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">售价 (RM):</label>
+              <div class="flex items-center gap-1">
+                <button onclick="adjDishPrice('${dish.id}', -1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">-</button>
+                <input type="number" step="0.10" value="${dish.price}" onchange="updateDishField('${dish.id}', 'price', parseFloat(this.value)||0)" class="text-xs font-black mono text-emerald-500 border rounded-lg px-2 py-1 w-full text-center focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
+                <button onclick="adjDishPrice('${dish.id}', 1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">+</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">热销角标 (Badge):</label>
+              <input type="text" value="${escapeHtml(dish.badge || '')}" placeholder="如: 🔥 进店必点" onchange="updateDishField('${dish.id}', 'badge', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">菜品描述 (Description):</label>
+            <input type="text" value="${escapeHtml(dish.desc || '')}" placeholder="菜品短句描述..." onchange="updateDishField('${dish.id}', 'desc', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+          </div>
+
+          <div class="pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--border-subtle);">
+            <span class="font-semibold text-[11px]" style="color: var(--text-muted);">上下架状态:</span>
+            <button onclick="toggleDishStock('${dish.id}')" class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isStock ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'}">
+              <span>${isStock ? '🟢 正常在售' : '🔴 售罄下架'}</span>
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function updateDishField(id, field, value) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish[field] = value;
+        localStorage.setItem('laiwan_menu_data', JSON.stringify(CATALOG_DATA));
+        renderDishesTable();
+      }
+    }
+
+    function adjDishPrice(id, delta) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.price = Math.max(0, +(dish.price + delta).toFixed(2));
+        updateDishField(id, 'price', dish.price);
+        renderMenuManagerList();
+      }
+    }
+
+    function toggleDishStock(id) {
+      const dish = CATALOG_DATA.find(d => d.id === id);
+      if (dish) {
+        dish.in_stock = dish.in_stock === false ? true : false;
+        updateDishField(id, 'in_stock', dish.in_stock);
+        renderMenuManagerList();
+      }
+    }
+
+    function onPatInputChange() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      updatePatStatusBadge(pat);
+    }
+
+    function saveGithubToken() {
+      const pat = document.getElementById('inp-github-pat').value.trim();
+      localStorage.setItem('laiwan_github_pat', pat);
+      updatePatStatusBadge(pat);
+      alert('✅ GitHub Token (PAT) 已成功保存到本地浏览器缓存！');
+    }
+
+    function togglePatVisibility() {
+      const inp = document.getElementById('inp-github-pat');
+      if (inp.type === 'password') inp.type = 'text'; else inp.type = 'password';
+    }
+
+    function updatePatStatusBadge(pat) {
+      const badge = document.getElementById('pat-status-badge');
+      if (!badge) return;
+      if (pat && pat.length > 10) {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 font-medium flex items-center gap-1';
+        badge.innerHTML = '<span>✅ Token 已配置</span>';
+      } else {
+        badge.className = 'px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium';
+        badge.innerHTML = '⚠️ 未配置 Token (发布需配置)';
+      }
+    }
+
+    async function saveAndDeployMenuToGitHub() {
+      let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
+      if (!pat) {
+        pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');
+        if (!pat) return;
+        localStorage.setItem('laiwan_github_pat', pat.trim());
+        document.getElementById('inp-github-pat').value = pat.trim();
+        updatePatStatusBadge(pat.trim());
+      }
+
+      const btn = document.getElementById('btn-deploy-menu');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="rotate-cw" class="w-4 h-4 animate-spin"></i> <span>正在发布更新到 GitHub...</span>`;
+        lucide.createIcons();
+      }
+
+      try {
+        const repoOwner = 'zhilikam-design';
+        const repoName = 'laiwanluosifen-order';
+        const filePath = 'menu_data.json';
+        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
+
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        if (!getRes.ok && getRes.status !== 404) {
+          throw new Error(`无法获取 GitHub 文件信息 (HTTP ${getRes.status})。请检查 PAT 权限。`);
+        }
+
+        let sha = '';
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        const contentJsonStr = JSON.stringify(CATALOG_DATA, null, 2);
+        const base64Content = window.btoa(unescape(encodeURIComponent(contentJsonStr)));
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + pat,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify({
+            message: 'Update menu_data.json via Laiwan Finance Menu Manager',
+            content: base64Content,
+            sha: sha
+          })
+        });
+
+        if (!putRes.ok) {
+          const errJson = await putRes.json();
+          throw new Error(errJson.message || `GitHub API 提交失败 (HTTP ${putRes.status})`);
+        }
+
+        alert('🎉 菜单与价格更新已成功发布到 GitHub Pages 在线点餐系统！\n\nGitHub Pages 将在 1-2 分钟内同步完成部署。在点餐前台刷新页面即可看到最新菜品价格与状态！');
+
+      } catch (err) {
+        alert('❌ 菜单发布失败: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          lucide.createIcons();
+        }
+      }
+    }
+
+  </script>
 </body>
 </html>
