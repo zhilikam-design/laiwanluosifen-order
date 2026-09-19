@@ -222,7 +222,236 @@
   <!-- 主体工作区 -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
 
-    <!-- TAB 1 to 9 all present in file -->
+    <!-- ============================================================ -->
+    <!-- TAB 1: 经营总览 (OVERVIEW) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-overview" class="space-y-6">
+      
+      <!-- 头部状态栏：区分真实记账与预估模型 -->
+      <div class="fin-card rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+              <span id="overview-period-title">2026年 9月 经营动态盘点</span>
+            </h2>
+            <span id="period-status-tag" class="text-xs px-2.5 py-0.5 rounded-full font-semibold" style="background: rgba(245,158,11,0.15); color: var(--accent-amber);">
+              当月记账进行中 (实时动态计算)
+            </span>
+          </div>
+          <p class="text-xs mt-1" style="color: var(--text-muted);">
+            💡 说明：9月账目正处在实时录入阶段，当前看板金额为您已实际记录的真实流水累加，不使用死板假想数据。
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <!-- 切换月份 -->
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <span class="text-xs font-medium whitespace-nowrap" style="color: var(--text-secondary);">月份切换:</span>
+            <select id="month-picker" onchange="onMonthChange(this.value)" class="text-xs border rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="2026-09" selected>2026年 9月 (当月实时 · POS已记17天)</option>
+              <option value="2026-08">2026年 8月 (POS 31天真实流水)</option>
+              <option value="2026-07">2026年 7月 (POS 31天真实流水)</option>
+              <option value="2026-06">2026年 6月 (POS 30天真实流水)</option>
+              <option value="2026-05">2026年 5月 (POS 31天真实流水)</option>
+              <option value="2026-04">2026年 4月 (POS 30天真实流水)</option>
+              <option value="2026-03">2026年 3月 (POS 31天真实流水)</option>
+              <option value="2026-02">2026年 2月 (POS 28天真实流水)</option>
+              <option value="2026-01">2026年 1月 (POS 31天真实流水)</option>
+              <option value="ALL">🌟 2026全年 (1~9月 累计 260天)</option>
+            </select>
+          </div>
+
+          <button onclick="openAddExpenseModal()" class="text-xs px-3.5 py-2 rounded-xl text-white font-semibold flex items-center gap-1.5 transition shadow-sm" style="background-color: var(--accent-rose);">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>记杂支</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 5 大核心财务 KPI 指标卡片 (金融级微质感) -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+        
+        <!-- KPI 1: 全店总营业额 -->
+        <div class="fin-card fin-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted);">
+              <span>全店总营业额</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style="background: rgba(16,185,129,0.15); color: var(--accent-emerald);">
+                <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-xl sm:text-2xl font-black mono tracking-tight text-current" id="kpi-gross-revenue">
+              RM 0.00
+            </div>
+          </div>
+          <div class="text-[11px] pt-3 mt-3 border-t flex items-center justify-between" style="border-color: var(--border-subtle); color: var(--text-muted);">
+            <span>柜台实收: <b class="mono text-current" id="kpi-counter-sales">RM 0</b></span>
+            <span>外卖到手: <b class="mono text-current" id="kpi-delivery-sales">RM 0</b></span>
+          </div>
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+        </div>
+
+        <!-- KPI 2: 原材料采购 (COGS) -->
+        <div class="fin-card fin-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted);">
+              <span>原材料与食材采购</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style="background: rgba(245,158,11,0.15); color: var(--accent-amber);">
+                <i data-lucide="package-open" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-xl sm:text-2xl font-black mono tracking-tight" style="color: var(--accent-amber);" id="kpi-cogs-amount">
+              RM 0.00
+            </div>
+          </div>
+          <div class="text-[11px] pt-3 mt-3 border-t flex items-center justify-between" style="border-color: var(--border-subtle); color: var(--text-muted);">
+            <span>食材成本率:</span>
+            <span class="font-bold mono" style="color: var(--accent-amber);" id="kpi-cogs-ratio">0.0%</span>
+          </div>
+          <div class="absolute top-0 left-0 right-0 h-1 bg-amber-500"></div>
+        </div>
+
+        <!-- KPI 3: 运营杂支 (OPEX) -->
+        <div class="fin-card fin-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted);">
+              <span>运营日常杂支</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style="background: rgba(244,63,94,0.15); color: var(--accent-rose);">
+                <i data-lucide="building" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-xl sm:text-2xl font-black mono tracking-tight" style="color: var(--accent-rose);" id="kpi-opex-amount">
+              RM 0.00
+            </div>
+          </div>
+          <div class="text-[11px] pt-3 mt-3 border-t flex items-center justify-between" style="border-color: var(--border-subtle); color: var(--text-muted);">
+            <span>房租+水电+薪资</span>
+            <span class="font-medium" id="kpi-expense-count-text">0 笔流水</span>
+          </div>
+          <div class="absolute top-0 left-0 right-0 h-1 bg-rose-500"></div>
+        </div>
+
+        <!-- KPI 4: 净利润 (Net Profit) -->
+        <div class="fin-card fin-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted);">
+              <span>实际/预估净利润</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style="background: rgba(16,185,129,0.15); color: var(--accent-emerald);">
+                <i data-lucide="wallet-cards" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-xl sm:text-2xl font-black mono tracking-tight" style="color: var(--accent-emerald);" id="kpi-net-profit">
+              RM 0.00
+            </div>
+          </div>
+          <div class="text-[11px] pt-3 mt-3 border-t flex items-center justify-between" style="border-color: var(--border-subtle); color: var(--text-muted);">
+            <span>净利润率:</span>
+            <span class="font-bold mono" style="color: var(--accent-emerald);" id="kpi-profit-ratio">0.0%</span>
+          </div>
+          <div class="absolute top-0 left-0 right-0 h-1 bg-emerald-500"></div>
+        </div>
+
+        <!-- KPI 5: 每日保本平衡线 -->
+        <div class="col-span-2 lg:col-span-1 fin-card fin-card-hover rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--text-muted);">
+              <span>每日保本平衡线</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs" style="background: rgba(99,102,241,0.15); color: var(--accent-indigo);">
+                <i data-lucide="scale" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-xl sm:text-2xl font-black mono tracking-tight" style="color: var(--accent-indigo);" id="kpi-breakeven-target">
+              RM 0 /天
+            </div>
+          </div>
+          <div class="text-[11px] pt-3 mt-3 border-t flex items-center justify-between" style="border-color: var(--border-subtle); color: var(--text-muted);">
+            <span>每日需售出:</span>
+            <span class="font-bold" style="color: var(--accent-indigo);" id="kpi-breakeven-orders">约 0 碗</span>
+          </div>
+          <div class="absolute top-0 left-0 right-0 h-1 bg-indigo-500"></div>
+        </div>
+      </div>
+
+      <!-- 2 大金融图表看板 (适配暗黑/白天双模式) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- 图表 1: 月度对比走势图 -->
+        <div class="lg:col-span-2 fin-card rounded-2xl p-5">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <h3 class="font-bold text-sm sm:text-base flex items-center gap-2 text-current">
+                <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-500"></i>
+                <span>月度营收、总成本与净利润趋势</span>
+              </h3>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">2026 年 POS 真实核定月度数据与当月记账汇总</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-lg border font-medium mono" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+              单位: RM (MYR)
+            </span>
+          </div>
+          <div class="h-64 sm:h-72 w-full">
+            <canvas id="chart-monthly-trend"></canvas>
+          </div>
+        </div>
+
+        <!-- 图表 2: 当月支出结构分布 -->
+        <div class="fin-card rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-sm sm:text-base flex items-center gap-2 text-current mb-1">
+              <i data-lucide="donut" class="w-4 h-4 text-cyan-500"></i>
+              <span>当月实际支出与成本结构</span>
+            </h3>
+            <p class="text-xs mb-4" style="color: var(--text-muted);">基于您已录入的实际开支项目分类占比</p>
+          </div>
+          <div class="h-48 w-full flex items-center justify-center">
+            <canvas id="chart-expense-donut"></canvas>
+          </div>
+          <div id="donut-legend-box" class="grid grid-cols-2 gap-2 text-xs pt-3 mt-3 border-t font-medium" style="border-color: var(--border-subtle); color: var(--text-secondary);">
+            <!-- JS 动态填充分类 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 历史月度对比表格 -->
+      <div class="fin-card rounded-2xl p-5 overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-bold text-sm sm:text-base flex items-center gap-2 text-current">
+              <i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i>
+              <span>历史经营月报对比表 (真实 POS 与财务底表)</span>
+            </h3>
+            <p class="text-xs mt-0.5" style="color: var(--text-muted);">支持随时切换回顾过去的月度利润与食材成本率</p>
+          </div>
+          <button onclick="switchTab('pnl')" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1">
+            <span>生成正规损益表 (P&L)</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-4">核算月份</th>
+                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">POS 实收营业额</th>
+                <th class="py-3 px-4">订单单量</th>
+                <th class="py-3 px-4">客单价 (AOV)</th>
+                <th class="py-3 px-4">服务费 (10%)</th>
+                <th class="py-3 px-4" style="color: var(--accent-amber);">食材原料成本 (COGS)</th>
+                <th class="py-3 px-4" style="color: var(--accent-rose);">运营日常杂支 (OPEX)</th>
+                <th class="py-3 px-4 font-black" style="color: var(--accent-emerald);">净利润</th>
+                <th class="py-3 px-4 text-right">数据状态</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-monthly-summary" class="divide-y mono" style="border-color: var(--border-subtle);">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 2 to 9, scripts, styles -->
   </main>
 </body>
 </html>
