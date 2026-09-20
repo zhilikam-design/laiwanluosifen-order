@@ -191,6 +191,7 @@
         <button onclick="switchTab('delivery')" id="nav-btn-delivery" class="nav-tab-btn px-3.5 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="bike" class="w-4 h-4 text-sky-500"></i>
           <span>外卖扣点审计</span>
+          <span id="nav-badge-delivery" class="text-[10px] px-1.5 py-0.2 rounded-full mono font-bold" style="background: rgba(56,189,248,0.15); color: var(--accent-sky);">3</span>
         </button>
         <button onclick="switchTab('dishes')" id="nav-btn-dishes" class="nav-tab-btn px-3.5 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-500"></i>
@@ -710,78 +711,115 @@
     <!-- ============================================================ -->
     <div id="tab-content-delivery" class="hidden space-y-6">
       
-      <div class="fin-card rounded-2xl p-4 sm:p-5">
-        <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
-          <i data-lucide="bike" class="w-5 h-5 text-sky-500"></i>
-          <span>外卖平台月结单抽佣审计与净打款分析</span>
-        </h2>
-        <p class="text-xs mt-0.5" style="color: var(--text-muted);">
-          精确审查 GrabFood、ShopeeFood、Foodpanda 平台实际扣点比例 (31%~33%) 及商家补贴让利损耗
-        </p>
+      <!-- 头部控制栏 -->
+      <div class="fin-card rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+            <i data-lucide="bike" class="w-5 h-5 text-sky-500"></i>
+            <span>外卖平台月结单抽佣审计与净打款核销</span>
+          </h2>
+          <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+            每月结单一次，精确核对平台佣金 (Commission)、广告营销赞助 (Advertisement) 与最终银行净到账
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openAddDeliveryModal()" class="text-xs px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold shadow-md shadow-sky-600/30 flex items-center gap-1.5 transition">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>+ 录入外卖月结单</span>
+          </button>
+        </div>
       </div>
 
-      <!-- 3 大平台卡片 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- 4 大外卖综合概览指标卡片 -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">全平台总销售额 (Gross)</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1 text-current" id="del-metric-gross">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">顾客在平台原价总消费</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">平台总抽佣 (Commission)</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1 text-rose-500" id="del-metric-comm">- RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">平台服务抽点 (约28%~30%)</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">广告推广与优惠补贴 (Ads)</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1" style="color: var(--accent-amber);" id="del-metric-ads">- RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">投放广告 + 商家优惠卷让利</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">实际净打款到手 (Net Payout)</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1 text-emerald-600 dark:text-emerald-400" id="del-metric-net">RM 0.00</div>
+          <div class="text-xs mt-1 font-bold mono text-cyan-600 dark:text-cyan-400" id="del-metric-rate-text">综合扣点损耗率: 0.0%</div>
+        </div>
+      </div>
+
+      <!-- 3 大平台卡片 (动态渲染) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="delivery-platform-cards-box">
         
+        <!-- GrabFood 卡片 -->
         <div class="fin-card rounded-2xl p-5 border relative overflow-hidden" style="border-color: rgba(16,185,129,0.3);">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold text-xs">GF</span>
               <div>
                 <h3 class="font-bold text-sm text-current">GrabFood</h3>
-                <span class="text-[10px]" style="color: var(--accent-emerald);">主力平台 (份额 56.8%)</span>
+                <span class="text-[10px]" id="gf-share-text" style="color: var(--accent-emerald);">外卖主力平台</span>
               </div>
             </div>
-            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" style="background: rgba(16,185,129,0.15); color: var(--accent-emerald);">实扣 31.9%</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" id="gf-rate-badge" style="background: rgba(16,185,129,0.15); color: var(--accent-emerald);">实扣 0.0%</span>
           </div>
           <div class="space-y-2 text-xs pt-3 border-t mono" style="border-color: var(--border-subtle); color: var(--text-secondary);">
-            <div class="flex justify-between"><span>平台总流水 (Gross):</span> <span class="font-bold text-current">RM 10,500.00</span></div>
-            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span>- RM 3,150.00</span></div>
-            <div class="flex justify-between" style="color: var(--accent-amber);"><span>商家补贴折扣:</span> <span>- RM 200.00</span></div>
+            <div class="flex justify-between"><span>总流水 (Gross):</span> <span class="font-bold text-current" id="gf-val-gross">RM 0.00</span></div>
+            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span id="gf-val-comm">- RM 0.00</span></div>
+            <div class="flex justify-between" style="color: var(--accent-amber);"><span>广告与优惠 (Ads):</span> <span id="gf-val-ads">- RM 0.00</span></div>
             <div class="flex justify-between font-black text-sm pt-2 border-t text-emerald-600 dark:text-emerald-400" style="border-color: var(--border-subtle);">
-              <span>实际净打款:</span> <span>RM 7,150.00</span>
+              <span>实际净到账:</span> <span id="gf-val-net">RM 0.00</span>
             </div>
           </div>
         </div>
 
+        <!-- Foodpanda 卡片 -->
         <div class="fin-card rounded-2xl p-5 border relative overflow-hidden" style="border-color: rgba(236,72,153,0.3);">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-pink-500 text-white flex items-center justify-center font-bold text-xs">FP</span>
               <div>
                 <h3 class="font-bold text-sm text-current">Foodpanda</h3>
-                <span class="text-[10px] text-pink-500">次级主力 (份额 25.9%)</span>
+                <span class="text-[10px] text-pink-500" id="fp-share-text">次级主力</span>
               </div>
             </div>
-            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" style="background: rgba(236,72,153,0.15); color: #ec4899;">实扣 33.1%</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" id="fp-rate-badge" style="background: rgba(236,72,153,0.15); color: #ec4899;">实扣 0.0%</span>
           </div>
           <div class="space-y-2 text-xs pt-3 border-t mono" style="border-color: var(--border-subtle); color: var(--text-secondary);">
-            <div class="flex justify-between"><span>平台总流水 (Gross):</span> <span class="font-bold text-current">RM 4,800.00</span></div>
-            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span>- RM 1,440.00</span></div>
-            <div class="flex justify-between" style="color: var(--accent-amber);"><span>商家补贴折扣:</span> <span>- RM 150.00</span></div>
+            <div class="flex justify-between"><span>总流水 (Gross):</span> <span class="font-bold text-current" id="fp-val-gross">RM 0.00</span></div>
+            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span id="fp-val-comm">- RM 0.00</span></div>
+            <div class="flex justify-between" style="color: var(--accent-amber);"><span>广告与优惠 (Ads):</span> <span id="fp-val-ads">- RM 0.00</span></div>
             <div class="flex justify-between font-black text-sm pt-2 border-t text-pink-600 dark:text-pink-400" style="border-color: var(--border-subtle);">
-              <span>实际净打款:</span> <span>RM 3,210.00</span>
+              <span>实际净到账:</span> <span id="fp-val-net">RM 0.00</span>
             </div>
           </div>
         </div>
 
+        <!-- ShopeeFood 卡片 -->
         <div class="fin-card rounded-2xl p-5 border relative overflow-hidden" style="border-color: rgba(249,115,22,0.3);">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs">SF</span>
               <div>
                 <h3 class="font-bold text-sm text-current">ShopeeFood</h3>
-                <span class="text-[10px] text-orange-500">补充平台 (份额 17.3%)</span>
+                <span class="text-[10px] text-orange-500" id="sf-share-text">补充平台</span>
               </div>
             </div>
-            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" style="background: rgba(249,115,22,0.15); color: #f97316;">实扣 31.1%</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold mono" id="sf-rate-badge" style="background: rgba(249,115,22,0.15); color: #f97316;">实扣 0.0%</span>
           </div>
           <div class="space-y-2 text-xs pt-3 border-t mono" style="border-color: var(--border-subtle); color: var(--text-secondary);">
-            <div class="flex justify-between"><span>平台总流水 (Gross):</span> <span class="font-bold text-current">RM 3,200.00</span></div>
-            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span>- RM 896.00</span></div>
-            <div class="flex justify-between" style="color: var(--accent-amber);"><span>商家补贴折扣:</span> <span>- RM 100.00</span></div>
+            <div class="flex justify-between"><span>总流水 (Gross):</span> <span class="font-bold text-current" id="sf-val-gross">RM 0.00</span></div>
+            <div class="flex justify-between text-rose-500"><span>平台抽佣 (Commission):</span> <span id="sf-val-comm">- RM 0.00</span></div>
+            <div class="flex justify-between" style="color: var(--accent-amber);"><span>广告与优惠 (Ads):</span> <span id="sf-val-ads">- RM 0.00</span></div>
             <div class="flex justify-between font-black text-sm pt-2 border-t text-orange-600 dark:text-orange-400" style="border-color: var(--border-subtle);">
-              <span>实际净打款:</span> <span>RM 2,204.00</span>
+              <span>实际净到账:</span> <span id="sf-val-net">RM 0.00</span>
             </div>
           </div>
         </div>
@@ -797,11 +835,12 @@
                 <th class="py-3 px-4">所属月份</th>
                 <th class="py-3 px-4 font-bold text-current">外卖平台</th>
                 <th class="py-3 px-4">平台总销售额 (Gross)</th>
-                <th class="py-3 px-4 text-rose-500">平台总抽佣</th>
-                <th class="py-3 px-4" style="color: var(--accent-amber);">商家补贴</th>
+                <th class="py-3 px-4 text-rose-500">平台总抽佣 (Commission)</th>
+                <th class="py-3 px-4" style="color: var(--accent-amber);">广告与推广优惠 (Ads)</th>
                 <th class="py-3 px-4 font-black text-emerald-600 dark:text-emerald-400">实际净打款到账</th>
-                <th class="py-3 px-4 font-semibold text-cyan-600 dark:text-cyan-400">综合抽佣率</th>
-                <th class="py-3 px-4">月结单 Tax Invoice 备注</th>
+                <th class="py-3 px-4 font-semibold text-cyan-600 dark:text-cyan-400">综合扣点损耗率</th>
+                <th class="py-3 px-4">月结对账单 Invoice / 备注</th>
+                <th class="py-3 px-4 text-right">操作</th>
               </tr>
             </thead>
             <tbody id="tbody-delivery" class="divide-y mono" style="border-color: var(--border-subtle);">
@@ -1289,6 +1328,106 @@ function doPost(e) {
     </div>
   </div>
 
+  <!-- ============================================================ -->
+  <!-- MODAL 3: 录入/修改外卖平台月结单 (ADD/EDIT DELIVERY STATEMENT MODAL) -->
+  <!-- ============================================================ -->
+  <div id="modal-delivery" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="fin-card rounded-2xl p-6 w-full max-w-lg border shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b" style="border-color: var(--border-subtle);">
+        <h3 class="text-base font-bold text-current flex items-center gap-2">
+          <i data-lucide="bike" class="w-5 h-5 text-sky-500"></i>
+          <span id="modal-delivery-title">录入外卖平台月结单</span>
+        </h3>
+        <button onclick="closeDeliveryModal()" class="text-slate-400 hover:text-current">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-delivery" onsubmit="saveDeliveryRecord(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="edit-delivery-id" value="">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">所属月份</label>
+            <select id="inp-del-month" required class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-sky-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="2026-09" selected>2026年 9月</option>
+              <option value="2026-08">2026年 8月</option>
+              <option value="2026-07">2026年 7月</option>
+              <option value="2026-06">2026年 6月</option>
+              <option value="2026-05">2026年 5月</option>
+              <option value="2026-04">2026年 4月</option>
+              <option value="2026-03">2026年 3月</option>
+              <option value="2026-02">2026年 2月</option>
+              <option value="2026-01">2026年 1月</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">外卖平台</label>
+            <select id="inp-del-platform" required onchange="onDeliveryPlatformChange(this.value)" class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-sky-500 font-bold" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="GrabFood" selected>GrabFood (主力平台)</option>
+              <option value="Foodpanda">Foodpanda (粉色熊猫)</option>
+              <option value="ShopeeFood">ShopeeFood (橙色虾皮)</option>
+              <option value="其他外卖">其他外卖渠道</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">平台总销售额 Gross (RM)</label>
+            <input type="number" step="0.01" id="inp-del-gross" required oninput="calcDeliveryNetAuto()" placeholder="如 10500.00" class="border rounded-xl px-3 py-2 w-full font-bold mono focus:outline-none focus:ring-1 focus:ring-sky-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">平台总抽佣 Commission (RM)</label>
+            <input type="number" step="0.01" id="inp-del-comm" required oninput="calcDeliveryNetAuto()" placeholder="如 3150.00" class="border rounded-xl px-3 py-2 w-full font-bold mono text-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">广告推广与优惠扣款 Ads & Promo (RM)</label>
+            <input type="number" step="0.01" id="inp-del-ads" oninput="calcDeliveryNetAuto()" placeholder="0.00 (如广告推广/商家补贴)" class="border rounded-xl px-3 py-2 w-full font-bold mono focus:outline-none focus:ring-1 focus:ring-amber-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--accent-amber);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1 text-emerald-600 dark:text-emerald-400">银行实际净打款 Net Payout (RM)</label>
+            <input type="number" step="0.01" id="inp-del-net" required placeholder="0.00" class="border rounded-xl px-3 py-2 w-full font-black mono text-emerald-600 dark:text-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">月结对账单单号 (Tax Invoice No.)</label>
+            <input type="text" id="inp-del-ref" placeholder="如: GF-INV-202609" class="border rounded-xl px-3 py-2 w-full focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">综合损耗率预估</label>
+            <div id="del-calc-rate-preview" class="border rounded-xl px-3 py-2 w-full mono font-bold text-cyan-600 dark:text-cyan-400" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
+              实扣 0.0%
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1" style="color: var(--text-secondary);">对账备注说明 (Advertisement / Commission 明细)</label>
+          <input type="text" id="inp-del-notes" placeholder="如: 平台抽佣30% + 投流广告扣RM200，款项已入Maybank户头" class="border rounded-xl px-3 py-2 w-full focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+        </div>
+
+        <div class="pt-3 flex items-center justify-between border-t" style="border-color: var(--border-subtle);">
+          <button type="button" id="btn-delete-delivery" onclick="deleteCurrentDelivery()" class="hidden px-3.5 py-2 rounded-xl text-rose-600 hover:bg-rose-500/10 font-semibold transition flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>删除该结单</span>
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closeDeliveryModal()" class="px-4 py-2 rounded-xl border transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">取消</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold transition shadow-md shadow-sky-600/30">
+              <span id="btn-delivery-submit-text">确认保存结单</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT LOGIC ENGINE -->
   <script>
     // 1. 数据常量
@@ -1305,6 +1444,7 @@ function doPost(e) {
     let customRevenueList = []; // 店主手动录入的线下团餐/非POS营收
     let dayNotesMap = {};      // 每日营业备忘字典 { '2026-09-01': '早晚班交接正常' }
     let suppliersList = [];
+    let deliveryList = [];
     let activeMonth = "2026-09";
 
     // 图表引用
@@ -1426,6 +1566,56 @@ function doPost(e) {
         ];
         saveSuppliersToStorage();
       }
+
+      // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v2');
+      if (localDelivery) {
+        try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
+      }
+      if (!deliveryList || deliveryList.length === 0) {
+        deliveryList = [
+          {
+            id: 'del_1',
+            month: '2026-09',
+            platform: 'GrabFood',
+            gross: 10500.0,
+            commission: 3150.0,
+            adsPromo: 200.0,
+            adjustments: 0.0,
+            net: 7150.0,
+            rate: '31.9%',
+            ref: 'GF-STMT-202609',
+            notes: 'Grab 9月结单 (抽佣30% + 投流广告扣RM200)'
+          },
+          {
+            id: 'del_2',
+            month: '2026-09',
+            platform: 'Foodpanda',
+            gross: 4800.0,
+            commission: 1440.0,
+            adsPromo: 150.0,
+            adjustments: 0.0,
+            net: 3210.0,
+            rate: '33.1%',
+            ref: 'FP-STMT-202609',
+            notes: 'Panda 9月结单 (抽佣30% + 促销广告补贴RM150)'
+          },
+          {
+            id: 'del_3',
+            month: '2026-09',
+            platform: 'ShopeeFood',
+            gross: 3200.0,
+            commission: 896.0,
+            adsPromo: 100.0,
+            adjustments: 0.0,
+            net: 2204.0,
+            rate: '31.1%',
+            ref: 'SF-STMT-202609',
+            notes: 'Shopee 9月结单 (抽佣28% + 广告位扣款RM100)'
+          }
+        ];
+        saveDeliveryToStorage();
+      }
     }
 
     function saveExpensesToStorage() {
@@ -1440,6 +1630,9 @@ function doPost(e) {
     function saveCustomRevToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
+    function saveDeliveryToStorage() {
+      localStorage.setItem('laiwan_finance_delivery_v2', JSON.stringify(deliveryList));
+    }
 
     // 全局重渲染
     function renderAllViews() {
@@ -1447,6 +1640,7 @@ function doPost(e) {
       renderExpensesTable();
       renderRevenueTable();
       renderSuppliersTable();
+      renderDeliveryTable();
       renderDishesTable();
       renderPnLStatement();
       updateBadges();
@@ -1458,11 +1652,15 @@ function doPost(e) {
       if (bExp) bExp.innerText = expensesList.length;
       const bRev = document.getElementById('nav-badge-revenue');
       if (bRev) {
-        const totalDays = activeMonth === 'ALL' ? 260 : (POS_SALES_HISTORY[activeMonth]?.days_count || 0);
+        const totalDays = activeMonth === 'ALL' 
+          ? Object.values(POS_SALES_HISTORY).reduce((a, b) => a + (b.days_count || 0), 0)
+          : (POS_SALES_HISTORY[activeMonth]?.days_count || 0);
         bRev.innerText = `${totalDays}天`;
       }
       const bSupp = document.getElementById('nav-badge-suppliers');
       if (bSupp) bSupp.innerText = suppliersList.length;
+      const bDel = document.getElementById('nav-badge-delivery');
+      if (bDel) bDel.innerText = deliveryList.length;
     }
 
     // 月份切换控制
@@ -1470,15 +1668,17 @@ function doPost(e) {
       activeMonth = val;
       const statusTag = document.getElementById('period-status-tag');
       const titleElem = document.getElementById('overview-period-title');
+      const allDays = Object.values(POS_SALES_HISTORY).reduce((a, b) => a + (b.days_count || 0), 0);
+      const mDays = POS_SALES_HISTORY[val]?.days_count || 0;
 
       if (val === 'ALL') {
         titleElem.innerText = "2026年 1~9月 全年经营盘点";
-        statusTag.innerText = "2026 全年 POS 真实汇总 (260天)";
+        statusTag.innerText = `2026 全年 POS 真实汇总 (${allDays}天)`;
         statusTag.style.background = "rgba(16,185,129,0.15)";
         statusTag.style.color = "var(--accent-emerald)";
       } else if (val === '2026-09') {
         titleElem.innerText = "2026年 9月 经营动态盘点";
-        statusTag.innerText = "当月记账进行中 (POS已记17天)";
+        statusTag.innerText = `当月记账进行中 (POS已记${mDays}天)`;
         statusTag.style.background = "rgba(245,158,11,0.15)";
         statusTag.style.color = "var(--accent-amber)";
       } else {
@@ -1520,7 +1720,10 @@ function doPost(e) {
       // 叠加手动补充的其他营收 (若有)
       const customMatches = customRevenueList.filter(r => activeMonth === 'ALL' || r.date.startsWith(activeMonth));
       const customTotal = customMatches.reduce((acc, it) => acc + (it.amount || 0), 0);
-      const totalRevenue = periodSales + customTotal;
+      // 外卖月结打款到账总额 (根据当前月份计算)
+      const currentDelivery = deliveryList.filter(d => activeMonth === 'ALL' || d.month === activeMonth);
+      const deliveryPayout = currentDelivery.reduce((acc, it) => acc + (it.net || 0), 0);
+      const totalRevenue = periodSales + customTotal + deliveryPayout;
 
       const aov = periodBills > 0 ? (periodSales / periodBills).toFixed(2) : "0.00";
 
@@ -1549,7 +1752,7 @@ function doPost(e) {
 
       safeSet('kpi-gross-revenue', `RM ${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
       safeSet('kpi-counter-sales', `RM ${periodSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
-      safeSet('kpi-delivery-sales', `${periodBills} 单 (AOV: RM ${aov})`);
+      safeSet('kpi-delivery-sales', `RM ${deliveryPayout.toLocaleString('en-US', {minimumFractionDigits: 2})} (已核销)`);
       safeSet('kpi-cogs-amount', `RM ${cogsAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
       safeSet('kpi-cogs-ratio', cogsAmount > 0 ? `${cogsRatio}%` : "0.0% (待店主补录)");
       safeSet('kpi-opex-amount', `RM ${opexAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
@@ -1845,6 +2048,235 @@ function doPost(e) {
       document.getElementById('supp-sum-paid').innerText = `RM ${paid.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
     }
 
+    
+    // -------------------------------------------------------------
+    // TAB 5: 外卖平台月结单抽佣审计与净打款核销 (DELIVERY ENGINE)
+    // -------------------------------------------------------------
+    function renderDeliveryTable() {
+      const tbody = document.getElementById('tbody-delivery');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = deliveryList.filter(d => activeMonth === 'ALL' || d.month === activeMonth);
+
+      let totalGross = 0;
+      let totalComm = 0;
+      let totalAds = 0;
+      let totalNet = 0;
+
+      const platStats = {
+        'GrabFood': { gross: 0, comm: 0, ads: 0, net: 0, count: 0 },
+        'Foodpanda': { gross: 0, comm: 0, ads: 0, net: 0, count: 0 },
+        'ShopeeFood': { gross: 0, comm: 0, ads: 0, net: 0, count: 0 }
+      };
+
+      if (list.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td colspan="9" class="py-8 text-center" style="color: var(--text-muted);">
+            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <p class="font-medium text-xs sm:text-sm">当前核算期间 (${activeMonth === 'ALL' ? '2026全年' : activeMonth}) 暂无外卖平台结单记录</p>
+            <p class="text-xs opacity-75 mt-1">每个月月初收到 Grab / Panda / Shopee 结单后，点击右上角【+ 录入外卖月结单】即可入账核销。</p>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      } else {
+        list.forEach(item => {
+          totalGross += item.gross;
+          totalComm += item.commission;
+          totalAds += (item.adsPromo || 0);
+          totalNet += item.net;
+
+          if (platStats[item.platform]) {
+            platStats[item.platform].gross += item.gross;
+            platStats[item.platform].comm += item.commission;
+            platStats[item.platform].ads += (item.adsPromo || 0);
+            platStats[item.platform].net += item.net;
+            platStats[item.platform].count++;
+          }
+
+          const totalDeducted = item.gross - item.net;
+          const rate = item.gross > 0 ? ((totalDeducted / item.gross) * 100).toFixed(1) + '%' : '0.0%';
+
+          let platBadge = '<span class="text-xs px-2.5 py-0.5 rounded-md font-bold bg-emerald-500/15 text-emerald-500">GrabFood</span>';
+          if (item.platform === 'Foodpanda') {
+            platBadge = '<span class="text-xs px-2.5 py-0.5 rounded-md font-bold bg-pink-500/15 text-pink-500">Foodpanda</span>';
+          } else if (item.platform === 'ShopeeFood') {
+            platBadge = '<span class="text-xs px-2.5 py-0.5 rounded-md font-bold bg-orange-500/15 text-orange-500">ShopeeFood</span>';
+          }
+
+          const tr = document.createElement('tr');
+          tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-semibold mono" style="color: var(--text-muted);">${item.month}</td>
+            <td class="py-3 px-4 font-bold text-current">${platBadge}</td>
+            <td class="py-3 px-4 mono font-bold text-current">RM ${item.gross.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+            <td class="py-3 px-4 mono font-semibold text-rose-500">- RM ${item.commission.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+            <td class="py-3 px-4 mono font-semibold" style="color: var(--accent-amber);">- RM ${(item.adsPromo || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+            <td class="py-3 px-4 mono font-black text-emerald-600 dark:text-emerald-400">RM ${item.net.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+            <td class="py-3 px-4 mono font-bold text-cyan-600 dark:text-cyan-400">${rate}</td>
+            <td class="py-3 px-4 text-xs" style="color: var(--text-muted);">${item.ref ? `[${item.ref}] ` : ''}${item.notes || '-'}</td>
+            <td class="py-3 px-4 text-right whitespace-nowrap">
+              <button onclick="editDelivery('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 mr-1.5 transition">修改</button>
+              <button onclick="deleteDelivery('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-rose-600 hover:bg-rose-500/10 transition">删除</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // 更新顶部 4 大概览小卡片
+      const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+      safeSet('del-metric-gross', `RM ${totalGross.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('del-metric-comm', `- RM ${totalComm.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('del-metric-ads', `- RM ${totalAds.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('del-metric-net', `RM ${totalNet.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      
+      const overallRate = totalGross > 0 ? (((totalGross - totalNet) / totalGross) * 100).toFixed(1) + '%' : '0.0%';
+      safeSet('del-metric-rate-text', `综合扣点损耗率: ${overallRate}`);
+
+      // 更新 3 大平台专属卡片
+      updatePlatformCardBox('gf', platStats['GrabFood'], totalGross);
+      updatePlatformCardBox('fp', platStats['Foodpanda'], totalGross);
+      updatePlatformCardBox('sf', platStats['ShopeeFood'], totalGross);
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function updatePlatformCardBox(prefix, stat, totalGross) {
+      const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+      const share = totalGross > 0 && stat.gross > 0 ? ((stat.gross / totalGross) * 100).toFixed(1) + '%' : '0.0%';
+      const rate = stat.gross > 0 ? (((stat.gross - stat.net) / stat.gross) * 100).toFixed(1) + '%' : '0.0%';
+
+      safeSet(`${prefix}-share-text`, `营收份额 ${share} (${stat.count}笔月结)`);
+      safeSet(`${prefix}-rate-badge`, `实扣 ${rate}`);
+      safeSet(`${prefix}-val-gross`, `RM ${stat.gross.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet(`${prefix}-val-comm`, `- RM ${stat.comm.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet(`${prefix}-val-ads`, `- RM ${stat.ads.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet(`${prefix}-val-net`, `RM ${stat.net.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+    }
+
+    function openAddDeliveryModal() {
+      document.getElementById('modal-delivery-title').innerText = "录入外卖平台月结对账单";
+      document.getElementById('edit-delivery-id').value = "";
+      document.getElementById('btn-delivery-submit-text').innerText = "确认保存结单";
+      document.getElementById('btn-delete-delivery').classList.add('hidden');
+      document.getElementById('form-delivery').reset();
+
+      // 默认填充当前选中月份
+      if (activeMonth !== 'ALL') {
+        document.getElementById('inp-del-month').value = activeMonth;
+      }
+      document.getElementById('modal-delivery').classList.remove('hidden');
+    }
+
+    function closeDeliveryModal() {
+      document.getElementById('modal-delivery').classList.add('hidden');
+    }
+
+    function onDeliveryPlatformChange(platform) {
+      const gross = parseFloat(document.getElementById('inp-del-gross').value) || 0;
+      let defaultRate = 0.30;
+      if (platform === 'ShopeeFood') defaultRate = 0.28;
+      if (platform === 'Foodpanda') defaultRate = 0.30;
+      if (gross > 0 && (!document.getElementById('inp-del-comm').value || document.getElementById('inp-del-comm').value === '0')) {
+        document.getElementById('inp-del-comm').value = (gross * defaultRate).toFixed(2);
+      }
+      calcDeliveryNetAuto();
+    }
+
+    function calcDeliveryNetAuto() {
+      const gross = parseFloat(document.getElementById('inp-del-gross').value) || 0;
+      const comm = parseFloat(document.getElementById('inp-del-comm').value) || 0;
+      const ads = parseFloat(document.getElementById('inp-del-ads').value) || 0;
+
+      const net = Math.max(0, gross - comm - ads);
+      document.getElementById('inp-del-net').value = net.toFixed(2);
+
+      const deducted = gross - net;
+      const rate = gross > 0 ? ((deducted / gross) * 100).toFixed(1) + '%' : '0.0%';
+      const prevBox = document.getElementById('del-calc-rate-preview');
+      if (prevBox) {
+        prevBox.innerText = `实扣损耗率 ${rate}`;
+      }
+    }
+
+    function editDelivery(id) {
+      const item = deliveryList.find(d => d.id === id);
+      if (!item) return;
+
+      document.getElementById('modal-delivery-title').innerText = "修改外卖月结对账单";
+      document.getElementById('edit-delivery-id').value = item.id;
+      document.getElementById('btn-delivery-submit-text').innerText = "保存修改";
+      document.getElementById('btn-delete-delivery').classList.remove('hidden');
+
+      document.getElementById('inp-del-month').value = item.month;
+      document.getElementById('inp-del-platform').value = item.platform;
+      document.getElementById('inp-del-gross').value = item.gross;
+      document.getElementById('inp-del-comm').value = item.commission;
+      document.getElementById('inp-del-ads').value = item.adsPromo || 0;
+      document.getElementById('inp-del-net').value = item.net;
+      document.getElementById('inp-del-ref').value = item.ref || '';
+      document.getElementById('inp-del-notes').value = item.notes || '';
+
+      calcDeliveryNetAuto();
+      document.getElementById('modal-delivery').classList.remove('hidden');
+    }
+
+    function saveDeliveryRecord(e) {
+      e.preventDefault();
+      const editId = document.getElementById('edit-delivery-id').value;
+      const month = document.getElementById('inp-del-month').value;
+      const platform = document.getElementById('inp-del-platform').value;
+      const gross = parseFloat(document.getElementById('inp-del-gross').value) || 0;
+      const commission = parseFloat(document.getElementById('inp-del-comm').value) || 0;
+      const adsPromo = parseFloat(document.getElementById('inp-del-ads').value) || 0;
+      const net = parseFloat(document.getElementById('inp-del-net').value) || 0;
+      const ref = document.getElementById('inp-del-ref').value.trim();
+      const notes = document.getElementById('inp-del-notes').value.trim();
+
+      const rate = gross > 0 ? (((gross - net) / gross) * 100).toFixed(1) + '%' : '0.0%';
+
+      if (editId) {
+        const idx = deliveryList.findIndex(d => d.id === editId);
+        if (idx !== -1) {
+          deliveryList[idx] = { id: editId, month, platform, gross, commission, adsPromo, net, rate, ref, notes };
+        }
+      } else {
+        deliveryList.unshift({
+          id: 'del_' + Date.now(),
+          month, platform, gross, commission, adsPromo, net, rate, ref, notes
+        });
+      }
+
+      saveDeliveryToStorage();
+      closeDeliveryModal();
+      renderAllViews();
+      alert(editId ? "✅ 该笔外卖月结单修改成功！" : "✅ 外卖月结账单录入成功！实际到账已汇总至全店营业额。");
+    }
+
+    function deleteDelivery(id) {
+      const item = deliveryList.find(d => d.id === id);
+      if (!item) return;
+      if (confirm(`⚠️ 确认删除这笔月结账单吗？
+
+【${item.month} ${item.platform}】
+总销售额: RM ${item.gross.toFixed(2)}
+净打款到账: RM ${item.net.toFixed(2)}`)) {
+        deliveryList = deliveryList.filter(d => d.id !== id);
+        saveDeliveryToStorage();
+        renderAllViews();
+      }
+    }
+
+    function deleteCurrentDelivery() {
+      const editId = document.getElementById('edit-delivery-id').value;
+      if (editId) {
+        closeDeliveryModal();
+        deleteDelivery(editId);
+      }
+    }
+
     function toggleSupplierStatus(id) {
       const item = suppliersList.find(s => s.id === id);
       if (!item) return;
@@ -1937,7 +2369,10 @@ function doPost(e) {
       };
 
       safePnlSet('pnl-counter-rev', `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
-      safePnlSet('pnl-delivery-rev', `RM 0.00 (已并入POS实收)`);
+      const curDel = deliveryList.filter(d => activeMonth === 'ALL' || d.month === activeMonth);
+      const delNetPayout = curDel.reduce((a, b) => a + (b.net || 0), 0);
+      safePnlSet('pnl-delivery-rev', `RM ${delNetPayout.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      totalSales += delNetPayout;
       safePnlSet('pnl-total-rev', `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
       safePnlSet('pnl-total-cogs', `RM ${totalCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
       safePnlSet('pnl-gross-profit', `RM ${grossProfit.toLocaleString('en-US', {minimumFractionDigits: 2})} (毛利率 ${grossMargin}%)`);
@@ -2099,7 +2534,7 @@ function doPost(e) {
 
     // 选项卡切换
     function switchTab(tabId) {
-      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'dishes', 'pnl', 'settings', 'menu-manager'];
+      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'delivery', 'dishes', 'pnl', 'settings', 'menu-manager'];
       tabs.forEach(t => {
         const btn = document.getElementById(`nav-btn-${t}`);
         const content = document.getElementById(`tab-content-${t}`);
@@ -2108,6 +2543,7 @@ function doPost(e) {
             btn.classList.add('active');
             content.classList.remove('hidden');
             if (t === 'menu-manager') initMenuManager();
+            if (t === 'delivery') renderDeliveryTable();
           } else {
             btn.classList.remove('active');
             content.classList.add('hidden');
