@@ -574,41 +574,46 @@
         <div>
           <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
             <i data-lucide="banknote" class="w-5 h-5 text-emerald-500"></i>
-            <span>每日柜台现金与无现金流水实收 (可编辑)</span>
+            <span>每日营业实收流水 (POS 系统实时直连 · 1~9月全量明细)</span>
           </h2>
           <p class="text-xs mt-0.5" style="color: var(--text-muted);">
-            收银交班流水，记账录错可随时点击修改或删除重新核准
+            自动直连 Optimy POS 门店收银系统。每笔包含实收额、单量、客单价与服务费，支持随时补充交班备注。
           </p>
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="restoreOfficialRevenueData()" class="text-xs px-3.5 py-2 rounded-xl bg-sky-600/15 hover:bg-sky-600/25 text-sky-600 dark:text-sky-400 border border-sky-500/30 font-semibold flex items-center gap-1.5 transition shadow-sm" title="从 Google Sheet 原表一键恢复被误删的 9月前5天营业收入流水">
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-            <span>一键恢复原表营收 (9月1~5日)</span>
+          <button onclick="fetchLivePOSSales(activeMonth, true)" class="text-xs px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition" title="直接调用 Optimy POS 官方 API 拉取最新营业流水">
+            <i data-lucide="refresh-cw" id="pos-sync-icon" class="w-4 h-4"></i>
+            <span>从 POS 实时同步最新数据</span>
           </button>
-          <button onclick="openAddRevenueModal()" class="text-xs px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition">
+          <button onclick="openAddRevenueModal()" class="text-xs px-3 py-2 rounded-xl border font-semibold flex items-center gap-1.5 transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);" title="手动补充线下包场或团餐等其他营业流水">
             <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>录入今日营收</span>
+            <span>补录其他营收</span>
           </button>
         </div>
       </div>
 
-      <!-- 营收指标小卡片 -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <!-- 营收指标 4 大卡片 -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="fin-card p-4 rounded-2xl">
-          <div class="text-xs" style="color: var(--text-muted);">已录入柜台总营收</div>
-          <div class="text-2xl font-black mono mt-1 text-emerald-600 dark:text-emerald-400" id="rev-metric-total">RM 0.00</div>
-          <div class="text-xs mt-1" style="color: var(--text-muted);" id="rev-metric-count">统计 0 天</div>
+          <div class="text-xs" style="color: var(--text-muted);">期间 POS 实收总额</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1 text-emerald-600 dark:text-emerald-400" id="rev-metric-total">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);" id="rev-metric-days-text">核算 0 天流水</div>
         </div>
         <div class="fin-card p-4 rounded-2xl">
-          <div class="text-xs" style="color: var(--text-muted);">柜台现金实收 (Cash)</div>
-          <div class="text-2xl font-black mono mt-1" style="color: var(--accent-amber);" id="rev-metric-cash">RM 0.00</div>
-          <div class="text-xs mt-1" style="color: var(--text-muted);" id="rev-metric-cash-ratio">占比 0%</div>
+          <div class="text-xs" style="color: var(--text-muted);">期间 POS 订单总量</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1" style="color: var(--accent-sky);" id="rev-metric-bills">0 单</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">POS 终端结账笔数</div>
         </div>
         <div class="fin-card p-4 rounded-2xl">
-          <div class="text-xs" style="color: var(--text-muted);">扫码/刷卡 (DuitNow/Card)</div>
-          <div class="text-2xl font-black mono mt-1" style="color: var(--accent-sky);" id="rev-metric-card">RM 0.00</div>
-          <div class="text-xs mt-1" style="color: var(--text-muted);" id="rev-metric-card-ratio">占比 0% (主流)</div>
+          <div class="text-xs" style="color: var(--text-muted);">平均客单价 (AOV)</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1" style="color: var(--accent-amber);" id="rev-metric-aov">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">每单平均消费金额</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">10% 服务费实收</div>
+          <div class="text-xl sm:text-2xl font-black mono mt-1" style="color: var(--accent-indigo);" id="rev-metric-charge">RM 0.00</div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">Service Charge 累计</div>
         </div>
       </div>
 
@@ -619,10 +624,12 @@
             <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
               <tr>
                 <th class="py-3 px-4">营业日期</th>
-                <th class="py-3 px-4" style="color: var(--accent-amber);">现金实收 (Cash RM)</th>
-                <th class="py-3 px-4" style="color: var(--accent-sky);">扫码/刷卡 (DuitNow/Card RM)</th>
-                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">当日总实收 (RM)</th>
-                <th class="py-3 px-4">经手员工 / 交班对账备注</th>
+                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">当日 POS 实收 (RM)</th>
+                <th class="py-3 px-4">订单单量</th>
+                <th class="py-3 px-4" style="color: var(--accent-sky);">客单价 (AOV)</th>
+                <th class="py-3 px-4" style="color: var(--accent-amber);">10% 服务费 (RM)</th>
+                <th class="py-3 px-4">营业渠道 / 终端</th>
+                <th class="py-3 px-4">交班对账 / 备注</th>
                 <th class="py-3 px-4 text-right">操作</th>
               </tr>
             </thead>
@@ -1535,21 +1542,22 @@ function doPost(e) {
       const breakEvenOrders = Math.round(breakEvenDaily / 15.8);
 
       // 界面赋值
-      document.getElementById('kpi-gross-revenue').innerText = `RM ${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-counter-sales').innerText = `RM ${periodSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-delivery-sales').innerText = `${periodBills} 单 (AOV: RM ${aov})`;
+      const safeSet = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+      };
 
-      document.getElementById('kpi-cogs-amount').innerText = `RM ${cogsAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-cogs-ratio').innerText = cogsAmount > 0 ? `${cogsRatio}%` : "0.0% (待店主补录)";
-
-      document.getElementById('kpi-opex-amount').innerText = `RM ${opexAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-expense-count-text').innerText = `${currentExpenses.length} 笔真实流水 ${currentExpenses.length === 0 ? '(待补录)' : ''}`;
-
-      document.getElementById('kpi-net-profit').innerText = `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('kpi-profit-ratio').innerText = `${profitRatio}%`;
-
-      document.getElementById('kpi-breakeven-target').innerText = opexAmount > 0 ? `RM ${breakEvenDaily} /天` : "待录入成本";
-      document.getElementById('kpi-breakeven-orders').innerText = opexAmount > 0 ? `约 ${breakEvenOrders} 碗粉` : "暂无开销";
+      safeSet('kpi-gross-revenue', `RM ${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('kpi-counter-sales', `RM ${periodSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('kpi-delivery-sales', `${periodBills} 单 (AOV: RM ${aov})`);
+      safeSet('kpi-cogs-amount', `RM ${cogsAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('kpi-cogs-ratio', cogsAmount > 0 ? `${cogsRatio}%` : "0.0% (待店主补录)");
+      safeSet('kpi-opex-amount', `RM ${opexAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('kpi-expense-count-text', `${currentExpenses.length} 笔真实流水 ${currentExpenses.length === 0 ? '(待补录)' : ''}`);
+      safeSet('kpi-net-profit', `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safeSet('kpi-profit-ratio', `${profitRatio}%`);
+      safeSet('kpi-breakeven-target', opexAmount > 0 ? `RM ${breakEvenDaily} /天` : "待录入成本");
+      safeSet('kpi-breakeven-orders', opexAmount > 0 ? `约 ${breakEvenOrders} 碗粉` : "暂无开销");
 
       // 渲染 2026 年 1~9 月历史经营月报对比表 (从 9月 倒排至 1月)
       const tbody = document.getElementById('tbody-monthly-summary');
@@ -1693,13 +1701,26 @@ function doPost(e) {
         tbody.appendChild(tr);
       });
 
-      // 界面 4 大卡片更新
-      document.getElementById('rev-metric-total').innerText = `RM ${sumTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('rev-metric-bills').innerText = `${sumBills.toLocaleString('en-US')} 单`;
+      // 界面 4 大卡片更新 (全部添加防空保护 null-safe)
+      const elemTotal = document.getElementById('rev-metric-total');
+      if (elemTotal) elemTotal.innerText = `RM ${sumTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+      const elemBills = document.getElementById('rev-metric-bills');
+      if (elemBills) elemBills.innerText = `${sumBills.toLocaleString('en-US')} 单`;
+
       const avgAov = sumBills > 0 ? (sumTotal / sumBills).toFixed(2) : "0.00";
-      document.getElementById('rev-metric-aov').innerText = `RM ${avgAov}`;
-      document.getElementById('rev-metric-charge').innerText = `RM ${sumCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('rev-metric-days-text').innerText = `核算 ${dayRows.length} 天 POS 流水`;
+      const elemAov = document.getElementById('rev-metric-aov');
+      if (elemAov) elemAov.innerText = `RM ${avgAov}`;
+
+      const elemCharge = document.getElementById('rev-metric-charge');
+      if (elemCharge) elemCharge.innerText = `RM ${sumCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+
+      const elemDays = document.getElementById('rev-metric-days-text');
+      if (elemDays) elemDays.innerText = `核算 ${dayRows.length} 天 POS 流水`;
+
+      // 兼容旧版 ID
+      const elemCount = document.getElementById('rev-metric-count');
+      if (elemCount) elemCount.innerText = `核算 ${dayRows.length} 天 (${sumBills} 单)`;
     }
 
     // 编辑当日交班备注
@@ -1910,33 +1931,19 @@ function doPost(e) {
       const netProfit = grossProfit - totalOpex;
       const netMargin = totalSales > 0 ? ((netProfit / totalSales) * 100).toFixed(1) : "0.0";
 
-      document.getElementById('pnl-counter-rev').innerText = `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('pnl-delivery-rev').innerText = `RM 0.00 (已并入POS实收)`;
-      document.getElementById('pnl-total-rev').innerText = `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+      const safePnlSet = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+      };
 
-      document.getElementById('pnl-total-cogs').innerText = `RM ${totalCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('pnl-gross-profit').innerText = `RM ${grossProfit.toLocaleString('en-US', {minimumFractionDigits: 2})} (毛利率 ${grossMargin}%)`;
-
-      const opexBox = document.getElementById('pnl-opex-breakdown');
-      opexBox.innerHTML = '';
-      if (currentExp.length === 0) {
-        opexBox.innerHTML = '<div class="py-2 text-xs text-slate-500">当前期间暂无录入杂支，待店主自主补录。</div>';
-      } else {
-        currentExp.forEach((it, idx) => {
-          const row = document.createElement('div');
-          row.className = "py-1.5 flex justify-between text-xs";
-          row.style.color = "var(--text-secondary)";
-          row.innerHTML = `
-            <span>${idx + 1}. ${it.name} [${it.category}]</span>
-            <span class="text-current font-semibold mono">RM ${it.amount.toFixed(2)}</span>
-          `;
-          opexBox.appendChild(row);
-        });
-      }
-
-      document.getElementById('pnl-total-opex').innerText = `RM ${totalOpex.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('pnl-final-net-profit').innerText = `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-      document.getElementById('pnl-final-margin').innerText = `${netMargin}%`;
+      safePnlSet('pnl-counter-rev', `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safePnlSet('pnl-delivery-rev', `RM 0.00 (已并入POS实收)`);
+      safePnlSet('pnl-total-rev', `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safePnlSet('pnl-total-cogs', `RM ${totalCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safePnlSet('pnl-gross-profit', `RM ${grossProfit.toLocaleString('en-US', {minimumFractionDigits: 2})} (毛利率 ${grossMargin}%)`);
+      safePnlSet('pnl-total-opex', `RM ${totalOpex.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safePnlSet('pnl-final-net-profit', `RM ${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safePnlSet('pnl-final-margin', `${netMargin}%`);
     }
 
     // -------------------------------------------------------------
