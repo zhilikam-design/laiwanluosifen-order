@@ -1805,8 +1805,74 @@
       lines.push(`*包含税费(10%):* RM ${totals.taxAmount.toFixed(2)}`);
       lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】*`);
 
-      const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\\n'))}`;
+            const now = new Date();
+      const orderId = 'LW' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '-' + Math.floor(1000 + Math.random() * 9000);
+      const timeStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+      // 将订单单号放入 WhatsApp 消息顶部
+      lines.splice(2, 0, `*订单编号:* ${orderId}`, `*下单时间:* ${timeStr}`);
+
+      const itemsStr = cart.map(it => {
+        let s = `${it.name} x${it.qty}`;
+        if (it.spicy) s += ` (${it.spicy})`;
+        if (it.addons && it.addons.length > 0) s += ` +${it.addons.map(a => a.name).join(',')}`;
+        return s;
+      }).join('; ');
+
+      // 静默推送至【线上订单 Google Sheet】
+      pushOrderToGoogleSheet({
+        orderId: orderId,
+        time: timeStr,
+        mode: currentOrderMode,
+        name: name,
+        phone: phone,
+        address: addr || (currentOrderMode === '堂食' ? '堂食点餐' : '到店自取'),
+        items: itemsStr,
+        subtotal: totals.itemsSubtotal.toFixed(2),
+        tax: totals.taxAmount.toFixed(2),
+        total: totals.grandTotal.toFixed(2),
+        remarks: remarks || '-',
+        status: '待接单'
+      });
+
+      const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
       window.open(waUrl, "_blank");
+    }
+
+    // 线上订单 Google Sheet 实时推送
+    function pushOrderToGoogleSheet(order) {
+      const webhookUrl = localStorage.getItem('laiwan_orders_webhook') || "";
+      if (!webhookUrl) {
+        console.log('[Orders Sheet] 未配置订单 Webhook，订单仅通过 WhatsApp 发送。');
+        return;
+      }
+      fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sheetName: '在线点餐订单总表',
+          headers: ['订单编号', '下单时间', '就餐方式', '顾客姓名', '联络电话', '送餐/就餐地址', '餐品明细', '餐品小计 (RM)', '税费服务费 (RM)', '实付总额 (RM)', '整单备注', '订单状态'],
+          row: [
+            order.orderId,
+            order.time,
+            order.mode,
+            order.name,
+            order.phone,
+            order.address,
+            order.items,
+            order.subtotal,
+            order.tax,
+            order.total,
+            order.remarks,
+            order.status
+          ]
+        })
+      }).then(() => {
+        console.log('[Orders Sheet] 订单已成功同步至 Google Sheet 云端订单表:', order.orderId);
+      }).catch(err => {
+        console.warn('[Orders Sheet Sync Error]', err);
+      });
     }
 
     // AI ASSISTANT LOGIC (generative-ui-copilotkit)

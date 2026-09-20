@@ -1037,119 +1037,200 @@
     <!-- ============================================================ -->
     <div id="tab-content-settings" class="hidden space-y-6">
       
-      <!-- 头部：云端账本协同原理解释卡片 -->
+      <!-- 头部：云端双账本全景联动架构 -->
       <div class="fin-card rounded-2xl p-6 border relative overflow-hidden" style="border-color: rgba(56,189,248,0.3);">
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-2">
               <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
-                <i data-lucide="cloud-cog" class="w-5 h-5 text-cyan-500"></i>
-                <span>Google Sheet 云端主账本与本地高速双向协同</span>
+                <i data-lucide="cloud" class="w-5 h-5 text-sky-500"></i>
+                <span>Google Sheet 云端双账本与全系统核心联动中心</span>
               </h2>
-              <span id="sheet-sync-status-badge" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-cyan-500/15 text-cyan-500">
-                双向联动就绪
+              <span id="sheet-sync-status-badge" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/15 text-emerald-500">
+                双账本独立联动就绪
               </span>
             </div>
             <p class="text-xs mt-1" style="color: var(--text-muted);">
-              <strong>架构说明：</strong>Google Sheet 是您的【云端中央总账本】；浏览器本地缓存是您的【离线秒级保险箱】。无论在电脑还是手机记账，数据本地毫秒级落盘防丢，同时实时双写至 Google Sheet！
+              整个系统完全以 Google Sheet 作为云端底层运行：<strong>【账本① 门店财务总账】</strong> 涵盖营收、杂支、外卖月结、供应商；<strong>【账本② 顾客线上订单】</strong> 涵盖前台在线点餐订单实时流水！
             </p>
           </div>
 
-          <div class="flex items-center gap-2">
-            <button onclick="pullAllFromGoogleSheet()" id="btn-pull-sheet" class="text-xs px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold flex items-center gap-1.5 transition shadow-md shadow-cyan-600/30">
-              <i data-lucide="refresh-cw" id="sheet-pull-spinner" class="w-3.5 h-3.5"></i>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="pullAllFromGoogleSheet()" id="btn-pull-sheet" class="text-xs px-3.5 py-2 rounded-xl border font-semibold flex items-center gap-1.5 transition hover:border-cyan-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <i data-lucide="refresh-cw" id="sheet-pull-spinner" class="w-3.5 h-3.5 text-cyan-500"></i>
               <span>从 Google Sheet 实时拉取最新数据</span>
+            </button>
+            <button onclick="pushAllFinanceToGoogleSheet()" id="btn-push-all-sheet" class="text-xs px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold flex items-center gap-1.5 transition shadow-md shadow-sky-600/30">
+              <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+              <span>🚀 全量推送所有历史财务至 Google Sheet</span>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- 主配置卡片 -->
-      <div class="fin-card rounded-2xl p-6">
-        <div class="space-y-5 text-xs">
-          
-          <!-- 1. Google Sheet 表格链接 -->
-          <div>
-            <label class="block font-semibold text-current mb-1">1. 已连接的 Google Sheet 共享地址 (读取端):</label>
+      <!-- 双 Google Sheet 并列配置网格 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- ======================= -->
+        <!-- 表格 ①：门店财务与经营主账本 -->
+        <!-- ======================= -->
+        <div class="fin-card rounded-2xl p-6 border space-y-4" style="border-color: rgba(16,185,129,0.3);">
+          <div class="flex items-center justify-between pb-3 border-b" style="border-color: var(--border-subtle);">
             <div class="flex items-center gap-2">
-              <input type="text" readonly value="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" class="border rounded-xl px-3 py-2.5 w-full mono text-xs" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
-              <a href="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center gap-1.5 whitespace-nowrap transition">
+              <span class="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold text-xs">①</span>
+              <div>
+                <h3 class="font-bold text-sm text-current">表格 ①：门店财务与经营总账本</h3>
+                <p class="text-[11px]" style="color: var(--text-muted);">管钱管账：每日营收、运营杂支、外卖月结、供应商进货</p>
+              </div>
+            </div>
+            <span id="webhook-active-tag" class="text-[11px] font-bold text-amber-500">未配置</span>
+          </div>
+
+          <!-- 财务表格地址 -->
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">财务 Google Sheet 共享地址 (读取端):</label>
+            <div class="flex items-center gap-2">
+              <input type="text" id="cfg-finance-sheet-url" readonly value="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" class="border rounded-xl px-3 py-2 w-full mono text-xs" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+              <a href="https://docs.google.com/spreadsheets/d/1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o/edit?usp=sharing" target="_blank" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center gap-1 whitespace-nowrap transition">
                 <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                <span>打开在线表格</span>
+                <span>打开</span>
               </a>
             </div>
-            <p class="text-[11px] mt-1 text-emerald-600 dark:text-emerald-400">
-              ✅ 读取端已自动打通：系统通过 Google GVIZ 实时接口可直接读取表格内所有工作表（杂支、进货、外卖月结等）。
-            </p>
           </div>
 
-          <!-- 2. Webhook 写入配置 -->
-          <div class="pt-4 border-t" style="border-color: var(--border-subtle);">
-            <div class="flex items-center justify-between mb-1">
-              <label class="block font-semibold text-current">2. Google Apps Script Webhook URL (实时写入端):</label>
-              <span id="webhook-active-tag" class="text-[11px] font-bold text-amber-500">未配置（当前使用本地高速缓存）</span>
-            </div>
-            <p class="text-[11px] mb-2" style="color: var(--text-muted);">
-              配置 Webhook 后，在网页端每记一笔杂支或外卖月结单，网页在本地保存的同时，会<strong>自动在 Google Sheet 对应工作表实时追加新的一行</strong>！
-            </p>
+          <!-- 财务 Webhook URL -->
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">财务 Apps Script Webhook URL (写入端):</label>
             <div class="flex items-center gap-2">
-              <input type="text" id="cfg-webhook-url" placeholder="粘贴您的 Apps Script Web App URL (例如: https://script.google.com/macros/s/.../exec)" class="border rounded-xl px-3 py-2.5 w-full focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono text-xs" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-              <button onclick="saveWebhookSettings()" class="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold whitespace-nowrap transition shadow-sm">
-                保存并激活写入
+              <input type="text" id="cfg-webhook-url" placeholder="粘贴财务 Apps Script 部署生成的 URL" class="border rounded-xl px-3 py-2 w-full font-mono text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <button onclick="saveWebhookSettings()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold whitespace-nowrap transition">
+                保存
               </button>
             </div>
           </div>
 
-          <!-- 3. Google Apps Script 一键代码与操作指引 -->
-          <div class="pt-4 border-t" style="border-color: var(--border-subtle);">
-            <div class="flex items-center justify-between mb-2">
-              <div>
-                <span class="font-bold text-current">3. Google Apps Script 自动化脚本 (一键复制):</span>
-                <span class="text-[11px] ml-2" style="color: var(--text-muted);">只需在 Google 表格【扩展程序 -> Apps Script】中粘贴一次即可</span>
-              </div>
-              <button onclick="copyAppsScriptCode()" class="text-xs px-3 py-1.5 rounded-lg border text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10 flex items-center gap-1.5 transition">
+          <!-- 该表格包含的工作表 -->
+          <div class="p-3 rounded-xl border text-[11px] space-y-1" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+            <div class="font-bold text-current mb-1">该表格自动托管的工作表 (Tabs)：</div>
+            <div class="flex items-center gap-2"><span class="text-emerald-500">●</span> <strong>《每日营收流水》</strong>: POS 262天历史流水 (RM 312k+) + 每日自动同步 + 线下营收</div>
+            <div class="flex items-center gap-2"><span class="text-rose-500">●</span> <strong>《运营与日常杂支》</strong>: 门市租金、水电煤气、员工薪资、零用金等</div>
+            <div class="flex items-center gap-2"><span class="text-sky-500">●</span> <strong>《外卖扣点审计》</strong>: GrabFood / Foodpanda / ShopeeFood 月结单核销</div>
+            <div class="flex items-center gap-2"><span class="text-amber-500">●</span> <strong>《供应商账单表》</strong>: 生鲜批发、中国干货、包装耗材等进货单</div>
+          </div>
+
+          <!-- 复制财务 Apps Script 脚本 -->
+          <div class="pt-2">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-bold text-current">财务表格 Apps Script 部署脚本:</span>
+              <button onclick="copyAppsScriptCode('finance')" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1">
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                <span id="copy-status-text">一键复制代码</span>
+                <span id="copy-status-text">一键复制</span>
               </button>
             </div>
-            <pre class="p-4 rounded-xl text-[11px] mono overflow-x-auto border max-h-56" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);" id="script-code-block">
+            <pre class="p-3 rounded-xl text-[10px] mono overflow-x-auto border max-h-36" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);" id="script-code-block">
 function doPost(e) {
   try {
     var json = JSON.parse(e.postData.contents);
-    var sheetName = json.sheetName || '运营与日常杂支';
-    var rowData = json.row;
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName(sheetName);
-    if (!sheet) {
-      sheet = ss.insertSheet(sheetName);
-      if (json.headers && json.headers.length > 0) {
-        sheet.appendRow(json.headers);
+    if (json.action === 'batchSync' && json.sheets) {
+      for (var sName in json.sheets) {
+        var sData = json.sheets[sName];
+        var sheet = ss.getSheetByName(sName) || ss.insertSheet(sName);
+        if (sData.clear) sheet.clear();
+        if (sData.headers && sData.headers.length > 0) sheet.appendRow(sData.headers);
+        if (sData.rows && sData.rows.length > 0) {
+          sheet.getRange(sheet.getLastRow() + 1, 1, sData.rows.length, sData.rows[0].length).setValues(sData.rows);
+        }
       }
+      return ContentService.createTextOutput(JSON.stringify({ status: 'success' })).setMimeType(ContentService.MimeType.JSON);
     }
-    if (rowData && rowData.length > 0) {
-      sheet.appendRow(rowData);
-    }
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Row added to ' + sheetName }))
-      .setMimeType(ContentService.MimeType.JSON);
+    var sheetName = json.sheetName || '运营与日常杂支';
+    var sheet = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
+    if (sheet.getLastRow() === 0 && json.headers) sheet.appendRow(json.headers);
+    if (json.row) sheet.appendRow(json.row);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success' })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'error', error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', error: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   }
 }
             </pre>
-            <div class="mt-3 p-3.5 rounded-xl border text-[11px] space-y-1.5" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
-              <div class="font-bold text-current flex items-center gap-1">
-                <i data-lucide="help-circle" class="w-4 h-4 text-cyan-500"></i>
-                <span>如何获取 Webhook URL？（超简单 4 步）：</span>
+          </div>
+        </div>
+
+
+        <!-- ======================= -->
+        <!-- 表格 ②：顾客线上点餐订单总表 -->
+        <!-- ======================= -->
+        <div class="fin-card rounded-2xl p-6 border space-y-4" style="border-color: rgba(56,189,248,0.3);">
+          <div class="flex items-center justify-between pb-3 border-b" style="border-color: var(--border-subtle);">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center font-bold text-xs">②</span>
+              <div>
+                <h3 class="font-bold text-sm text-current">表格 ②：顾客线上点餐订单总表</h3>
+                <p class="text-[11px]" style="color: var(--text-muted);">管客管单：顾客前台在线下单、点餐明细、外送自取、收款状态</p>
               </div>
-              <div>① 点击上方【打开在线表格】进入您的 Google Sheet；</div>
-              <div>② 点击顶部菜单栏的 <strong>【Extensions (扩展程序)】 -> 【Apps Script】</strong>；</div>
-              <div>③ 将上方代码完整粘贴进去，按 Ctrl+S 保存；</div>
-              <div>④ 点击右上角 <strong>【Deploy (部署)】 -> 【New deployment (新建部署)】</strong> -> 齿轮选择 <strong>【Web app (网页应用)】</strong> -> Who has access 选 <strong>【Anyone (任何人)】</strong> -> 点击 Deploy，复制生成的 URL 粘贴到上方输入框保存即可！</div>
+            </div>
+            <span id="orders-webhook-active-tag" class="text-[11px] font-bold text-amber-500">未配置</span>
+          </div>
+
+          <!-- 订单表格地址 -->
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">线上订单 Google Sheet 共享地址 (可选):</label>
+            <div class="flex items-center gap-2">
+              <input type="text" id="cfg-orders-sheet-url" placeholder="粘贴您的线上订单 Google Sheet 链接" class="border rounded-xl px-3 py-2 w-full mono text-xs focus:outline-none focus:ring-1 focus:ring-sky-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <a id="link-orders-sheet" href="#" target="_blank" class="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold flex items-center gap-1 whitespace-nowrap transition">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <span>打开</span>
+              </a>
             </div>
           </div>
 
+          <!-- 订单 Webhook URL -->
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">订单 Apps Script Webhook URL (写入端):</label>
+            <div class="flex items-center gap-2">
+              <input type="text" id="cfg-orders-webhook-url" placeholder="粘贴订单表格 Apps Script 部署生成的 URL" class="border rounded-xl px-3 py-2 w-full font-mono text-xs focus:outline-none focus:ring-1 focus:ring-sky-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <button onclick="saveOrdersWebhookSettings()" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold whitespace-nowrap transition">
+                保存
+              </button>
+            </div>
+          </div>
+
+          <!-- 该表格包含的工作表 -->
+          <div class="p-3 rounded-xl border text-[11px] space-y-1" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+            <div class="font-bold text-current mb-1">自动捕获的前台顾客订单字段：</div>
+            <div class="text-xs">【订单编号】 【下单时间】 【就餐方式: 堂食/外送/自提】</div>
+            <div class="text-xs">【顾客姓名】 【联络电话】 【送餐地址】 【餐品明细(加料/辣度)】</div>
+            <div class="text-xs">【餐品小计】 【服务费/税】 【实付总额】 【整单备注】 【订单状态】</div>
+            <div class="pt-1 text-[11px] text-sky-600 dark:text-sky-400 font-medium">
+              💡 顾客在前台点击【通过 WhatsApp 发送订单】时，系统自动生成订单编号并在该 Google Sheet 实时追加一行记录！
+            </div>
+          </div>
+
+          <!-- 测试推送与复制订单脚本 -->
+          <div class="pt-2 flex items-center justify-between">
+            <button onclick="testPushOrderToGoogleSheet()" class="text-xs px-3 py-1.5 rounded-lg border text-sky-600 dark:text-sky-400 hover:bg-sky-500/10 flex items-center gap-1.5 transition">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <span>🧪 发送一笔模拟测试订单</span>
+            </button>
+            <button onclick="copyAppsScriptCode('orders')" class="text-xs text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span id="copy-orders-code-text">复制订单表格脚本</span>
+            </button>
+          </div>
         </div>
+
+      </div>
+
+      <!-- 部署极速指南 -->
+      <div class="fin-card rounded-2xl p-5 border text-xs" style="border-color: var(--border-subtle);">
+        <h4 class="font-bold text-current flex items-center gap-2 mb-2">
+          <i data-lucide="info" class="w-4 h-4 text-cyan-500"></i>
+          <span>为什么推荐两个独立的 Google Sheet？（餐饮财务隔离最佳实践）</span>
+        </h4>
+        <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+          <strong>权限与安全隔离：</strong>【表格② 线上订单】需要给前台收银员、打包外送骑手随时查阅，不应包含门店租金、员工真实薪水、平台净利润等敏感商业秘密；而【表格① 财务总账】是店主和会计专用的核心决策主账。系统通过独立的两个 Webhook，既实现了“两套表格互不干扰”，又实现了“全系统完全在 Google Sheet 上自动化流转”！
+        </p>
       </div>
 
     </div>
@@ -2604,6 +2685,17 @@ function doPost(e) {
               const inp = document.getElementById('cfg-webhook-url');
               if (inp) inp.value = savedWebhook;
               updateWebhookStatusTag(savedWebhook);
+
+              const savedOrdersUrl = localStorage.getItem('laiwan_orders_sheet_url') || '';
+              const inpOrdersUrl = document.getElementById('cfg-orders-sheet-url');
+              if (inpOrdersUrl) inpOrdersUrl.value = savedOrdersUrl;
+              const linkOrders = document.getElementById('link-orders-sheet');
+              if (linkOrders && savedOrdersUrl) linkOrders.href = savedOrdersUrl;
+
+              const savedOrdersHook = localStorage.getItem('laiwan_orders_webhook') || '';
+              const inpOrdersHook = document.getElementById('cfg-orders-webhook-url');
+              if (inpOrdersHook) inpOrdersHook.value = savedOrdersHook;
+              updateOrdersWebhookStatusTag(savedOrdersHook);
             }
           } else {
             btn.classList.remove('active');
@@ -3069,7 +3161,155 @@ function doPost(e) {
       const val = document.getElementById('cfg-webhook-url').value.trim();
       localStorage.setItem('laiwan_finance_webhook', val);
       updateWebhookStatusTag(val);
-      alert('🎉 Google Sheet Webhook URL 已成功保存并激活！\n\n从现在开始，您在网页中录入的每一笔杂支账单与外卖月结单，都将自动在本地秒存并静默推送写入您的 Google Sheet 云端主表格中！');
+      alert('🎉 财务主账本 Webhook 已成功保存！\n\n从现在开始，您录入的每一笔营业额、杂支账单与外卖月结单，都将实时双写推送写入您的财务 Google Sheet 主账本中！');
+    }
+
+    function saveOrdersWebhookSettings() {
+      const sheetUrl = document.getElementById('cfg-orders-sheet-url').value.trim();
+      const webhookUrl = document.getElementById('cfg-orders-webhook-url').value.trim();
+      localStorage.setItem('laiwan_orders_sheet_url', sheetUrl);
+      localStorage.setItem('laiwan_orders_webhook', webhookUrl);
+      updateOrdersWebhookStatusTag(webhookUrl);
+      const link = document.getElementById('link-orders-sheet');
+      if (link && sheetUrl) link.href = sheetUrl;
+      alert('🎉 线上点餐订单 Webhook 已保存！\n\n从现在开始，顾客在前台点餐下单时，系统将自动将订单明细追加写入您的线上订单 Google Sheet 总表中！');
+    }
+
+    function updateOrdersWebhookStatusTag(url) {
+      const tag = document.getElementById('orders-webhook-active-tag');
+      if (!tag) return;
+      if (url && url.startsWith('http')) {
+        tag.innerText = "🟢 实时写入已激活";
+        tag.className = "text-[11px] font-bold text-emerald-600 dark:text-emerald-400";
+      } else {
+        tag.innerText = "未配置（使用默认前台）";
+        tag.className = "text-[11px] font-bold text-amber-500";
+      }
+    }
+
+    async function testPushOrderToGoogleSheet() {
+      const webhookUrl = localStorage.getItem('laiwan_orders_webhook');
+      if (!webhookUrl) {
+        return alert('⚠️ 请先在上方【订单 Apps Script Webhook URL】输入框粘贴并保存您的订单表格 Webhook！');
+      }
+
+      const testOrderId = 'TEST-' + Math.floor(1000 + Math.random() * 9000);
+      const testTime = new Date().toLocaleString('zh-CN', { hour12: false });
+
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sheetName: '在线点餐订单总表',
+            headers: ['订单编号', '下单时间', '就餐方式', '顾客姓名', '联络电话', '送餐/就餐地址', '餐品明细', '餐品小计 (RM)', '税费服务费 (RM)', '实付总额 (RM)', '整单备注', '订单状态'],
+            row: [testOrderId, testTime, '外送', '张小明 (测试)', '012-3456789', 'Austin Heights 店附近 (测试)', '招牌螺蛳粉 x2; 炸腐竹 x1', '35.80', '3.58', '39.38', '微辣，少葱', '测试订单']
+          })
+        });
+        alert('🎉 测试订单推送请求已发出！\n\n请打开您的【线上订单 Google Sheet】，检查是否已成功自动创建《在线点餐订单总表》并新增了单号为 ' + testOrderId + ' 的测试订单！');
+      } catch (err) {
+        alert('❌ 推送测试失败: ' + err.message);
+      }
+    }
+
+    async function pushAllFinanceToGoogleSheet() {
+      const webhookUrl = localStorage.getItem('laiwan_finance_webhook');
+      if (!webhookUrl) {
+        return alert('⚠️ 请先在【表格① 财务主账本】中配置并保存您的 Apps Script Webhook URL！\n\n配置完成后即可一键将全部 262 天 POS 营业额、杂支与外卖账单全量写入 Google Sheet。');
+      }
+
+      const btn = document.getElementById('btn-push-all-sheet');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "正在推送到 Google Sheet...";
+      }
+
+      try {
+        // 1. 组装每日营收流水 (包含 2026年 1~9月全部 262 天 POS 真实历史 + 线下营收)
+        const salesRows = [];
+        const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'];
+        months.forEach(m => {
+          const mData = POS_SALES_HISTORY[m];
+          if (mData && mData.daily_sales) {
+            mData.daily_sales.forEach(d => {
+              salesRows.push([
+                d.date,
+                d.total.toFixed(2),
+                d.bills,
+                d.charge.toFixed(2),
+                'POS系统直连 (Austin Branch 118)'
+              ]);
+            });
+          }
+        });
+        customRevenueList.forEach(cr => {
+          salesRows.push([
+            cr.date,
+            cr.amount.toFixed(2),
+            1,
+            '0.00',
+            cr.payment + ' (线下自定义录入: ' + (cr.notes || '') + ')'
+          ]);
+        });
+
+        // 2. 组装杂支记录
+        const expRows = expensesList.map(e => [
+          e.date, e.category, e.name, e.amount.toFixed(2), e.payment, e.ref || '-', e.handled || '店长', e.notes || '-'
+        ]);
+
+        // 3. 组装外卖扣点结单
+        const delRows = deliveryList.map(d => [
+          d.month, d.platform, d.gross.toFixed(2), d.commission.toFixed(2), (d.adsPromo || 0).toFixed(2), d.net.toFixed(2), d.rate, d.ref || '-', d.notes || '-'
+        ]);
+
+        // 4. 组装供应商进货账单
+        const suppRows = suppliersList.map(s => [
+          s.date, s.supplier, s.category, s.invNo || '-', s.amount.toFixed(2), s.status, s.receiptNo || '-', s.items || '-'
+        ]);
+
+        // 发送全量同步包
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'batchSync',
+            sheets: {
+              '每日营收流水': {
+                clear: true,
+                headers: ['日期', '当日总营收实收 (RM)', '结账单量 (Bills)', '服务费 (RM)', '营收来源与交班备注'],
+                rows: salesRows
+              },
+              '运营与日常杂支': {
+                clear: true,
+                headers: ['支出日期', '费用类别', '项目明细', '金额 (RM)', '支付方式', '凭证/收据单号', '经手人', '备注'],
+                rows: expRows
+              },
+              '外卖扣点审计': {
+                clear: true,
+                headers: ['所属月份', '外卖平台', '平台总销售额 (Gross RM)', '平台总抽佣 (Commission RM)', '广告与推广优惠 (Ads RM)', '实际净打款到账 (Net RM)', '综合扣点损耗率', '月结单号', '备注说明'],
+                rows: delRows
+              },
+              '供应商账单表': {
+                clear: true,
+                headers: ['进货日期', '供应商名称', '进货类别', '发票/DO单号', '账单总金额 (RM)', '付款状态', '收据号', '货品明细'],
+                rows: suppRows
+              }
+            }
+          })
+        });
+
+        alert(`🎉 全量历史财务数据已成功推送到 Google Sheet！\n\n已推送：\n- 每日营收流水：${salesRows.length} 条 (涵盖2026全年262天)\n- 运营杂支：${expRows.length} 笔\n- 外卖月结审计：${delRows.length} 笔\n- 供应商进货账单：${suppRows.length} 笔\n\n打开 Google Sheet 即可查看所有完整明细！`);
+      } catch (err) {
+        alert('❌ 推送出现异常: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i><span>🚀 全量推送所有历史财务至 Google Sheet</span>';
+          lucide.createIcons();
+        }
+      }
     }
 
     function updateWebhookStatusTag(url) {
@@ -3093,12 +3333,22 @@ function doPost(e) {
       }
     }
 
-    function copyAppsScriptCode() {
+    function copyAppsScriptCode(type) {
       const code = document.getElementById('script-code-block').innerText;
       navigator.clipboard.writeText(code).then(() => {
-        const txt = document.getElementById('copy-status-text');
-        txt.innerText = "已复制成功！";
-        setTimeout(() => txt.innerText = "一键复制代码", 2000);
+        if (type === 'orders') {
+          const txt = document.getElementById('copy-orders-code-text');
+          if (txt) {
+            txt.innerText = "已复制订单脚本！";
+            setTimeout(() => txt.innerText = "复制订单表格脚本", 2000);
+          }
+        } else {
+          const txt = document.getElementById('copy-status-text');
+          if (txt) {
+            txt.innerText = "已复制成功！";
+            setTimeout(() => txt.innerText = "一键复制", 2000);
+          }
+        }
       });
     }
   
