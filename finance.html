@@ -1166,8 +1166,8 @@ function doPost(e) {
             <div class="flex items-center gap-2">
               <span class="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center font-bold text-xs">②</span>
               <div>
-                <h3 class="font-bold text-sm text-current">表格 ②：顾客线上点餐订单总表</h3>
-                <p class="text-[11px]" style="color: var(--text-muted);">管客管单：顾客前台在线下单、点餐明细、外送自取、收款状态</p>
+                <h3 class="font-bold text-sm text-current">表格 ②：顾客线上点餐订单表 (接单与改单工作台)</h3>
+                <p class="text-[11px]" style="color: var(--text-muted);">管单与改单：顾客前台下单 ➔ 员工在表格查阅并按需修改内容 ➔ 员工核准后手工输入 POS 机</p>
               </div>
             </div>
             <span id="orders-webhook-active-tag" class="text-[11px] font-bold text-amber-500">未配置</span>
@@ -1175,12 +1175,12 @@ function doPost(e) {
 
           <!-- 订单表格地址 -->
           <div>
-            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">线上订单 Google Sheet 共享地址 (可选):</label>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">线上订单 Google Sheet 共享地址 (便于员工在线改单):</label>
             <div class="flex items-center gap-2">
               <input type="text" id="cfg-orders-sheet-url" placeholder="粘贴您的线上订单 Google Sheet 链接" class="border rounded-xl px-3 py-2 w-full mono text-xs focus:outline-none focus:ring-1 focus:ring-sky-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
               <a id="link-orders-sheet" href="#" target="_blank" class="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold flex items-center gap-1 whitespace-nowrap transition">
                 <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                <span>打开</span>
+                <span>打开订单表</span>
               </a>
             </div>
           </div>
@@ -1197,13 +1197,13 @@ function doPost(e) {
           </div>
 
           <!-- 该表格包含的工作表 -->
-          <div class="p-3 rounded-xl border text-[11px] space-y-1" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
+          <div class="p-3 rounded-xl border text-[11px] space-y-1.5" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
             <div class="font-bold text-current mb-1">自动捕获的前台顾客订单字段：</div>
             <div class="text-xs">【订单编号】 【下单时间】 【就餐方式: 堂食/外送/自提】</div>
             <div class="text-xs">【顾客姓名】 【联络电话】 【送餐地址】 【餐品明细(加料/辣度)】</div>
             <div class="text-xs">【餐品小计】 【服务费/税】 【实付总额】 【整单备注】 【订单状态】</div>
-            <div class="pt-1 text-[11px] text-sky-600 dark:text-sky-400 font-medium">
-              💡 顾客在前台点击【通过 WhatsApp 发送订单】时，系统自动生成订单编号并在该 Google Sheet 实时追加一行记录！
+            <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-semibold mt-2">
+              🛡️ 严格防重复记账保障：此在线订单表仅作为员工“看单与改单”的协同中转站，<strong>系统绝对不会把它自动加进您的财务营业额中</strong>！所有真实营收完全等员工确认改单后，亲自打入店面 POS 机为准，账目百分之百干净独立！
             </div>
           </div>
 
@@ -1225,11 +1225,11 @@ function doPost(e) {
       <!-- 部署极速指南 -->
       <div class="fin-card rounded-2xl p-5 border text-xs" style="border-color: var(--border-subtle);">
         <h4 class="font-bold text-current flex items-center gap-2 mb-2">
-          <i data-lucide="info" class="w-4 h-4 text-cyan-500"></i>
-          <span>为什么推荐两个独立的 Google Sheet？（餐饮财务隔离最佳实践）</span>
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+          <span>双 Google Sheet 的业务流程与防重记账闭环</span>
         </h4>
         <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
-          <strong>权限与安全隔离：</strong>【表格② 线上订单】需要给前台收银员、打包外送骑手随时查阅，不应包含门店租金、员工真实薪水、平台净利润等敏感商业秘密；而【表格① 财务总账】是店主和会计专用的核心决策主账。系统通过独立的两个 Webhook，既实现了“两套表格互不干扰”，又实现了“全系统完全在 Google Sheet 上自动化流转”！
+          <strong>前后台完美解耦：</strong>① 顾客在前台选餐提交 ➔ ② 订单自动流入【表格② 线上订单表】并发送 WhatsApp 给员工 ➔ ③ 员工与顾客确认或直接在表格修改订单内容（如加蛋/换粉） ➔ ④ 员工将最终确认的餐点手工输入 Optimy POS 机打单 ➔ ⑤ POS 系统自动产生当日营业额 ➔ ⑥ 【表格① 财务主账本】自动直连拉取 POS 营业额。整个链条<strong>绝不产生任何重复记账</strong>！
         </p>
       </div>
 
