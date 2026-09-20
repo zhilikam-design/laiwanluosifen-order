@@ -4,753 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>来碗 · 餐饮门店智能财务管理与经营分析系统</title>
-  <script src="https://cdn.tailwindcss.com">
-    // -------------------------------------------------------------
-    // TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC)
-    // -------------------------------------------------------------
-    let activeMenuCatFilter = "ALL";
-
-    function initMenuManager() {
-      const savedPat = localStorage.getItem('laiwan_github_pat') || "";
-      const inp = document.getElementById('inp-github-pat');
-      if (inp) inp.value = savedPat;
-      updatePatStatusBadge(savedPat);
-
-      const localMenu = localStorage.getItem('laiwan_menu_data');
-      if (localMenu) {
-        try {
-          const parsed = JSON.parse(localMenu);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            CATALOG_DATA = parsed;
-          }
-        } catch(e) {}
-      }
-
-      renderMenuCatPills();
-      renderMenuManagerList();
-    }
-
-    function renderMenuCatPills() {
-      const categories = ["ALL", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
-      const box = document.getElementById('menu-mgr-cat-pills');
-      if (!box) return;
-      box.innerHTML = categories.map(cat => {
-        const label = cat === 'ALL' ? '全部菜品 (58)' : cat;
-        const isActive = activeMenuCatFilter === cat;
-        const activeClass = isActive 
-          ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20' 
-          : 'bg-slate-800/40 text-slate-400 hover:text-white border border-slate-700/50';
-        return `<button onclick="setMenuCatFilter('${cat}')" class="text-xs px-3 py-1.5 rounded-xl whitespace-nowrap transition ${activeClass}">${label}</button>`;
-      }).join('');
-    }
-
-    function setMenuCatFilter(cat) {
-      activeMenuCatFilter = cat;
-      renderMenuCatPills();
-      renderMenuManagerList();
-    }
-
-    function renderMenuManagerList() {
-      const grid = document.getElementById('menu-mgr-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      const searchKw = (document.getElementById('menu-mgr-search')?.value || '').toLowerCase().trim();
-
-      const filtered = CATALOG_DATA.filter(dish => {
-        const mCat = activeMenuCatFilter === 'ALL' || dish.cat === activeMenuCatFilter;
-        const mKw = !searchKw || dish.id.toLowerCase().includes(searchKw) || dish.name.toLowerCase().includes(searchKw);
-        return mCat && mKw;
-      });
-
-      const countPill = document.getElementById('menu-mgr-count-pill');
-      if (countPill) countPill.innerText = `${filtered.length} 道`;
-
-      filtered.forEach(dish => {
-        const isStock = dish.in_stock !== false;
-        const imgSrc = dish.cdn_img || dish.img || 'images/logo.png';
-        const card = document.createElement('div');
-        card.className = "fin-card rounded-2xl p-4 flex flex-col justify-between space-y-3 relative border hover:border-emerald-500/40 transition";
-        card.innerHTML = `
-          <div class="flex items-start gap-3">
-            <img src="${imgSrc}" alt="${dish.name}" class="w-14 h-14 rounded-xl object-cover border flex-shrink-0" style="border-color: var(--border-subtle);" onerror="this.src='images/logo.png'">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-1 mb-1">
-                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 mono">${dish.id}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-md border" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">${dish.cat}</span>
-              </div>
-              <input type="text" value="${escapeHtml(dish.name)}" onchange="updateDishField('${dish.id}', 'name', this.value)" class="text-xs font-bold border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">售价 (RM):</label>
-              <div class="flex items-center gap-1">
-                <button onclick="adjDishPrice('${dish.id}', -1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">-</button>
-                <input type="number" step="0.10" value="${dish.price}" onchange="updateDishField('${dish.id}', 'price', parseFloat(this.value)||0)" class="text-xs font-black mono text-emerald-500 border rounded-lg px-2 py-1 w-full text-center focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
-                <button onclick="adjDishPrice('${dish.id}', 1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">+</button>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">热销角标 (Badge):</label>
-              <input type="text" value="${escapeHtml(dish.badge || '')}" placeholder="如: 🔥 进店必点" onchange="updateDishField('${dish.id}', 'badge', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">菜品描述 (Description):</label>
-            <input type="text" value="${escapeHtml(dish.desc || '')}" placeholder="菜品短句描述..." onchange="updateDishField('${dish.id}', 'desc', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
-          </div>
-
-          <div class="pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--border-subtle);">
-            <span class="font-semibold text-[11px]" style="color: var(--text-muted);">上下架状态:</span>
-            <button onclick="toggleDishStock('${dish.id}')" class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isStock ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'}">
-              <span>${isStock ? '🟢 正常在售' : '🔴 售罄下架'}</span>
-            </button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    function updateDishField(id, field, value) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish[field] = value;
-        localStorage.setItem('laiwan_menu_data', JSON.stringify(CATALOG_DATA));
-        renderDishesTable();
-      }
-    }
-
-    function adjDishPrice(id, delta) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish.price = Math.max(0, +(dish.price + delta).toFixed(2));
-        updateDishField(id, 'price', dish.price);
-        renderMenuManagerList();
-      }
-    }
-
-    function toggleDishStock(id) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish.in_stock = dish.in_stock === false ? true : false;
-        updateDishField(id, 'in_stock', dish.in_stock);
-        renderMenuManagerList();
-      }
-    }
-
-    function onPatInputChange() {
-      const pat = document.getElementById('inp-github-pat').value.trim();
-      updatePatStatusBadge(pat);
-    }
-
-    function saveGithubToken() {
-      const pat = document.getElementById('inp-github-pat').value.trim();
-      localStorage.setItem('laiwan_github_pat', pat);
-      updatePatStatusBadge(pat);
-      alert('✅ GitHub Token (PAT) 已成功保存到本地浏览器缓存！');
-    }
-
-    function togglePatVisibility() {
-      const inp = document.getElementById('inp-github-pat');
-      if (inp.type === 'password') inp.type = 'text'; else inp.type = 'password';
-    }
-
-    function updatePatStatusBadge(pat) {
-      const badge = document.getElementById('pat-status-badge');
-      if (!badge) return;
-      if (pat && pat.length > 10) {
-        badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 font-medium flex items-center gap-1';
-        badge.innerHTML = '<span>✅ Token 已配置</span>';
-      } else {
-        badge.className = 'px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium';
-        badge.innerHTML = '⚠️ 未配置 Token (发布需配置)';
-      }
-    }
-
-    async function saveAndDeployMenuToGitHub() {
-      let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
-      if (!pat) {
-        pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');
-        if (!pat) return;
-        localStorage.setItem('laiwan_github_pat', pat.trim());
-        document.getElementById('inp-github-pat').value = pat.trim();
-        updatePatStatusBadge(pat.trim());
-      }
-
-      const btn = document.getElementById('btn-deploy-menu');
-      const originalText = btn ? btn.innerHTML : '';
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<i data-lucide="rotate-cw" class="w-4 h-4 animate-spin"></i> <span>正在发布更新到 GitHub...</span>`;
-        lucide.createIcons();
-      }
-
-      try {
-        const repoOwner = 'zhilikam-design';
-        const repoName = 'laiwanluosifen-order';
-        const filePath = 'menu_data.json';
-        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
-
-        const getRes = await fetch(apiUrl, {
-          headers: {
-            'Authorization': 'Bearer ' + pat,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-
-        if (!getRes.ok && getRes.status !== 404) {
-          throw new Error(`无法获取 GitHub 文件信息 (HTTP ${getRes.status})。请检查 PAT 权限。`);
-        }
-
-        let sha = '';
-        if (getRes.ok) {
-          const fileInfo = await getRes.json();
-          sha = fileInfo.sha;
-        }
-
-        const contentJsonStr = JSON.stringify(CATALOG_DATA, null, 2);
-        const base64Content = window.btoa(unescape(encodeURIComponent(contentJsonStr)));
-
-        const putRes = await fetch(apiUrl, {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + pat,
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.v3+json'
-          },
-          body: JSON.stringify({
-            message: 'Update menu_data.json via Laiwan Finance Menu Manager',
-            content: base64Content,
-            sha: sha
-          })
-        });
-
-        if (!putRes.ok) {
-          const errJson = await putRes.json();
-          throw new Error(errJson.message || `GitHub API 提交失败 (HTTP ${putRes.status})`);
-        }
-
-        alert('🎉 菜单与价格更新已成功发布到 GitHub Pages 在线点餐系统！\n\nGitHub Pages 将在 1-2 分钟内同步完成部署。在点餐前台刷新页面即可看到最新菜品价格与状态！');
-
-      } catch (err) {
-        alert('❌ 菜单发布失败: ' + err.message);
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-          lucide.createIcons();
-        }
-      }
-    }
-
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js">
-    // -------------------------------------------------------------
-    // TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC)
-    // -------------------------------------------------------------
-    let activeMenuCatFilter = "ALL";
-
-    function initMenuManager() {
-      const savedPat = localStorage.getItem('laiwan_github_pat') || "";
-      const inp = document.getElementById('inp-github-pat');
-      if (inp) inp.value = savedPat;
-      updatePatStatusBadge(savedPat);
-
-      const localMenu = localStorage.getItem('laiwan_menu_data');
-      if (localMenu) {
-        try {
-          const parsed = JSON.parse(localMenu);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            CATALOG_DATA = parsed;
-          }
-        } catch(e) {}
-      }
-
-      renderMenuCatPills();
-      renderMenuManagerList();
-    }
-
-    function renderMenuCatPills() {
-      const categories = ["ALL", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
-      const box = document.getElementById('menu-mgr-cat-pills');
-      if (!box) return;
-      box.innerHTML = categories.map(cat => {
-        const label = cat === 'ALL' ? '全部菜品 (58)' : cat;
-        const isActive = activeMenuCatFilter === cat;
-        const activeClass = isActive 
-          ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20' 
-          : 'bg-slate-800/40 text-slate-400 hover:text-white border border-slate-700/50';
-        return `<button onclick="setMenuCatFilter('${cat}')" class="text-xs px-3 py-1.5 rounded-xl whitespace-nowrap transition ${activeClass}">${label}</button>`;
-      }).join('');
-    }
-
-    function setMenuCatFilter(cat) {
-      activeMenuCatFilter = cat;
-      renderMenuCatPills();
-      renderMenuManagerList();
-    }
-
-    function renderMenuManagerList() {
-      const grid = document.getElementById('menu-mgr-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      const searchKw = (document.getElementById('menu-mgr-search')?.value || '').toLowerCase().trim();
-
-      const filtered = CATALOG_DATA.filter(dish => {
-        const mCat = activeMenuCatFilter === 'ALL' || dish.cat === activeMenuCatFilter;
-        const mKw = !searchKw || dish.id.toLowerCase().includes(searchKw) || dish.name.toLowerCase().includes(searchKw);
-        return mCat && mKw;
-      });
-
-      const countPill = document.getElementById('menu-mgr-count-pill');
-      if (countPill) countPill.innerText = `${filtered.length} 道`;
-
-      filtered.forEach(dish => {
-        const isStock = dish.in_stock !== false;
-        const imgSrc = dish.cdn_img || dish.img || 'images/logo.png';
-        const card = document.createElement('div');
-        card.className = "fin-card rounded-2xl p-4 flex flex-col justify-between space-y-3 relative border hover:border-emerald-500/40 transition";
-        card.innerHTML = `
-          <div class="flex items-start gap-3">
-            <img src="${imgSrc}" alt="${dish.name}" class="w-14 h-14 rounded-xl object-cover border flex-shrink-0" style="border-color: var(--border-subtle);" onerror="this.src='images/logo.png'">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-1 mb-1">
-                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 mono">${dish.id}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-md border" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">${dish.cat}</span>
-              </div>
-              <input type="text" value="${escapeHtml(dish.name)}" onchange="updateDishField('${dish.id}', 'name', this.value)" class="text-xs font-bold border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">售价 (RM):</label>
-              <div class="flex items-center gap-1">
-                <button onclick="adjDishPrice('${dish.id}', -1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">-</button>
-                <input type="number" step="0.10" value="${dish.price}" onchange="updateDishField('${dish.id}', 'price', parseFloat(this.value)||0)" class="text-xs font-black mono text-emerald-500 border rounded-lg px-2 py-1 w-full text-center focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
-                <button onclick="adjDishPrice('${dish.id}', 1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">+</button>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">热销角标 (Badge):</label>
-              <input type="text" value="${escapeHtml(dish.badge || '')}" placeholder="如: 🔥 进店必点" onchange="updateDishField('${dish.id}', 'badge', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">菜品描述 (Description):</label>
-            <input type="text" value="${escapeHtml(dish.desc || '')}" placeholder="菜品短句描述..." onchange="updateDishField('${dish.id}', 'desc', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
-          </div>
-
-          <div class="pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--border-subtle);">
-            <span class="font-semibold text-[11px]" style="color: var(--text-muted);">上下架状态:</span>
-            <button onclick="toggleDishStock('${dish.id}')" class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isStock ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'}">
-              <span>${isStock ? '🟢 正常在售' : '🔴 售罄下架'}</span>
-            </button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    function updateDishField(id, field, value) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish[field] = value;
-        localStorage.setItem('laiwan_menu_data', JSON.stringify(CATALOG_DATA));
-        renderDishesTable();
-      }
-    }
-
-    function adjDishPrice(id, delta) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish.price = Math.max(0, +(dish.price + delta).toFixed(2));
-        updateDishField(id, 'price', dish.price);
-        renderMenuManagerList();
-      }
-    }
-
-    function toggleDishStock(id) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish.in_stock = dish.in_stock === false ? true : false;
-        updateDishField(id, 'in_stock', dish.in_stock);
-        renderMenuManagerList();
-      }
-    }
-
-    function onPatInputChange() {
-      const pat = document.getElementById('inp-github-pat').value.trim();
-      updatePatStatusBadge(pat);
-    }
-
-    function saveGithubToken() {
-      const pat = document.getElementById('inp-github-pat').value.trim();
-      localStorage.setItem('laiwan_github_pat', pat);
-      updatePatStatusBadge(pat);
-      alert('✅ GitHub Token (PAT) 已成功保存到本地浏览器缓存！');
-    }
-
-    function togglePatVisibility() {
-      const inp = document.getElementById('inp-github-pat');
-      if (inp.type === 'password') inp.type = 'text'; else inp.type = 'password';
-    }
-
-    function updatePatStatusBadge(pat) {
-      const badge = document.getElementById('pat-status-badge');
-      if (!badge) return;
-      if (pat && pat.length > 10) {
-        badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 font-medium flex items-center gap-1';
-        badge.innerHTML = '<span>✅ Token 已配置</span>';
-      } else {
-        badge.className = 'px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium';
-        badge.innerHTML = '⚠️ 未配置 Token (发布需配置)';
-      }
-    }
-
-    async function saveAndDeployMenuToGitHub() {
-      let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
-      if (!pat) {
-        pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');
-        if (!pat) return;
-        localStorage.setItem('laiwan_github_pat', pat.trim());
-        document.getElementById('inp-github-pat').value = pat.trim();
-        updatePatStatusBadge(pat.trim());
-      }
-
-      const btn = document.getElementById('btn-deploy-menu');
-      const originalText = btn ? btn.innerHTML : '';
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<i data-lucide="rotate-cw" class="w-4 h-4 animate-spin"></i> <span>正在发布更新到 GitHub...</span>`;
-        lucide.createIcons();
-      }
-
-      try {
-        const repoOwner = 'zhilikam-design';
-        const repoName = 'laiwanluosifen-order';
-        const filePath = 'menu_data.json';
-        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
-
-        const getRes = await fetch(apiUrl, {
-          headers: {
-            'Authorization': 'Bearer ' + pat,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-
-        if (!getRes.ok && getRes.status !== 404) {
-          throw new Error(`无法获取 GitHub 文件信息 (HTTP ${getRes.status})。请检查 PAT 权限。`);
-        }
-
-        let sha = '';
-        if (getRes.ok) {
-          const fileInfo = await getRes.json();
-          sha = fileInfo.sha;
-        }
-
-        const contentJsonStr = JSON.stringify(CATALOG_DATA, null, 2);
-        const base64Content = window.btoa(unescape(encodeURIComponent(contentJsonStr)));
-
-        const putRes = await fetch(apiUrl, {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + pat,
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.v3+json'
-          },
-          body: JSON.stringify({
-            message: 'Update menu_data.json via Laiwan Finance Menu Manager',
-            content: base64Content,
-            sha: sha
-          })
-        });
-
-        if (!putRes.ok) {
-          const errJson = await putRes.json();
-          throw new Error(errJson.message || `GitHub API 提交失败 (HTTP ${putRes.status})`);
-        }
-
-        alert('🎉 菜单与价格更新已成功发布到 GitHub Pages 在线点餐系统！\n\nGitHub Pages 将在 1-2 分钟内同步完成部署。在点餐前台刷新页面即可看到最新菜品价格与状态！');
-
-      } catch (err) {
-        alert('❌ 菜单发布失败: ' + err.message);
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-          lucide.createIcons();
-        }
-      }
-    }
-
-  </script>
-  <script src="https://unpkg.com/lucide@latest">
-    // -------------------------------------------------------------
-    // TAB 9: 在线点餐菜单管理 (MENU MANAGER - DIRECT GITHUB SYNC)
-    // -------------------------------------------------------------
-    let activeMenuCatFilter = "ALL";
-
-    function initMenuManager() {
-      const savedPat = localStorage.getItem('laiwan_github_pat') || "";
-      const inp = document.getElementById('inp-github-pat');
-      if (inp) inp.value = savedPat;
-      updatePatStatusBadge(savedPat);
-
-      const localMenu = localStorage.getItem('laiwan_menu_data');
-      if (localMenu) {
-        try {
-          const parsed = JSON.parse(localMenu);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            CATALOG_DATA = parsed;
-          }
-        } catch(e) {}
-      }
-
-      renderMenuCatPills();
-      renderMenuManagerList();
-    }
-
-    function renderMenuCatPills() {
-      const categories = ["ALL", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
-      const box = document.getElementById('menu-mgr-cat-pills');
-      if (!box) return;
-      box.innerHTML = categories.map(cat => {
-        const label = cat === 'ALL' ? '全部菜品 (58)' : cat;
-        const isActive = activeMenuCatFilter === cat;
-        const activeClass = isActive 
-          ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/20' 
-          : 'bg-slate-800/40 text-slate-400 hover:text-white border border-slate-700/50';
-        return `<button onclick="setMenuCatFilter('${cat}')" class="text-xs px-3 py-1.5 rounded-xl whitespace-nowrap transition ${activeClass}">${label}</button>`;
-      }).join('');
-    }
-
-    function setMenuCatFilter(cat) {
-      activeMenuCatFilter = cat;
-      renderMenuCatPills();
-      renderMenuManagerList();
-    }
-
-    function renderMenuManagerList() {
-      const grid = document.getElementById('menu-mgr-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      const searchKw = (document.getElementById('menu-mgr-search')?.value || '').toLowerCase().trim();
-
-      const filtered = CATALOG_DATA.filter(dish => {
-        const mCat = activeMenuCatFilter === 'ALL' || dish.cat === activeMenuCatFilter;
-        const mKw = !searchKw || dish.id.toLowerCase().includes(searchKw) || dish.name.toLowerCase().includes(searchKw);
-        return mCat && mKw;
-      });
-
-      const countPill = document.getElementById('menu-mgr-count-pill');
-      if (countPill) countPill.innerText = `${filtered.length} 道`;
-
-      filtered.forEach(dish => {
-        const isStock = dish.in_stock !== false;
-        const imgSrc = dish.cdn_img || dish.img || 'images/logo.png';
-        const card = document.createElement('div');
-        card.className = "fin-card rounded-2xl p-4 flex flex-col justify-between space-y-3 relative border hover:border-emerald-500/40 transition";
-        card.innerHTML = `
-          <div class="flex items-start gap-3">
-            <img src="${imgSrc}" alt="${dish.name}" class="w-14 h-14 rounded-xl object-cover border flex-shrink-0" style="border-color: var(--border-subtle);" onerror="this.src='images/logo.png'">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-1 mb-1">
-                <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-500 mono">${dish.id}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-md border" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">${dish.cat}</span>
-              </div>
-              <input type="text" value="${escapeHtml(dish.name)}" onchange="updateDishField('${dish.id}', 'name', this.value)" class="text-xs font-bold border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">售价 (RM):</label>
-              <div class="flex items-center gap-1">
-                <button onclick="adjDishPrice('${dish.id}', -1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">-</button>
-                <input type="number" step="0.10" value="${dish.price}" onchange="updateDishField('${dish.id}', 'price', parseFloat(this.value)||0)" class="text-xs font-black mono text-emerald-500 border rounded-lg px-2 py-1 w-full text-center focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">
-                <button onclick="adjDishPrice('${dish.id}', 1)" class="px-2 py-1 rounded-lg border font-bold text-slate-400 hover:text-white" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);">+</button>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">热销角标 (Badge):</label>
-              <input type="text" value="${escapeHtml(dish.badge || '')}" placeholder="如: 🔥 进店必点" onchange="updateDishField('${dish.id}', 'badge', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[10px] mb-0.5 font-medium" style="color: var(--text-muted);">菜品描述 (Description):</label>
-            <input type="text" value="${escapeHtml(dish.desc || '')}" placeholder="菜品短句描述..." onchange="updateDishField('${dish.id}', 'desc', this.value)" class="text-xs border rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
-          </div>
-
-          <div class="pt-2 border-t flex items-center justify-between text-xs" style="border-color: var(--border-subtle);">
-            <span class="font-semibold text-[11px]" style="color: var(--text-muted);">上下架状态:</span>
-            <button onclick="toggleDishStock('${dish.id}')" class="px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isStock ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'}">
-              <span>${isStock ? '🟢 正常在售' : '🔴 售罄下架'}</span>
-            </button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    function updateDishField(id, field, value) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish[field] = value;
-        localStorage.setItem('laiwan_menu_data', JSON.stringify(CATALOG_DATA));
-        renderDishesTable();
-      }
-    }
-
-    function adjDishPrice(id, delta) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish.price = Math.max(0, +(dish.price + delta).toFixed(2));
-        updateDishField(id, 'price', dish.price);
-        renderMenuManagerList();
-      }
-    }
-
-    function toggleDishStock(id) {
-      const dish = CATALOG_DATA.find(d => d.id === id);
-      if (dish) {
-        dish.in_stock = dish.in_stock === false ? true : false;
-        updateDishField(id, 'in_stock', dish.in_stock);
-        renderMenuManagerList();
-      }
-    }
-
-    function onPatInputChange() {
-      const pat = document.getElementById('inp-github-pat').value.trim();
-      updatePatStatusBadge(pat);
-    }
-
-    function saveGithubToken() {
-      const pat = document.getElementById('inp-github-pat').value.trim();
-      localStorage.setItem('laiwan_github_pat', pat);
-      updatePatStatusBadge(pat);
-      alert('✅ GitHub Token (PAT) 已成功保存到本地浏览器缓存！');
-    }
-
-    function togglePatVisibility() {
-      const inp = document.getElementById('inp-github-pat');
-      if (inp.type === 'password') inp.type = 'text'; else inp.type = 'password';
-    }
-
-    function updatePatStatusBadge(pat) {
-      const badge = document.getElementById('pat-status-badge');
-      if (!badge) return;
-      if (pat && pat.length > 10) {
-        badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 font-medium flex items-center gap-1';
-        badge.innerHTML = '<span>✅ Token 已配置</span>';
-      } else {
-        badge.className = 'px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-500 font-medium';
-        badge.innerHTML = '⚠️ 未配置 Token (发布需配置)';
-      }
-    }
-
-    async function saveAndDeployMenuToGitHub() {
-      let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
-      if (!pat) {
-        pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');
-        if (!pat) return;
-        localStorage.setItem('laiwan_github_pat', pat.trim());
-        document.getElementById('inp-github-pat').value = pat.trim();
-        updatePatStatusBadge(pat.trim());
-      }
-
-      const btn = document.getElementById('btn-deploy-menu');
-      const originalText = btn ? btn.innerHTML : '';
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<i data-lucide="rotate-cw" class="w-4 h-4 animate-spin"></i> <span>正在发布更新到 GitHub...</span>`;
-        lucide.createIcons();
-      }
-
-      try {
-        const repoOwner = 'zhilikam-design';
-        const repoName = 'laiwanluosifen-order';
-        const filePath = 'menu_data.json';
-        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
-
-        const getRes = await fetch(apiUrl, {
-          headers: {
-            'Authorization': 'Bearer ' + pat,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-
-        if (!getRes.ok && getRes.status !== 404) {
-          throw new Error(`无法获取 GitHub 文件信息 (HTTP ${getRes.status})。请检查 PAT 权限。`);
-        }
-
-        let sha = '';
-        if (getRes.ok) {
-          const fileInfo = await getRes.json();
-          sha = fileInfo.sha;
-        }
-
-        const contentJsonStr = JSON.stringify(CATALOG_DATA, null, 2);
-        const base64Content = window.btoa(unescape(encodeURIComponent(contentJsonStr)));
-
-        const putRes = await fetch(apiUrl, {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + pat,
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.v3+json'
-          },
-          body: JSON.stringify({
-            message: 'Update menu_data.json via Laiwan Finance Menu Manager',
-            content: base64Content,
-            sha: sha
-          })
-        });
-
-        if (!putRes.ok) {
-          const errJson = await putRes.json();
-          throw new Error(errJson.message || `GitHub API 提交失败 (HTTP ${putRes.status})`);
-        }
-
-        alert('🎉 菜单与价格更新已成功发布到 GitHub Pages 在线点餐系统！\n\nGitHub Pages 将在 1-2 分钟内同步完成部署。在点餐前台刷新页面即可看到最新菜品价格与状态！');
-
-      } catch (err) {
-        alert('❌ 菜单发布失败: ' + err.message);
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = originalText;
-          lucide.createIcons();
-        }
-      }
-    }
-
-  </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -883,29 +139,17 @@
           <i data-lucide="moon" id="theme-icon-moon" class="w-4 h-4 text-sky-400"></i>
         </button>
 
-        <!-- Google Sheet 连通状态指示 -->
-        <button onclick="switchTab('settings')" class="hidden sm:flex items-center gap-2 text-xs px-3 py-1.5 rounded-xl border transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);" title="点击查看 Google Sheet 联通与 Webhook 设置">
-          <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="sync-text" class="text-xs font-medium" style="color: var(--text-secondary);">Sheet 实时连通</span>
-          <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+        <!-- POS 实时直连状态指示与一键同步 -->
+        <button onclick="fetchLivePOSSales(activeMonth, true)" id="btn-live-pos-sync" class="flex items-center gap-2 text-xs px-3 py-1.5 rounded-xl border font-semibold transition hover:border-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);" title="点击直接从 Optimy POS 系统拉取最新营业额（零后台、纯前端实时直连）">
+          <span id="pos-live-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="pos-live-text" class="text-xs font-medium" style="color: var(--text-primary);">POS 实时直连</span>
+          <i data-lucide="refresh-cw" id="pos-live-spinner" class="w-3.5 h-3.5 text-emerald-500"></i>
         </button>
 
-                <!-- 一键同步 POS 账目 (Header Button) -->
-        <button onclick="syncLivePOSData()" id="btn-sync-pos-header" class="p-2 sm:px-3 sm:py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);" title="一键直连 Optimy POS 系统更新最新账目">
-          <i data-lucide="refresh-cw" id="icon-sync-pos" class="w-3.5 h-3.5 text-emerald-500"></i>
-          <span class="hidden sm:inline">一键更新 POS 账目</span>
-        </button>
-
-        <!-- 恢复官方数据 -->
-        <button onclick="restoreAllSheetData()" class="p-2 sm:px-3 sm:py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5 text-sky-600 dark:text-sky-400 hover:bg-sky-500/10" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);" title="从 Google Sheet 重新载入所有原始财务数据（防止误删）">
-          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-          <span class="hidden sm:inline">恢复初始数据</span>
-        </button>
-
-        <!-- 刷新数据 -->
-        <button onclick="reloadAndRecalculate()" class="p-2 sm:px-3 sm:py-1.5 rounded-xl border text-xs font-medium transition flex items-center gap-1.5" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+        <!-- 刷新核算 -->
+        <button onclick="fetchLivePOSSales(activeMonth, true)" class="p-2 sm:px-3 sm:py-1.5 rounded-xl border text-xs font-medium transition flex items-center gap-1.5" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);" title="从 POS 实时拉取最新数据并重新核算">
           <i data-lucide="rotate-cw" id="refresh-spinner" class="w-3.5 h-3.5"></i>
-          <span class="hidden sm:inline">重新核算</span>
+          <span class="hidden sm:inline">从 POS 实时更新</span>
         </button>
 
         <!-- 记一笔开销主按钮 -->
@@ -2064,9 +1308,15 @@ function doPost(e) {
       initTheme();
       initDates();
       loadDataFromStorage();
+      loadLivePOSFromStorage();
       renderAllViews();
       initCharts();
       lucide.createIcons();
+
+      // 页面加载完成后，自动在后台静默发起一次 POS 实时同步（获取最新当天与本月数据，无需用户点击）
+      setTimeout(() => {
+        fetchLivePOSSales('2026-09', false);
+      }, 500);
     });
 
     // 主题切换逻辑 (白天/暗夜)
@@ -2233,6 +1483,7 @@ function doPost(e) {
 
       renderAllViews();
       if (chartTrend) initCharts();
+      fetchLivePOSSales(val, false);
     }
 
     // -------------------------------------------------------------
@@ -2972,15 +2223,191 @@ function doPost(e) {
       }
     }
 
+    // -------------------------------------------------------------
+    // 直连 OPTIMY POS API 实时拉取最新每日营收流水 (浏览器纯前端直连 · 零后台 · 零Token消耗)
+    // -------------------------------------------------------------
+    async function fetchLivePOSSales(targetMonth = null, showToast = false) {
+      const monthToFetch = targetMonth || activeMonth || "2026-09";
+      
+      const spinner1 = document.getElementById('refresh-spinner');
+      const spinner2 = document.getElementById('pos-sync-icon');
+      const spinner3 = document.getElementById('pos-live-spinner');
+      if (spinner1) spinner1.classList.add('animate-spin');
+      if (spinner2) spinner2.classList.add('animate-spin');
+      if (spinner3) spinner3.classList.add('animate-spin');
+
+      const liveText = document.getElementById('pos-live-text');
+      if (liveText) liveText.innerText = "正在拉取 POS 最新数据...";
+
+      if (monthToFetch === 'ALL') {
+        // 如果选择全年，逐个拉取 1~9 月
+        await fetchAllMonthsLive(showToast);
+        if (spinner1) spinner1.classList.remove('animate-spin');
+        if (spinner2) spinner2.classList.remove('animate-spin');
+        if (spinner3) spinner3.classList.remove('animate-spin');
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams();
+        params.append('getSalePerDayList', '1');
+        params.append('branch_id', '118');
+        params.append('month', monthToFetch);
+
+        const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          body: params.toString()
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        const reports = data.report || [];
+
+        if (reports && reports.length > 0) {
+          let mTotal = 0;
+          let mBills = 0;
+          let mCharge = 0;
+          const daily = [];
+
+          reports.forEach(r => {
+            const tot = parseFloat(r.total_amount) || 0;
+            const b = parseInt(r.total_bill) || 0;
+            const ch = parseFloat(r.charge) || 0;
+            const net = parseFloat(r.netsales || r.total_amount) || 0;
+            mTotal += tot;
+            mBills += b;
+            mCharge += ch;
+            daily.push({
+              date: r.date,
+              total: +(tot.toFixed(2)),
+              bills: b,
+              charge: +(ch.toFixed(2)),
+              net: +(net.toFixed(2))
+            });
+          });
+
+          // 存入内存中的 POS_SALES_HISTORY
+          POS_SALES_HISTORY[monthToFetch] = {
+            month: monthToFetch,
+            total_sales: +(mTotal.toFixed(2)),
+            total_bills: mBills,
+            aov: mBills > 0 ? +(mTotal / mBills).toFixed(2) : 0,
+            total_service_charge: +(mCharge.toFixed(2)),
+            days_count: daily.length,
+            daily_sales: daily
+          };
+
+          // 保存到本地浏览器缓存中
+          saveLivePOSToStorage();
+
+          // 重新渲染视图与图表
+          renderAllViews();
+          initCharts();
+
+          const nowTime = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+          const latestDay = daily[daily.length - 1]?.date || monthToFetch;
+          const dayNum = latestDay.split('-')[2];
+
+          if (liveText) liveText.innerText = `POS直连 (已同步至${dayNum}号)`;
+          const liveDot = document.getElementById('pos-live-dot');
+          if (liveDot) {
+            liveDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+          }
+
+          if (showToast) {
+            alert(`✅ 实时直连 Optimy POS 成功！\n\n【${monthToFetch} 营业数据已更新至最新】\n• 最新营业日期: ${latestDay}\n• 已统计营业天数: ${daily.length} 天\n• 当月 POS 实收总额: RM ${mTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}\n• 当月总结账单量: ${mBills} 单\n• 综合客单价 (AOV): RM ${(mBills > 0 ? (mTotal / mBills).toFixed(2) : '0.00')}\n• 10% 服务费实收: RM ${mCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}\n\n数据已实时更新并保存到您的浏览器中！`);
+          }
+        } else {
+          if (liveText) liveText.innerText = `POS直连 (${monthToFetch}暂无数据)`;
+          if (showToast) alert(`ℹ️ POS 系统中该月份 (${monthToFetch}) 暂无营业记录。`);
+        }
+      } catch (err) {
+        console.warn("直接连接 Optimy POS API 遇到网络波动，使用本地缓存:", err);
+        if (liveText) liveText.innerText = "POS缓存模式 (离线)";
+        const liveDot = document.getElementById('pos-live-dot');
+        if (liveDot) liveDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+        if (showToast) {
+          alert(`⚠️ 直连 POS 系统出现网络波动 (${err.message})，当前显示已缓存的真实流水。请检查网络后重试。`);
+        }
+      } finally {
+        if (spinner1) spinner1.classList.remove('animate-spin');
+        if (spinner2) spinner2.classList.remove('animate-spin');
+        if (spinner3) spinner3.classList.remove('animate-spin');
+      }
+    }
+
+    // 全年度逐月批量直连拉取
+    async function fetchAllMonthsLive(showToast = false) {
+      const months = ['2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02', '2026-01'];
+      let updatedCount = 0;
+      for (const m of months) {
+        try {
+          const params = new URLSearchParams();
+          params.append('getSalePerDayList', '1');
+          params.append('branch_id', '118');
+          params.append('month', m);
+          const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: params.toString()
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            const rep = data.report || [];
+            if (rep.length > 0) {
+              let mTotal = 0, mBills = 0, mCharge = 0;
+              const daily = [];
+              rep.forEach(r => {
+                const tot = parseFloat(r.total_amount) || 0;
+                const b = parseInt(r.total_bill) || 0;
+                const ch = parseFloat(r.charge) || 0;
+                const net = parseFloat(r.netsales || r.total_amount) || 0;
+                mTotal += tot; mBills += b; mCharge += ch;
+                daily.push({ date: r.date, total: +(tot.toFixed(2)), bills: b, charge: +(ch.toFixed(2)), net: +(net.toFixed(2)) });
+              });
+              POS_SALES_HISTORY[m] = {
+                month: m,
+                total_sales: +(mTotal.toFixed(2)),
+                total_bills: mBills,
+                aov: mBills > 0 ? +(mTotal / mBills).toFixed(2) : 0,
+                total_service_charge: +(mCharge.toFixed(2)),
+                days_count: daily.length,
+                daily_sales: daily
+              };
+              updatedCount++;
+            }
+          }
+        } catch(e) {}
+      }
+      saveLivePOSToStorage();
+      renderAllViews();
+      initCharts();
+      if (showToast) {
+        alert(`✅ 已完成 2026 全年 9 个月份 POS 数据同步！共拉取 ${updatedCount} 个月份的真实流水。`);
+      }
+    }
+
+    function saveLivePOSToStorage() {
+      try {
+        localStorage.setItem('laiwan_pos_sales_live_cache', JSON.stringify(POS_SALES_HISTORY));
+      } catch(e) {}
+    }
+
+    function loadLivePOSFromStorage() {
+      try {
+        const cached = localStorage.getItem('laiwan_pos_sales_live_cache');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          Object.assign(POS_SALES_HISTORY, parsed);
+        }
+      } catch(e) {}
+    }
+
     function reloadAndRecalculate() {
-      const spinner = document.getElementById('refresh-spinner') || document.getElementById('pos-sync-icon');
-      if (spinner) spinner.classList.add('animate-spin');
-      setTimeout(() => {
-        renderAllViews();
-        initCharts();
-        if (spinner) spinner.classList.remove('animate-spin');
-        alert("✅ POS 真实营业额与账目已重新核算完毕！");
-      }, 300);
+      fetchLivePOSSales(activeMonth, true);
     }
 
     function exportPnLToExcel() {
