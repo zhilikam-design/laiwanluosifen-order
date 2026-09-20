@@ -3523,7 +3523,45 @@ function doPost(e) {
       }
     }
 
+    async function pushCatalogToGoogleSheet() {
+      const webhookUrl = localStorage.getItem('laiwan_finance_webhook');
+      if (!webhookUrl) return;
+
+      const rows = CATALOG_DATA.map(item => [
+        item.id,
+        item.cat,
+        item.name,
+        item.price.toFixed(2),
+        item.desc || '',
+        item.img || 'images/default.jpg',
+        item.status === 'out' ? '售罄' : '在售',
+        item.badge || ''
+      ]);
+
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'batchSync',
+            sheets: {
+              '菜品与价格目录': {
+                clear: true,
+                headers: ['菜品ID', '所属分类', '菜品名称', '单价 (RM)', '菜品描述', '图片路径', '售卖状态 (在售/售罄)', '热销角标'],
+                rows: rows
+              }
+            }
+          })
+        });
+        console.log('[Catalog Sheet Sync] Successfully pushed ' + CATALOG_DATA.length + ' dishes to Google Sheet');
+      } catch(e) {
+        console.warn('[Catalog Sheet Sync Error]', e);
+      }
+    }
+
     async function saveAndDeployMenuToGitHub() {
+      pushCatalogToGoogleSheet();
       let pat = localStorage.getItem('laiwan_github_pat') || document.getElementById('inp-github-pat')?.value.trim();
       if (!pat) {
         pat = prompt('🔑 请输入您的 GitHub Personal Access Token (PAT):\n\n(用于发布更改到 repo `zhilikam-design/laiwanluosifen-order`):');

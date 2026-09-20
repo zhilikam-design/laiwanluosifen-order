@@ -1408,13 +1408,21 @@
     };
 
     async function init() {
-      try {
-        const res = await fetch("menu_data.json?v=" + Date.now());
-        if (res.ok) {
-          MENU = await res.json();
+      // 1. 优先尝试从 Google Sheet《菜品与价格目录》实时加载菜单 (支持在 Google Sheet 随意改价/加新菜)
+      const sheetMenu = await fetchMenuFromGoogleSheet();
+      if (sheetMenu && sheetMenu.length > 0) {
+        MENU = sheetMenu;
+        console.log('[Sheet Menu] 成功从 Google Sheet 云端实时加载了 ' + MENU.length + ' 道菜品！');
+      } else {
+        // 2. 备用：从 menu_data.json 加载
+        try {
+          const res = await fetch("menu_data.json?v=" + Date.now());
+          if (res.ok) {
+            MENU = await res.json();
+          }
+        } catch (e) {
+          console.warn("Using fallback static menu data...");
         }
-      } catch (e) {
-        console.warn("Using fallback static menu data...");
       }
 
       if (!MENU || MENU.length === 0) {
@@ -1426,6 +1434,46 @@
 
       renderCategoryTabs();
       renderMenu();
+    }
+
+    
+    async function fetchMenuFromGoogleSheet() {
+      try {
+        const sheetId = "1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o";
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('菜品与价格目录')}`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const text = await res.text();
+        const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
+        if (match) {
+          const json = JSON.parse(match[1]);
+          if (json.status === 'ok' && json.table && json.table.rows && json.table.rows.length > 0) {
+            const list = [];
+            json.table.rows.forEach(r => {
+              const vals = r.c ? r.c.map(c => c ? (c.f || c.v) : '') : [];
+              const id = vals[0] ? String(vals[0]).trim() : '';
+              const name = vals[2] ? String(vals[2]).trim() : '';
+              if (id && id !== 'ID' && id !== '菜品ID' && name) {
+                list.push({
+                  id: id,
+                  cat: vals[1] ? String(vals[1]).trim() : '汤螺蛳粉',
+                  name: name,
+                  price: parseFloat(vals[3]) || 0,
+                  desc: vals[4] ? String(vals[4]).trim() : '',
+                  img: vals[5] ? String(vals[5]).trim() : 'images/default.jpg',
+                  status: vals[6] === '售罄' ? 'out' : 'available',
+                  badge: vals[7] ? String(vals[7]).trim() : '',
+                  mods: ["spicy", "addons"]
+                });
+              }
+            });
+            return list.length > 0 ? list : null;
+          }
+        }
+      } catch(e) {
+        console.warn("[Sheet Menu Error]", e);
+      }
+      return null;
     }
 
     function renderCategoryTabs() {
