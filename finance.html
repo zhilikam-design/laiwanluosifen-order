@@ -1657,7 +1657,7 @@ function doPost(e) {
       }
 
       // 1. 杂支
-      const localExp = localStorage.getItem('laiwan_finance_expenses_v2');
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v3');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
@@ -1669,7 +1669,10 @@ function doPost(e) {
           { id: 'exp_3', date: '2026-09-03', category: '电费', name: '8月份商业电费', amount: 920.8, payment: 'TNB Online', ref: 'TNB-229104', handled: '店长', notes: '长时间熬汤电费' },
           { id: 'exp_4', date: '2026-09-03', category: '煤气费', name: '后厨商用煤气4桶', amount: 280.0, payment: '现金', ref: 'GAS-1029', handled: '主管', notes: 'RM 70/桶' },
           { id: 'exp_5', date: '2026-09-04', category: '柜台零用金(Petty Cash)', name: '买洗洁精、垃圾袋', amount: 65.5, payment: '柜台现金', ref: 'MRDIY-8821', handled: '收银员', notes: '小票已贴存' },
-          { id: 'exp_6', date: '2026-09-05', category: '员工薪资与福利', name: '员工半月预支薪资', amount: 2200.0, payment: '银行转账', ref: 'PAY-202609A', handled: '老板', notes: '全职与兼职' }
+          { id: 'exp_6', date: '2026-09-05', category: '员工薪资与福利', name: '员工半月预支薪资', amount: 2200.0, payment: '银行转账', ref: 'PAY-202609A', handled: '老板', notes: '全职与兼职' },
+          { id: 'exp_7', date: '2026-09-29', category: '外卖平台佣金抽成', name: '9月份 Foodpanda 平台 30% 佣金扣款', amount: 1694.69, payment: '平台账单扣除', ref: 'FP-COMM-09', handled: 'Foodpanda', notes: 'Foodpanda 292 单平台 30% 基础佣金结算' },
+          { id: 'exp_8', date: '2026-09-29', category: '打包与外卖耗材', name: '9月份 Foodpanda 平台曝光营销与广告费', amount: 1113.81, payment: '平台账单扣除', ref: 'FP-MKTG-09', handled: 'Foodpanda', notes: 'Foodpanda 首页曝光、搜索优先与活动营销扣款' },
+          { id: 'exp_9', date: '2026-09-29', category: '杂项维修与维护', name: '9月份 Foodpanda 商家自付折价券补贴', amount: 1679.34, payment: '平台账单扣除', ref: 'FP-DISC-09', handled: 'Foodpanda', notes: 'Foodpanda 平台内店铺自营满减折价券 (折价RM643.05 + 优惠券RM1,036.29)' }
         ];
         saveExpensesToStorage();
       }
@@ -1703,7 +1706,7 @@ function doPost(e) {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v2');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v3');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -1726,14 +1729,14 @@ function doPost(e) {
             id: 'del_2',
             month: '2026-09',
             platform: 'Foodpanda',
-            gross: 4800.0,
-            commission: 1440.0,
-            adsPromo: 150.0,
-            adjustments: 0.0,
-            net: 3210.0,
-            rate: '33.1%',
-            ref: 'FP-STMT-202609',
-            notes: 'Panda 9月结单 (抽佣30% + 促销广告补贴RM150)'
+            gross: 8839.90,
+            commission: 1694.69,
+            adsPromo: 2793.15,
+            adjustments: 6.12,
+            net: 4138.60,
+            rate: '53.2%',
+            ref: 'FP-INV-202609',
+            notes: 'Foodpanda 9月官方发票结单 (292单 | 账画RM8,839.90 | 抽成RM1,694.69 | 推广与折扣RM2,793.15 | 到手净打款RM4,138.60)'
           },
           {
             id: 'del_3',
@@ -1754,7 +1757,7 @@ function doPost(e) {
     }
 
     function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v2', JSON.stringify(expensesList));
+      localStorage.setItem('laiwan_finance_expenses_v3', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
@@ -1766,7 +1769,7 @@ function doPost(e) {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v2', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v3', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
