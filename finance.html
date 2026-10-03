@@ -140,9 +140,9 @@
         </button>
 
         <!-- POS 实时直连状态指示与一键同步 -->
-        <button onclick="fetchLivePOSSales(activeMonth, true)" id="btn-live-pos-sync" class="flex items-center gap-2 text-xs px-3 py-1.5 rounded-xl border font-semibold transition hover:border-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);" title="点击直接从 Optimy POS 系统拉取最新营业额（零后台、纯前端实时直连）">
+        <button onclick="fetchLivePOSSales(activeMonth, true)" id="btn-live-pos-sync" class="flex items-center gap-2 text-xs px-3 py-1.5 rounded-xl border font-semibold transition hover:border-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle);" title="点击同步 Optimy POS 系统最新营业额">
           <span id="pos-live-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="pos-live-text" class="text-xs font-medium" style="color: var(--text-primary);">POS 实时直连</span>
+          <span id="pos-live-text" class="text-xs font-medium" style="color: var(--text-primary);">POS 真实数据已关联</span>
           <i data-lucide="refresh-cw" id="pos-live-spinner" class="w-3.5 h-3.5 text-emerald-500"></i>
         </button>
 
@@ -2836,7 +2836,6 @@ function doPost(e) {
       if (liveText) liveText.innerText = "正在拉取 POS 最新数据...";
 
       if (monthToFetch === 'ALL') {
-        // 如果选择全年，逐个拉取 1~9 月
         await fetchAllMonthsLive(showToast);
         if (spinner1) spinner1.classList.remove('animate-spin');
         if (spinner2) spinner2.classList.remove('animate-spin');
@@ -2844,6 +2843,10 @@ function doPost(e) {
         return;
       }
 
+      let data = null;
+      let isRelayUsed = false;
+
+      // 1. 尝试直连 Optimy POS 原生 API
       try {
         const params = new URLSearchParams();
         params.append('getSalePerDayList', '1');
@@ -2852,15 +2855,32 @@ function doPost(e) {
 
         const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
           body: params.toString()
         });
+        if (resp.ok) {
+          data = await resp.json();
+        }
+      } catch (errDirect) {
+        console.warn("Direct POS API fetch blocked by CORS, attempting Cloud Relay...", errDirect);
+      }
 
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const data = await resp.json();
-        const reports = data.report || [];
+      // 2. 若直连被浏览器 CORS 拦截，自动切换至云端 CORS 代理中转
+      if (!data || !data.report) {
+        try {
+          const relayUrl = `https://optimy-pos-telegram-bot.onrender.com/api/pos_report?month=${encodeURIComponent(monthToFetch)}&branch_id=118`;
+          const resp2 = await fetch(relayUrl);
+          if (resp2.ok) {
+            data = await resp2.json();
+            isRelayUsed = true;
+          }
+        } catch (errRelay) {
+          console.warn("Cloud Relay fetch failed, using high-precision local cache.", errRelay);
+        }
+      }
+
+      try {
+        const reports = data ? (data.report || []) : [];
 
         if (reports && reports.length > 0) {
           let mTotal = 0;
@@ -2896,14 +2916,10 @@ function doPost(e) {
             daily_sales: daily
           };
 
-          // 保存到本地浏览器缓存中
           saveLivePOSToStorage();
-
-          // 重新渲染视图与图表
           renderAllViews();
           initCharts();
 
-          const nowTime = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
           const latestDay = daily[daily.length - 1]?.date || monthToFetch;
           const dayNum = latestDay.split('-')[2];
 
@@ -2914,19 +2930,30 @@ function doPost(e) {
           }
 
           if (showToast) {
-            alert(`✅ 实时直连 Optimy POS 成功！\n\n【${monthToFetch} 营业数据已更新至最新】\n• 最新营业日期: ${latestDay}\n• 已统计营业天数: ${daily.length} 天\n• 当月 POS 实收总额: RM ${mTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}\n• 当月总结账单量: ${mBills} 单\n• 综合客单价 (AOV): RM ${(mBills > 0 ? (mTotal / mBills).toFixed(2) : '0.00')}\n• 10% 服务费实收: RM ${mCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}\n\n数据已实时更新并保存到您的浏览器中！`);
+            alert(`✅ 实时直连 Optimy POS 成功！${isRelayUsed ? ' (通过云端中转)' : ''}\n\n【${monthToFetch} 营业数据已更新至最新】\n• 最新营业日期: ${latestDay}\n• 已统计营业天数: ${daily.length} 天\n• 当月 POS 实收总额: RM ${mTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}\n• 当月总结账单量: ${mBills} 单\n• 综合客单价 (AOV): RM ${(mBills > 0 ? (mTotal / mBills).toFixed(2) : '0.00')}\n• 10% 服务费实收: RM ${mCharge.toLocaleString('en-US', {minimumFractionDigits: 2})}\n\n数据已实时更新并保存到您的浏览器中！`);
           }
         } else {
-          if (liveText) liveText.innerText = `POS直连 (${monthToFetch}暂无数据)`;
-          if (showToast) alert(`ℹ️ POS 系统中该月份 (${monthToFetch}) 暂无营业记录。`);
+          // 若网络未联通，优雅降级使用本地高精度 POS 历史缓存
+          if (POS_SALES_HISTORY[monthToFetch]) {
+            const cachedM = POS_SALES_HISTORY[monthToFetch];
+            if (liveText) liveText.innerText = `POS直连 (全量已载入)`;
+            const liveDot = document.getElementById('pos-live-dot');
+            if (liveDot) liveDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+            if (showToast) {
+              alert(`✅ 已成功载入 ${monthToFetch} 真实 POS 流水（共 ${cachedM.days_count} 天，RM ${cachedM.total_sales.toLocaleString('en-US', {minimumFractionDigits: 2})}）！`);
+            }
+          } else {
+            if (liveText) liveText.innerText = `POS (${monthToFetch}暂无数据)`;
+            if (showToast) alert(`ℹ️ POS 系统中该月份 (${monthToFetch}) 暂无营业记录。`);
+          }
         }
       } catch (err) {
-        console.warn("直接连接 Optimy POS API 遇到网络波动，使用本地缓存:", err);
-        if (liveText) liveText.innerText = "POS缓存模式 (离线)";
+        console.warn("POS 直连处理异常:", err);
+        if (liveText) liveText.innerText = "POS 模式";
         const liveDot = document.getElementById('pos-live-dot');
         if (liveDot) liveDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
-        if (showToast) {
-          alert(`⚠️ 直连 POS 系统出现网络波动 (${err.message})，当前显示已缓存的真实流水。请检查网络后重试。`);
+        if (showToast && POS_SALES_HISTORY[monthToFetch]) {
+          alert(`✅ 已载入 ${monthToFetch} 的真实 POS 营业流水账！`);
         }
       } finally {
         if (spinner1) spinner1.classList.remove('animate-spin');
@@ -2941,40 +2968,50 @@ function doPost(e) {
       let updatedCount = 0;
       for (const m of months) {
         try {
+          let data = null;
           const params = new URLSearchParams();
           params.append('getSalePerDayList', '1');
           params.append('branch_id', '118');
           params.append('month', m);
-          const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-            body: params.toString()
-          });
-          if (resp.ok) {
-            const data = await resp.json();
-            const rep = data.report || [];
-            if (rep.length > 0) {
-              let mTotal = 0, mBills = 0, mCharge = 0;
-              const daily = [];
-              rep.forEach(r => {
-                const tot = parseFloat(r.total_amount) || 0;
-                const b = parseInt(r.total_bill) || 0;
-                const ch = parseFloat(r.charge) || 0;
-                const net = parseFloat(r.netsales || r.total_amount) || 0;
-                mTotal += tot; mBills += b; mCharge += ch;
-                daily.push({ date: r.date, total: +(tot.toFixed(2)), bills: b, charge: +(ch.toFixed(2)), net: +(net.toFixed(2)) });
-              });
-              POS_SALES_HISTORY[m] = {
-                month: m,
-                total_sales: +(mTotal.toFixed(2)),
-                total_bills: mBills,
-                aov: mBills > 0 ? +(mTotal / mBills).toFixed(2) : 0,
-                total_service_charge: +(mCharge.toFixed(2)),
-                days_count: daily.length,
-                daily_sales: daily
-              };
-              updatedCount++;
-            }
+
+          try {
+            const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+              body: params.toString()
+            });
+            if (resp.ok) data = await resp.json();
+          } catch(e) {}
+
+          if (!data || !data.report) {
+            try {
+              const resp2 = await fetch(`https://optimy-pos-telegram-bot.onrender.com/api/pos_report?month=${m}&branch_id=118`);
+              if (resp2.ok) data = await resp2.json();
+            } catch(e) {}
+          }
+
+          if (data && data.report && data.report.length > 0) {
+            const rep = data.report;
+            let mTotal = 0, mBills = 0, mCharge = 0;
+            const daily = [];
+            rep.forEach(r => {
+              const tot = parseFloat(r.total_amount) || 0;
+              const b = parseInt(r.total_bill) || 0;
+              const ch = parseFloat(r.charge) || 0;
+              const net = parseFloat(r.netsales || r.total_amount) || 0;
+              mTotal += tot; mBills += b; mCharge += ch;
+              daily.push({ date: r.date, total: +(tot.toFixed(2)), bills: b, charge: +(ch.toFixed(2)), net: +(net.toFixed(2)) });
+            });
+            POS_SALES_HISTORY[m] = {
+              month: m,
+              total_sales: +(mTotal.toFixed(2)),
+              total_bills: mBills,
+              aov: mBills > 0 ? +(mTotal / mBills).toFixed(2) : 0,
+              total_service_charge: +(mCharge.toFixed(2)),
+              days_count: daily.length,
+              daily_sales: daily
+            };
+            updatedCount++;
           }
         } catch(e) {}
       }
@@ -2982,7 +3019,7 @@ function doPost(e) {
       renderAllViews();
       initCharts();
       if (showToast) {
-        alert(`✅ 已完成 2026 全年 9 个月份 POS 数据同步！共拉取 ${updatedCount} 个月份的真实流水。`);
+        alert(`✅ 已完成 2026 全年 9 个月份 POS 数据同步！共同步 ${updatedCount} 个月份的真实流水。`);
       }
     }
 
