@@ -1407,6 +1407,46 @@
       }
     };
 
+    const DEFAULT_MENU = [
+      { id: "S1", cat: "汤螺蛳粉", name: "S1 原味螺蛳粉 Original Luosifen", price: 12.8, mods: ["spicy", "addons"], desc: "地道经典原汁原味螺蛳汤粉", img: "images/S1.jpeg", badge: "🌟 经典老柳州" },
+      { id: "S2", cat: "汤螺蛳粉", name: "S2 煎蛋螺蛳粉 Fried Egg Luosifen", price: 14.8, mods: ["spicy", "addons"], desc: "香煎荷包蛋搭配浓郁螺蛳汤", img: "images/S2.jpeg", badge: "" },
+      { id: "S3", cat: "汤螺蛳粉", name: "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", price: 15.8, mods: ["spicy", "addons"], desc: "招牌必点超大吸汤炸蛋", img: "images/S3.jpeg", badge: "🔥 进店必点" },
+      { id: "S4", cat: "汤螺蛳粉", name: "S4 虎皮凤爪螺蛳粉 Tiger Skin Claw Luosifen", price: 16.8, mods: ["spicy", "addons"], desc: "软糯脱骨虎皮凤爪", img: "images/S4.jpeg", badge: "" },
+      { id: "S5", cat: "汤螺蛳粉", name: "S5 卤香鸭脚螺蛳粉 Braised Duck Feet Luosifen", price: 16.8, mods: ["spicy", "addons"], desc: "广西特色卤鸭脚入味吸汁", img: "images/S5.jpeg", badge: "" },
+      { id: "S6", cat: "汤螺蛳粉", name: "S6 招牌双拼螺蛳粉 Signature Combo Luosifen", price: 18.8, mods: ["spicy", "addons"], desc: "炸蛋+凤爪双重满足豪华版", img: "images/S6.jpeg", badge: "👑 豪华双拼" },
+      { id: "S7", cat: "汤螺蛳粉", name: "S7 爆炒猪肠螺蛳粉 Crispy Pork Intestine Luosifen", price: 19.8, mods: ["spicy", "addons"], desc: "香脆肥肠搭配酸辣螺蛳汤", img: "images/S7.jpeg", badge: "" },
+      { id: "S8", cat: "汤螺蛳粉", name: "S8 秘制牛腩螺蛳粉 Beef Brisket Luosifen", price: 21.8, mods: ["spicy", "addons"], desc: "大块软烂入味秘制牛腩", img: "images/S8.jpeg", badge: "🥩 肉多质优" },
+
+      { id: "D1", cat: "招牌干捞", name: "D1 招牌干捞螺蛳粉 Signature Dry Luosifen", price: 14.8, mods: ["spicy", "addons"], desc: "特制干捞酱汁拌粉浓郁开胃", img: "images/D1.jpeg", badge: "🥢 干捞首选" },
+      { id: "D2", cat: "招牌干捞", name: "D2 炸蛋干捞螺蛳粉 Deep-Fried Egg Dry Luosifen", price: 16.8, mods: ["spicy", "addons"], desc: "吸饱干捞酱汁的大炸蛋", img: "images/D2.jpeg", badge: "" },
+      { id: "D3", cat: "招牌干捞", name: "D3 凤爪干捞螺蛳粉 Tiger Claw Dry Luosifen", price: 17.8, mods: ["spicy", "addons"], desc: "脱骨凤爪干捞大满足", img: "images/D3.jpeg", badge: "" },
+      { id: "D8", cat: "招牌干捞", name: "D8 叉烧干捞粉 Char Siu Dry Noodles", price: 15.8, mods: ["spicy", "addons"], desc: "蜜汁叉烧搭配特调酱汁", img: "images/D8.jpeg", badge: "" },
+
+      { id: "B1", cat: "炒粉炒饭", name: "B1 桂林炒米粉 Fried Guilin Rice Noodles", price: 14.8, mods: ["addons"], desc: "大火爆炒锅气满满桂林米粉", img: "images/B1.jpeg", badge: "🍳 爆炒大火" },
+      { id: "B2", cat: "炒粉炒饭", name: "B2 扬州炒饭 Yangzhou Fried Rice", price: 14.8, mods: [], desc: "粒粒分明经典扬州风味炒饭", img: "images/B2.jpeg", badge: "" },
+      { id: "B3", cat: "炒粉炒饭", name: "B3 螺蛳酱炒饭 Luosifen Sauce Fried Rice", price: 15.8, mods: [], desc: "独家螺蛳香辣酱爆炒神仙炒饭", img: "images/B3.jpeg", badge: "🔥 独家研发" },
+
+      { id: "C1", cat: "手工水饺云吞", name: "C1 手工鲜肉水饺 Handmade Pork Dumplings", price: 13.8, mods: ["dumpling_style"], desc: "每日手包鲜猪肉馅 (10个)", img: "images/C1.jpeg", badge: "🥟 每日手包" },
+      { id: "C2", cat: "手工水饺云吞", name: "C2 韭菜鲜肉水饺 Chive Pork Dumplings", price: 13.8, mods: ["dumpling_style"], desc: "新鲜韭菜猪肉陷 (10个)", img: "images/C2.jpeg", badge: "" },
+      { id: "C3", cat: "手工水饺云吞", name: "C3 鲜虾大云吞 Giant Shrimp Wantan", price: 15.8, mods: ["wantan_style"], desc: "完整大虾仁皮薄馅大 (8个)", img: "images/C3.jpeg", badge: "🦐 真材实料" },
+      { id: "C11", cat: "手工水饺云吞", name: "C11 酥脆炸云吞 Crispy Fried Wantan", price: 11.8, mods: [], desc: "金黄酥脆蘸酸辣酱 (8个)", img: "images/C11.jpeg", badge: "" },
+
+      { id: "C4", cat: "特色小吃", name: "C4 招牌吸汤大炸蛋 Deep-Fried Egg", price: 3.5, mods: [], desc: "螺蛳粉神仙灵魂伴侣", img: "images/C4.jpeg", badge: "⭐ 必点配菜" },
+      { id: "C5", cat: "特色小吃", name: "C5 虎皮凤爪 (2只) Tiger Skin Claws", price: 6.8, mods: [], desc: "软糯脱骨卤香浓郁", img: "images/C5.jpeg", badge: "" },
+      { id: "C6", cat: "特色小吃", name: "C6 卤香鸭脚 (2只) Braised Duck Feet", price: 6.8, mods: [], desc: "广西正宗鸭脚", img: "images/C6.jpeg", badge: "" },
+      { id: "C7", cat: "特色小吃", name: "C7 炸香脆腐竹 Crispy Beancurd Skin", price: 4.8, mods: [], desc: "浸汤3秒金黄酥脆", img: "images/C7.jpeg", badge: "" },
+      { id: "C8", cat: "特色小吃", name: "C8 秘制酸笋 Sour Bamboo Shoots", price: 3.8, mods: [], desc: "螺蛳粉灵魂酸笋加份", img: "images/C8.jpeg", badge: "" },
+      { id: "C10", cat: "特色小吃", name: "C10 台湾香肠 Taiwan Sausage", price: 4.8, mods: [], desc: "焦香多汁蜜汁香肠", img: "images/C10.jpeg", badge: "" },
+
+      { id: "F01", cat: "饮品甜品", name: "F01 冰镇酸梅汤 Iced Plum Drink", price: 4.5, mods: [], desc: "生津解腻解辣生神器", img: "images/F01.jpeg", badge: "🍹 冰镇解辣" },
+      { id: "F02", cat: "饮品甜品", name: "F02 港式冻奶茶 Iced Milk Tea", price: 5.5, mods: [], desc: "浓郁丝滑正宗港味", img: "images/F02.jpeg", badge: "" },
+      { id: "F03", cat: "饮品甜品", name: "F03 解辣冰红茶 Iced Black Tea", price: 4.0, mods: [], desc: "螺蛳粉黄金解辣伴侣", img: "images/F03.jpeg", badge: "🔥 热销饮品" },
+      { id: "F04", cat: "饮品甜品", name: "F04 冰镇豆奶 Iced Soy Milk", price: 4.0, mods: [], desc: "香浓豆浆冷藏冰镇", img: "images/F04.jpeg", badge: "" },
+      { id: "F11", cat: "饮品甜品", name: "F11 红牛能量饮料 Red Bull", price: 5.5, mods: [], desc: "补充能量冰罐装", img: "images/F11.jpeg", badge: "" },
+      { id: "F21", cat: "饮品甜品", name: "F21 苹果爱玉冰 Apple Aiyu Ice", price: 6.0, mods: [], desc: "清爽果香甜品冰凉Q弹", img: "images/F21.jpeg", badge: "" },
+      { id: "F22", cat: "饮品甜品", name: "F22 阿萨姆奶茶 Assam Milk Tea", price: 5.5, mods: [], desc: "醇香红茶奶茶", img: "images/F22.jpeg", badge: "" }
+    ];
+
     async function init() {
       // 1. 优先尝试从 Google Sheet《菜品与价格目录》实时加载菜单 (支持在 Google Sheet 随意改价/加新菜)
       const sheetMenu = await fetchMenuFromGoogleSheet();
@@ -1418,7 +1458,10 @@
         try {
           const res = await fetch("menu_data.json?v=" + Date.now());
           if (res.ok) {
-            MENU = await res.json();
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              MENU = data;
+            }
           }
         } catch (e) {
           console.warn("Using fallback static menu data...");
@@ -1426,17 +1469,13 @@
       }
 
       if (!MENU || MENU.length === 0) {
-        MENU = [
-          { id: "S1", cat: "汤螺蛳粉", name: "S1 原味螺蛳粉 Original Luosifen", price: 12.8, mods: ["spicy", "addons"], desc: "地道经典原汁原味螺蛳汤粉", img: "images/S1.jpeg", badge: "🌟 经典老柳州" },
-          { id: "S3", cat: "汤螺蛳粉", name: "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen", price: 15.8, mods: ["spicy", "addons"], desc: "招牌必点超大吸汤炸蛋", img: "images/S3.jpeg", badge: "🔥 进店必点" }
-        ];
+        MENU = DEFAULT_MENU;
       }
 
       renderCategoryTabs();
       renderMenu();
     }
 
-    
     async function fetchMenuFromGoogleSheet() {
       try {
         const sheetId = "1esumoMZmSrvfF4QQ-MOOGUD72g3JGkhU-yFpb6wtY2o";
@@ -1448,26 +1487,35 @@
         if (match) {
           const json = JSON.parse(match[1]);
           if (json.status === 'ok' && json.table && json.table.rows && json.table.rows.length > 0) {
+            const validCategories = ["汤螺蛳粉", "招牌干捞", "炒粉炒饭", "手工水饺云吞", "特色小吃", "饮品甜品"];
             const list = [];
             json.table.rows.forEach(r => {
               const vals = r.c ? r.c.map(c => c ? (c.f || c.v) : '') : [];
               const id = vals[0] ? String(vals[0]).trim() : '';
+              const cat = vals[1] ? String(vals[1]).trim() : '';
               const name = vals[2] ? String(vals[2]).trim() : '';
-              if (id && id !== 'ID' && id !== '菜品ID' && name) {
+              const price = parseFloat(vals[3]) || 0;
+
+              // 严格校验：防日期行/防无名菜品/防非菜单工作表降级污染
+              const isDate = /^\d{4}-\d{2}/.test(id);
+              if (id && !isDate && id !== 'ID' && id !== '菜品ID' && name && price > 0) {
                 list.push({
                   id: id,
-                  cat: vals[1] ? String(vals[1]).trim() : '汤螺蛳粉',
+                  cat: validCategories.includes(cat) ? cat : '汤螺蛳粉',
                   name: name,
-                  price: parseFloat(vals[3]) || 0,
+                  price: price,
                   desc: vals[4] ? String(vals[4]).trim() : '',
-                  img: vals[5] ? String(vals[5]).trim() : 'images/default.jpg',
+                  img: vals[5] ? String(vals[5]).trim() : `images/${id}.jpeg`,
                   status: vals[6] === '售罄' ? 'out' : 'available',
                   badge: vals[7] ? String(vals[7]).trim() : '',
                   mods: ["spicy", "addons"]
                 });
               }
             });
-            return list.length > 0 ? list : null;
+            // 必须包含有效餐点才返回，防止非菜单 Sheet 污染导致的空白页
+            if (list.length > 0 && list.some(item => validCategories.includes(item.cat))) {
+              return list;
+            }
           }
         }
       } catch(e) {
