@@ -125,7 +125,7 @@
             <span>•</span>
             <span>Google Sheet 双向同步</span>
             <span>•</span>
-            <span id="live-datetime" class="mono">2026-10-03</span>
+            <span id="live-datetime" class="mono">2026-09-17</span>
           </div>
         </div>
       </div>
@@ -243,8 +243,7 @@
           <div class="flex items-center gap-2 w-full md:w-auto">
             <span class="text-xs font-medium whitespace-nowrap" style="color: var(--text-secondary);">月份切换:</span>
             <select id="month-picker" onchange="onMonthChange(this.value)" class="text-xs border rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-              <option value="2026-10" selected>2026年 10月 (当月已结盘 2天流水)</option>
-              <option value="2026-09">2026年 9月 (POS 30天真实全量流水)</option>
+              <option value="2026-09" selected>2026年 9月 (当月实时 · POS已记17天)</option>
               <option value="2026-08">2026年 8月 (POS 31天真实流水)</option>
               <option value="2026-07">2026年 7月 (POS 31天真实流水)</option>
               <option value="2026-06">2026年 6月 (POS 30天真实流水)</option>
@@ -253,7 +252,7 @@
               <option value="2026-03">2026年 3月 (POS 31天真实流水)</option>
               <option value="2026-02">2026年 2月 (POS 28天真实流水)</option>
               <option value="2026-01">2026年 1月 (POS 31天真实流水)</option>
-              <option value="ALL">🌟 2026全年 (1~10月 累计 292天)</option>
+              <option value="ALL">🌟 2026全年 (1~9月 累计 260天)</option>
             </select>
           </div>
 
@@ -1570,12 +1569,99 @@ function doPost(e) {
     const GVIZ_BASE = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
 
     // 2026 年 1~9 月 POS 门店直连真实销售数据 (包含全年月度汇总与 260 天每日明细)
-    const POS_SALES_HISTORY = {"2026-01": {"month": "2026-01", "total_sales": 43800.25, "total_bills": 1092, "aov": 40.11, "total_service_charge": 3663.44, "days_count": 31, "daily_sales": [{"date": "2026-01-01", "total": 1505.85, "bills": 33, "charge": 109.89, "net": 1505.85}, {"date": "2026-01-02", "total": 1524.9, "bills": 34, "charge": 127.23, "net": 1524.9}, {"date": "2026-01-03", "total": 2066.6, "bills": 40, "charge": 179.96, "net": 2066.6}, {"date": "2026-01-04", "total": 1565.7, "bills": 41, "charge": 133.7, "net": 1565.7}, {"date": "2026-01-05", "total": 1443.7, "bills": 35, "charge": 124.68, "net": 1443.7}, {"date": "2026-01-06", "total": 1178.6, "bills": 29, "charge": 90.07, "net": 1178.6}, {"date": "2026-01-07", "total": 662.1, "bills": 19, "charge": 56.24, "net": 662.1}, {"date": "2026-01-08", "total": 1017.7, "bills": 24, "charge": 75.3, "net": 1017.7}, {"date": "2026-01-09", "total": 1282.6, "bills": 33, "charge": 109.14, "net": 1282.6}, {"date": "2026-01-10", "total": 1935.95, "bills": 46, "charge": 168.06, "net": 1935.95}, {"date": "2026-01-11", "total": 1441.6, "bills": 35, "charge": 125.22, "net": 1441.6}, {"date": "2026-01-12", "total": 1283.05, "bills": 37, "charge": 109.69, "net": 1283.05}, {"date": "2026-01-13", "total": 987.15, "bills": 33, "charge": 81.9, "net": 987.15}, {"date": "2026-01-14", "total": 1624.4, "bills": 39, "charge": 140.38, "net": 1624.4}, {"date": "2026-01-15", "total": 1301.5, "bills": 30, "charge": 108.96, "net": 1301.5}, {"date": "2026-01-16", "total": 1692.9, "bills": 47, "charge": 142.93, "net": 1692.9}, {"date": "2026-01-17", "total": 1499.55, "bills": 43, "charge": 122.01, "net": 1499.55}, {"date": "2026-01-18", "total": 1698.85, "bills": 37, "charge": 147.0, "net": 1698.85}, {"date": "2026-01-19", "total": 849.4, "bills": 22, "charge": 71.2, "net": 849.4}, {"date": "2026-01-20", "total": 1606.75, "bills": 44, "charge": 134.44, "net": 1606.75}, {"date": "2026-01-21", "total": 1162.4, "bills": 31, "charge": 88.98, "net": 1162.4}, {"date": "2026-01-22", "total": 1036.85, "bills": 31, "charge": 90.04, "net": 1036.85}, {"date": "2026-01-23", "total": 1372.35, "bills": 35, "charge": 118.91, "net": 1372.35}, {"date": "2026-01-24", "total": 2327.75, "bills": 49, "charge": 200.99, "net": 2327.75}, {"date": "2026-01-25", "total": 2098.95, "bills": 53, "charge": 174.81, "net": 2098.95}, {"date": "2026-01-26", "total": 1272.1, "bills": 31, "charge": 98.6, "net": 1272.1}, {"date": "2026-01-27", "total": 869.7, "bills": 28, "charge": 75.27, "net": 869.7}, {"date": "2026-01-28", "total": 1355.2, "bills": 29, "charge": 114.03, "net": 1355.2}, {"date": "2026-01-29", "total": 949.35, "bills": 23, "charge": 78.65, "net": 949.35}, {"date": "2026-01-30", "total": 1518.25, "bills": 39, "charge": 121.13, "net": 1518.25}, {"date": "2026-01-31", "total": 1668.5, "bills": 42, "charge": 144.03, "net": 1668.5}]}, "2026-02": {"month": "2026-02", "total_sales": 29069.25, "total_bills": 701, "aov": 41.47, "total_service_charge": 2431.57, "days_count": 28, "daily_sales": [{"date": "2026-02-01", "total": 1377.25, "bills": 28, "charge": 113.07, "net": 1377.25}, {"date": "2026-02-02", "total": 1188.85, "bills": 28, "charge": 107.71, "net": 1188.85}, {"date": "2026-02-03", "total": 1098.65, "bills": 27, "charge": 87.72, "net": 1098.65}, {"date": "2026-02-04", "total": 1087.25, "bills": 29, "charge": 94.8, "net": 1087.25}, {"date": "2026-02-05", "total": 939.5, "bills": 26, "charge": 68.47, "net": 939.5}, {"date": "2026-02-06", "total": 1211.25, "bills": 30, "charge": 96.34, "net": 1211.25}, {"date": "2026-02-07", "total": 1723.15, "bills": 39, "charge": 149.63, "net": 1723.15}, {"date": "2026-02-08", "total": 1801.5, "bills": 39, "charge": 159.35, "net": 1801.5}, {"date": "2026-02-09", "total": 1206.15, "bills": 32, "charge": 94.44, "net": 1206.15}, {"date": "2026-02-10", "total": 754.8, "bills": 23, "charge": 63.94, "net": 754.8}, {"date": "2026-02-11", "total": 980.5, "bills": 23, "charge": 85.81, "net": 980.5}, {"date": "2026-02-12", "total": 922.6, "bills": 26, "charge": 78.66, "net": 922.6}, {"date": "2026-02-13", "total": 1771.0, "bills": 37, "charge": 148.06, "net": 1771.0}, {"date": "2026-02-14", "total": 1927.1, "bills": 42, "charge": 170.06, "net": 1927.1}, {"date": "2026-02-15", "total": 1164.75, "bills": 22, "charge": 103.1, "net": 1164.75}, {"date": "2026-02-16", "total": 257.35, "bills": 8, "charge": 15.96, "net": 257.35}, {"date": "2026-02-17", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-18", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-19", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-20", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-21", "total": 1343.75, "bills": 34, "charge": 108.41, "net": 1343.75}, {"date": "2026-02-22", "total": 1068.1, "bills": 27, "charge": 95.57, "net": 1068.1}, {"date": "2026-02-23", "total": 1002.75, "bills": 25, "charge": 82.06, "net": 1002.75}, {"date": "2026-02-24", "total": 970.2, "bills": 25, "charge": 70.03, "net": 970.2}, {"date": "2026-02-25", "total": 1105.45, "bills": 29, "charge": 91.41, "net": 1105.45}, {"date": "2026-02-26", "total": 956.9, "bills": 29, "charge": 78.35, "net": 956.9}, {"date": "2026-02-27", "total": 1505.7, "bills": 32, "charge": 124.5, "net": 1505.7}, {"date": "2026-02-28", "total": 1704.75, "bills": 41, "charge": 144.12, "net": 1704.75}]}, "2026-03": {"month": "2026-03", "total_sales": 44574.15, "total_bills": 1142, "aov": 39.03, "total_service_charge": 3692.21, "days_count": 31, "daily_sales": [{"date": "2026-03-01", "total": 1985.75, "bills": 46, "charge": 173.51, "net": 1985.75}, {"date": "2026-03-02", "total": 1573.7, "bills": 40, "charge": 134.58, "net": 1573.7}, {"date": "2026-03-03", "total": 1138.05, "bills": 27, "charge": 98.79, "net": 1138.05}, {"date": "2026-03-04", "total": 1212.6, "bills": 28, "charge": 109.92, "net": 1212.6}, {"date": "2026-03-05", "total": 967.1, "bills": 28, "charge": 79.45, "net": 967.1}, {"date": "2026-03-06", "total": 1760.3, "bills": 43, "charge": 138.54, "net": 1760.3}, {"date": "2026-03-07", "total": 2455.45, "bills": 59, "charge": 204.59, "net": 2455.45}, {"date": "2026-03-08", "total": 1301.4, "bills": 34, "charge": 115.14, "net": 1301.4}, {"date": "2026-03-09", "total": 531.15, "bills": 18, "charge": 46.03, "net": 531.15}, {"date": "2026-03-10", "total": 1415.1, "bills": 34, "charge": 123.6, "net": 1415.1}, {"date": "2026-03-11", "total": 1241.85, "bills": 36, "charge": 99.6, "net": 1241.85}, {"date": "2026-03-12", "total": 1544.6, "bills": 38, "charge": 131.86, "net": 1544.6}, {"date": "2026-03-13", "total": 1106.5, "bills": 30, "charge": 94.82, "net": 1106.5}, {"date": "2026-03-14", "total": 1153.05, "bills": 33, "charge": 83.35, "net": 1153.05}, {"date": "2026-03-15", "total": 2178.25, "bills": 57, "charge": 179.29, "net": 2178.25}, {"date": "2026-03-16", "total": 1321.45, "bills": 40, "charge": 96.83, "net": 1321.45}, {"date": "2026-03-17", "total": 1219.8, "bills": 33, "charge": 97.64, "net": 1219.8}, {"date": "2026-03-18", "total": 1249.1, "bills": 39, "charge": 102.7, "net": 1249.1}, {"date": "2026-03-19", "total": 1263.6, "bills": 33, "charge": 108.03, "net": 1263.6}, {"date": "2026-03-20", "total": 1870.95, "bills": 45, "charge": 151.34, "net": 1870.95}, {"date": "2026-03-21", "total": 1847.15, "bills": 45, "charge": 142.75, "net": 1847.15}, {"date": "2026-03-22", "total": 1188.4, "bills": 34, "charge": 102.2, "net": 1188.4}, {"date": "2026-03-23", "total": 1873.5, "bills": 49, "charge": 154.83, "net": 1873.5}, {"date": "2026-03-24", "total": 1600.75, "bills": 34, "charge": 121.32, "net": 1600.75}, {"date": "2026-03-25", "total": 1039.0, "bills": 28, "charge": 86.36, "net": 1039.0}, {"date": "2026-03-26", "total": 919.2, "bills": 26, "charge": 80.5, "net": 919.2}, {"date": "2026-03-27", "total": 1722.0, "bills": 38, "charge": 147.12, "net": 1722.0}, {"date": "2026-03-28", "total": 1637.7, "bills": 42, "charge": 140.78, "net": 1637.7}, {"date": "2026-03-29", "total": 1182.2, "bills": 29, "charge": 99.32, "net": 1182.2}, {"date": "2026-03-30", "total": 2169.8, "bills": 49, "charge": 170.4, "net": 2169.8}, {"date": "2026-03-31", "total": 904.7, "bills": 27, "charge": 77.02, "net": 904.7}]}, "2026-04": {"month": "2026-04", "total_sales": 36099.4, "total_bills": 895, "aov": 40.33, "total_service_charge": 2931.46, "days_count": 30, "daily_sales": [{"date": "2026-04-01", "total": 1008.0, "bills": 26, "charge": 82.43, "net": 1008.0}, {"date": "2026-04-02", "total": 928.5, "bills": 23, "charge": 77.3, "net": 928.5}, {"date": "2026-04-03", "total": 1859.85, "bills": 48, "charge": 152.06, "net": 1859.85}, {"date": "2026-04-04", "total": 1858.65, "bills": 38, "charge": 157.18, "net": 1858.65}, {"date": "2026-04-05", "total": 1298.45, "bills": 31, "charge": 106.79, "net": 1298.45}, {"date": "2026-04-06", "total": 1052.35, "bills": 27, "charge": 84.53, "net": 1052.35}, {"date": "2026-04-07", "total": 1220.05, "bills": 34, "charge": 95.63, "net": 1220.05}, {"date": "2026-04-08", "total": 1407.95, "bills": 34, "charge": 113.41, "net": 1407.95}, {"date": "2026-04-09", "total": 819.85, "bills": 22, "charge": 68.49, "net": 819.85}, {"date": "2026-04-10", "total": 1584.05, "bills": 36, "charge": 131.6, "net": 1584.05}, {"date": "2026-04-11", "total": 1739.1, "bills": 45, "charge": 146.84, "net": 1739.1}, {"date": "2026-04-12", "total": 1585.4, "bills": 38, "charge": 129.59, "net": 1585.4}, {"date": "2026-04-13", "total": 1156.7, "bills": 27, "charge": 100.03, "net": 1156.7}, {"date": "2026-04-14", "total": 736.05, "bills": 23, "charge": 47.38, "net": 736.05}, {"date": "2026-04-15", "total": 871.0, "bills": 25, "charge": 70.64, "net": 871.0}, {"date": "2026-04-16", "total": 574.05, "bills": 17, "charge": 43.36, "net": 574.05}, {"date": "2026-04-17", "total": 1251.55, "bills": 31, "charge": 82.39, "net": 1251.55}, {"date": "2026-04-18", "total": 1663.7, "bills": 35, "charge": 136.59, "net": 1663.7}, {"date": "2026-04-19", "total": 1292.05, "bills": 29, "charge": 115.56, "net": 1292.05}, {"date": "2026-04-20", "total": 1147.75, "bills": 30, "charge": 96.7, "net": 1147.75}, {"date": "2026-04-21", "total": 877.0, "bills": 22, "charge": 65.04, "net": 877.0}, {"date": "2026-04-22", "total": 578.5, "bills": 16, "charge": 45.91, "net": 578.5}, {"date": "2026-04-23", "total": 1235.9, "bills": 33, "charge": 108.89, "net": 1235.9}, {"date": "2026-04-24", "total": 1389.2, "bills": 31, "charge": 108.51, "net": 1389.2}, {"date": "2026-04-25", "total": 1632.6, "bills": 42, "charge": 136.64, "net": 1632.6}, {"date": "2026-04-26", "total": 1196.3, "bills": 27, "charge": 97.95, "net": 1196.3}, {"date": "2026-04-27", "total": 661.1, "bills": 15, "charge": 57.75, "net": 661.1}, {"date": "2026-04-28", "total": 1009.65, "bills": 26, "charge": 81.42, "net": 1009.65}, {"date": "2026-04-29", "total": 1208.25, "bills": 31, "charge": 93.62, "net": 1208.25}, {"date": "2026-04-30", "total": 1255.85, "bills": 33, "charge": 97.23, "net": 1255.85}]}, "2026-05": {"month": "2026-05", "total_sales": 33535.6, "total_bills": 837, "aov": 40.07, "total_service_charge": 2714.64, "days_count": 31, "daily_sales": [{"date": "2026-05-01", "total": 1519.6, "bills": 33, "charge": 121.61, "net": 1519.6}, {"date": "2026-05-02", "total": 1294.2, "bills": 35, "charge": 98.14, "net": 1294.2}, {"date": "2026-05-03", "total": 1134.55, "bills": 27, "charge": 95.49, "net": 1134.55}, {"date": "2026-05-04", "total": 518.6, "bills": 17, "charge": 42.53, "net": 518.6}, {"date": "2026-05-05", "total": 630.75, "bills": 22, "charge": 39.42, "net": 630.75}, {"date": "2026-05-06", "total": 1002.6, "bills": 22, "charge": 84.22, "net": 1002.6}, {"date": "2026-05-07", "total": 735.25, "bills": 19, "charge": 56.61, "net": 735.25}, {"date": "2026-05-08", "total": 924.95, "bills": 26, "charge": 74.63, "net": 924.95}, {"date": "2026-05-09", "total": 1418.8, "bills": 29, "charge": 121.34, "net": 1418.8}, {"date": "2026-05-10", "total": 981.75, "bills": 25, "charge": 81.32, "net": 981.75}, {"date": "2026-05-11", "total": 1167.25, "bills": 23, "charge": 93.14, "net": 1167.25}, {"date": "2026-05-12", "total": 724.2, "bills": 20, "charge": 55.3, "net": 724.2}, {"date": "2026-05-13", "total": 757.95, "bills": 24, "charge": 57.71, "net": 757.95}, {"date": "2026-05-14", "total": 882.9, "bills": 22, "charge": 72.89, "net": 882.9}, {"date": "2026-05-15", "total": 992.0, "bills": 26, "charge": 69.2, "net": 992.0}, {"date": "2026-05-16", "total": 2026.7, "bills": 44, "charge": 177.34, "net": 2026.7}, {"date": "2026-05-17", "total": 1476.05, "bills": 33, "charge": 112.97, "net": 1476.05}, {"date": "2026-05-18", "total": 764.85, "bills": 20, "charge": 60.98, "net": 764.85}, {"date": "2026-05-19", "total": 849.3, "bills": 25, "charge": 68.18, "net": 849.3}, {"date": "2026-05-20", "total": 1074.05, "bills": 29, "charge": 94.21, "net": 1074.05}, {"date": "2026-05-21", "total": 688.7, "bills": 17, "charge": 62.24, "net": 688.7}, {"date": "2026-05-22", "total": 1158.3, "bills": 29, "charge": 102.15, "net": 1158.3}, {"date": "2026-05-23", "total": 1396.85, "bills": 36, "charge": 113.4, "net": 1396.85}, {"date": "2026-05-24", "total": 1195.7, "bills": 29, "charge": 102.93, "net": 1195.7}, {"date": "2026-05-25", "total": 862.9, "bills": 22, "charge": 72.16, "net": 862.9}, {"date": "2026-05-26", "total": 1216.5, "bills": 25, "charge": 93.84, "net": 1216.5}, {"date": "2026-05-27", "total": 1136.35, "bills": 29, "charge": 94.49, "net": 1136.35}, {"date": "2026-05-28", "total": 1081.95, "bills": 26, "charge": 90.43, "net": 1081.95}, {"date": "2026-05-29", "total": 1643.95, "bills": 42, "charge": 126.32, "net": 1643.95}, {"date": "2026-05-30", "total": 1366.9, "bills": 34, "charge": 110.54, "net": 1366.9}, {"date": "2026-05-31", "total": 911.2, "bills": 27, "charge": 68.91, "net": 911.2}]}, "2026-06": {"month": "2026-06", "total_sales": 34416.8, "total_bills": 858, "aov": 40.11, "total_service_charge": 2814.98, "days_count": 30, "daily_sales": [{"date": "2026-06-01", "total": 1234.45, "bills": 29, "charge": 106.91, "net": 1234.45}, {"date": "2026-06-02", "total": 1313.45, "bills": 30, "charge": 112.66, "net": 1313.45}, {"date": "2026-06-03", "total": 1400.65, "bills": 34, "charge": 101.51, "net": 1400.65}, {"date": "2026-06-04", "total": 1503.95, "bills": 35, "charge": 122.78, "net": 1503.95}, {"date": "2026-06-05", "total": 778.6, "bills": 21, "charge": 64.94, "net": 778.6}, {"date": "2026-06-06", "total": 1542.8, "bills": 42, "charge": 133.5, "net": 1542.8}, {"date": "2026-06-07", "total": 1487.75, "bills": 27, "charge": 132.2, "net": 1487.75}, {"date": "2026-06-08", "total": 777.1, "bills": 19, "charge": 58.29, "net": 777.1}, {"date": "2026-06-09", "total": 1182.1, "bills": 26, "charge": 97.47, "net": 1182.1}, {"date": "2026-06-10", "total": 1167.45, "bills": 28, "charge": 92.29, "net": 1167.45}, {"date": "2026-06-11", "total": 1193.65, "bills": 30, "charge": 93.97, "net": 1193.65}, {"date": "2026-06-12", "total": 1313.55, "bills": 37, "charge": 110.32, "net": 1313.55}, {"date": "2026-06-13", "total": 1243.9, "bills": 34, "charge": 98.68, "net": 1243.9}, {"date": "2026-06-14", "total": 1442.25, "bills": 35, "charge": 119.25, "net": 1442.25}, {"date": "2026-06-15", "total": 915.5, "bills": 25, "charge": 72.91, "net": 915.5}, {"date": "2026-06-16", "total": 1189.9, "bills": 28, "charge": 87.43, "net": 1189.9}, {"date": "2026-06-17", "total": 1233.95, "bills": 27, "charge": 111.81, "net": 1233.95}, {"date": "2026-06-18", "total": 1089.55, "bills": 32, "charge": 83.92, "net": 1089.55}, {"date": "2026-06-19", "total": 1112.15, "bills": 34, "charge": 87.96, "net": 1112.15}, {"date": "2026-06-20", "total": 1536.9, "bills": 42, "charge": 128.65, "net": 1536.9}, {"date": "2026-06-21", "total": 854.7, "bills": 24, "charge": 66.98, "net": 854.7}, {"date": "2026-06-22", "total": 687.95, "bills": 22, "charge": 52.71, "net": 687.95}, {"date": "2026-06-23", "total": 565.1, "bills": 16, "charge": 45.62, "net": 565.1}, {"date": "2026-06-24", "total": 773.25, "bills": 22, "charge": 64.09, "net": 773.25}, {"date": "2026-06-25", "total": 785.25, "bills": 22, "charge": 64.02, "net": 785.25}, {"date": "2026-06-26", "total": 1067.9, "bills": 25, "charge": 89.97, "net": 1067.9}, {"date": "2026-06-27", "total": 1681.45, "bills": 37, "charge": 149.7, "net": 1681.45}, {"date": "2026-06-28", "total": 1458.2, "bills": 29, "charge": 115.38, "net": 1458.2}, {"date": "2026-06-29", "total": 898.85, "bills": 22, "charge": 66.05, "net": 898.85}, {"date": "2026-06-30", "total": 984.55, "bills": 24, "charge": 83.01, "net": 984.55}]}, "2026-07": {"month": "2026-07", "total_sales": 33078.3, "total_bills": 797, "aov": 41.5, "total_service_charge": 2763.87, "days_count": 31, "daily_sales": [{"date": "2026-07-01", "total": 786.65, "bills": 22, "charge": 64.75, "net": 786.65}, {"date": "2026-07-02", "total": 739.45, "bills": 20, "charge": 56.69, "net": 739.45}, {"date": "2026-07-03", "total": 1309.4, "bills": 30, "charge": 109.31, "net": 1309.4}, {"date": "2026-07-04", "total": 1249.65, "bills": 34, "charge": 103.99, "net": 1249.65}, {"date": "2026-07-05", "total": 1172.1, "bills": 21, "charge": 106.57, "net": 1172.1}, {"date": "2026-07-06", "total": 639.35, "bills": 15, "charge": 49.74, "net": 639.35}, {"date": "2026-07-07", "total": 750.95, "bills": 19, "charge": 64.21, "net": 750.95}, {"date": "2026-07-08", "total": 776.4, "bills": 24, "charge": 53.5, "net": 776.4}, {"date": "2026-07-09", "total": 704.3, "bills": 18, "charge": 59.26, "net": 704.3}, {"date": "2026-07-10", "total": 1400.9, "bills": 32, "charge": 110.08, "net": 1400.9}, {"date": "2026-07-11", "total": 1932.25, "bills": 45, "charge": 154.72, "net": 1932.25}, {"date": "2026-07-12", "total": 1369.35, "bills": 34, "charge": 108.22, "net": 1369.35}, {"date": "2026-07-13", "total": 1143.4, "bills": 32, "charge": 93.23, "net": 1143.4}, {"date": "2026-07-14", "total": 756.8, "bills": 22, "charge": 60.15, "net": 756.8}, {"date": "2026-07-15", "total": 964.9, "bills": 22, "charge": 76.19, "net": 964.9}, {"date": "2026-07-16", "total": 695.7, "bills": 17, "charge": 55.85, "net": 695.7}, {"date": "2026-07-17", "total": 797.6, "bills": 21, "charge": 69.46, "net": 797.6}, {"date": "2026-07-18", "total": 1971.4, "bills": 39, "charge": 176.44, "net": 1971.4}, {"date": "2026-07-19", "total": 817.35, "bills": 18, "charge": 69.98, "net": 817.35}, {"date": "2026-07-20", "total": 1022.75, "bills": 27, "charge": 86.86, "net": 1022.75}, {"date": "2026-07-21", "total": 1453.75, "bills": 34, "charge": 122.09, "net": 1453.75}, {"date": "2026-07-22", "total": 833.65, "bills": 22, "charge": 72.09, "net": 833.65}, {"date": "2026-07-23", "total": 678.3, "bills": 18, "charge": 56.98, "net": 678.3}, {"date": "2026-07-24", "total": 884.2, "bills": 26, "charge": 66.44, "net": 884.2}, {"date": "2026-07-25", "total": 1956.85, "bills": 41, "charge": 166.94, "net": 1956.85}, {"date": "2026-07-26", "total": 1019.0, "bills": 23, "charge": 88.15, "net": 1019.0}, {"date": "2026-07-27", "total": 1160.2, "bills": 23, "charge": 105.48, "net": 1160.2}, {"date": "2026-07-28", "total": 978.3, "bills": 25, "charge": 85.52, "net": 978.3}, {"date": "2026-07-29", "total": 871.45, "bills": 19, "charge": 71.84, "net": 871.45}, {"date": "2026-07-30", "total": 909.65, "bills": 23, "charge": 80.18, "net": 909.65}, {"date": "2026-07-31", "total": 1332.3, "bills": 31, "charge": 118.96, "net": 1332.3}]}, "2026-08": {"month": "2026-08", "total_sales": 37490.75, "total_bills": 904, "aov": 41.47, "total_service_charge": 3146.97, "days_count": 31, "daily_sales": [{"date": "2026-08-01", "total": 1546.25, "bills": 40, "charge": 125.1, "net": 1546.25}, {"date": "2026-08-02", "total": 1358.2, "bills": 30, "charge": 118.88, "net": 1358.2}, {"date": "2026-08-03", "total": 938.75, "bills": 25, "charge": 80.17, "net": 938.75}, {"date": "2026-08-04", "total": 1180.8, "bills": 31, "charge": 92.78, "net": 1180.8}, {"date": "2026-08-05", "total": 656.5, "bills": 19, "charge": 51.32, "net": 656.5}, {"date": "2026-08-06", "total": 845.05, "bills": 19, "charge": 75.57, "net": 845.05}, {"date": "2026-08-07", "total": 1131.0, "bills": 29, "charge": 91.68, "net": 1131.0}, {"date": "2026-08-08", "total": 1591.15, "bills": 38, "charge": 140.07, "net": 1591.15}, {"date": "2026-08-09", "total": 2081.1, "bills": 41, "charge": 186.14, "net": 2081.1}, {"date": "2026-08-10", "total": 1281.0, "bills": 33, "charge": 103.53, "net": 1281.0}, {"date": "2026-08-11", "total": 1003.55, "bills": 27, "charge": 83.37, "net": 1003.55}, {"date": "2026-08-12", "total": 991.65, "bills": 24, "charge": 81.15, "net": 991.65}, {"date": "2026-08-13", "total": 919.35, "bills": 22, "charge": 83.57, "net": 919.35}, {"date": "2026-08-14", "total": 1000.45, "bills": 26, "charge": 78.29, "net": 1000.45}, {"date": "2026-08-15", "total": 2218.05, "bills": 51, "charge": 185.92, "net": 2218.05}, {"date": "2026-08-16", "total": 939.2, "bills": 24, "charge": 75.95, "net": 939.2}, {"date": "2026-08-17", "total": 1225.55, "bills": 29, "charge": 105.76, "net": 1225.55}, {"date": "2026-08-18", "total": 969.9, "bills": 22, "charge": 81.6, "net": 969.9}, {"date": "2026-08-19", "total": 937.85, "bills": 30, "charge": 71.18, "net": 937.85}, {"date": "2026-08-20", "total": 1238.3, "bills": 33, "charge": 102.73, "net": 1238.3}, {"date": "2026-08-21", "total": 1698.4, "bills": 41, "charge": 141.94, "net": 1698.4}, {"date": "2026-08-22", "total": 1229.3, "bills": 29, "charge": 103.39, "net": 1229.3}, {"date": "2026-08-23", "total": 1539.95, "bills": 31, "charge": 133.52, "net": 1539.95}, {"date": "2026-08-24", "total": 1501.9, "bills": 31, "charge": 128.15, "net": 1501.9}, {"date": "2026-08-25", "total": 925.1, "bills": 21, "charge": 81.66, "net": 925.1}, {"date": "2026-08-26", "total": 1017.65, "bills": 25, "charge": 82.97, "net": 1017.65}, {"date": "2026-08-27", "total": 462.1, "bills": 15, "charge": 30.1, "net": 462.1}, {"date": "2026-08-28", "total": 1095.0, "bills": 27, "charge": 88.66, "net": 1095.0}, {"date": "2026-08-29", "total": 1626.4, "bills": 35, "charge": 145.61, "net": 1626.4}, {"date": "2026-08-30", "total": 1088.8, "bills": 28, "charge": 92.4, "net": 1088.8}, {"date": "2026-08-31", "total": 1252.5, "bills": 28, "charge": 103.81, "net": 1252.5}]}, "2026-09": {"month": "2026-09", "total_sales": 30557.05, "total_bills": 792, "aov": 38.58, "total_service_charge": 2531.24, "days_count": 30, "daily_sales": [{"date": "2026-09-01", "total": 557.45, "bills": 18, "charge": 49.93, "net": 557.45}, {"date": "2026-09-02", "total": 921.65, "bills": 26, "charge": 79.37, "net": 921.65}, {"date": "2026-09-03", "total": 1407.1, "bills": 29, "charge": 127.91, "net": 1407.1}, {"date": "2026-09-04", "total": 983.5, "bills": 28, "charge": 79.0, "net": 983.5}, {"date": "2026-09-05", "total": 1494.8, "bills": 38, "charge": 118.71, "net": 1494.8}, {"date": "2026-09-06", "total": 1309.85, "bills": 34, "charge": 114.13, "net": 1309.85}, {"date": "2026-09-07", "total": 1085.5, "bills": 27, "charge": 92.13, "net": 1085.5}, {"date": "2026-09-08", "total": 940.75, "bills": 26, "charge": 79.47, "net": 940.75}, {"date": "2026-09-09", "total": 1001.85, "bills": 30, "charge": 87.29, "net": 1001.85}, {"date": "2026-09-10", "total": 954.3, "bills": 21, "charge": 71.06, "net": 954.3}, {"date": "2026-09-11", "total": 1114.8, "bills": 29, "charge": 95.15, "net": 1114.8}, {"date": "2026-09-12", "total": 1120.25, "bills": 26, "charge": 97.42, "net": 1120.25}, {"date": "2026-09-13", "total": 1569.2, "bills": 33, "charge": 137.7, "net": 1569.2}, {"date": "2026-09-14", "total": 685.05, "bills": 19, "charge": 55.86, "net": 685.05}, {"date": "2026-09-15", "total": 787.35, "bills": 19, "charge": 59.16, "net": 787.35}, {"date": "2026-09-16", "total": 1426.95, "bills": 37, "charge": 116.87, "net": 1426.95}, {"date": "2026-09-17", "total": 732.2, "bills": 17, "charge": 64.42, "net": 732.2}, {"date": "2026-09-18", "total": 887.1, "bills": 25, "charge": 60.47, "net": 887.1}, {"date": "2026-09-19", "total": 1399.1, "bills": 38, "charge": 111.39, "net": 1399.1}, {"date": "2026-09-20", "total": 881.7, "bills": 20, "charge": 70.4, "net": 881.7}, {"date": "2026-09-21", "total": 977.4, "bills": 27, "charge": 81.2, "net": 977.4}, {"date": "2026-09-22", "total": 1251.65, "bills": 35, "charge": 102.5, "net": 1251.65}, {"date": "2026-09-23", "total": 825.9, "bills": 20, "charge": 68.3, "net": 825.9}, {"date": "2026-09-24", "total": 506.4, "bills": 18, "charge": 41.5, "net": 506.4}, {"date": "2026-09-25", "total": 525.8, "bills": 13, "charge": 43.1, "net": 525.8}, {"date": "2026-09-26", "total": 1611.2, "bills": 34, "charge": 131.5, "net": 1611.2}, {"date": "2026-09-27", "total": 1198.5, "bills": 38, "charge": 98.2, "net": 1198.5}, {"date": "2026-09-28", "total": 650.45, "bills": 21, "charge": 53.4, "net": 650.45}, {"date": "2026-09-29", "total": 671.5, "bills": 19, "charge": 55.1, "net": 671.5}, {"date": "2026-09-30", "total": 1077.8, "bills": 27, "charge": 88.6, "net": 1077.8}]}, "2026-10": {"month": "2026-10", "total_sales": 1481.3, "total_bills": 40, "aov": 37.03, "total_service_charge": 109.62, "days_count": 2, "daily_sales": [{"date": "2026-10-01", "total": 607.5, "bills": 15, "charge": 46.79, "net": 607.5}, {"date": "2026-10-02", "total": 873.8, "bills": 25, "charge": 62.83, "net": 873.8}]}};
+    const POS_SALES_HISTORY = {"2026-01": {"month": "2026-01", "total_sales": 43800.25, "total_bills": 1092, "aov": 40.11, "total_service_charge": 3663.44, "days_count": 31, "daily_sales": [{"date": "2026-01-01", "total": 1505.85, "bills": 33, "charge": 109.89, "net": 1505.85}, {"date": "2026-01-02", "total": 1524.9, "bills": 34, "charge": 127.23, "net": 1524.9}, {"date": "2026-01-03", "total": 2066.6, "bills": 40, "charge": 179.96, "net": 2066.6}, {"date": "2026-01-04", "total": 1565.7, "bills": 41, "charge": 133.7, "net": 1565.7}, {"date": "2026-01-05", "total": 1443.7, "bills": 35, "charge": 124.68, "net": 1443.7}, {"date": "2026-01-06", "total": 1178.6, "bills": 29, "charge": 90.07, "net": 1178.6}, {"date": "2026-01-07", "total": 662.1, "bills": 19, "charge": 56.24, "net": 662.1}, {"date": "2026-01-08", "total": 1017.7, "bills": 24, "charge": 75.3, "net": 1017.7}, {"date": "2026-01-09", "total": 1282.6, "bills": 33, "charge": 109.14, "net": 1282.6}, {"date": "2026-01-10", "total": 1935.95, "bills": 46, "charge": 168.06, "net": 1935.95}, {"date": "2026-01-11", "total": 1441.6, "bills": 35, "charge": 125.22, "net": 1441.6}, {"date": "2026-01-12", "total": 1283.05, "bills": 37, "charge": 109.69, "net": 1283.05}, {"date": "2026-01-13", "total": 987.15, "bills": 33, "charge": 81.9, "net": 987.15}, {"date": "2026-01-14", "total": 1624.4, "bills": 39, "charge": 140.38, "net": 1624.4}, {"date": "2026-01-15", "total": 1301.5, "bills": 30, "charge": 108.96, "net": 1301.5}, {"date": "2026-01-16", "total": 1692.9, "bills": 47, "charge": 142.93, "net": 1692.9}, {"date": "2026-01-17", "total": 1499.55, "bills": 43, "charge": 122.01, "net": 1499.55}, {"date": "2026-01-18", "total": 1698.85, "bills": 37, "charge": 147.0, "net": 1698.85}, {"date": "2026-01-19", "total": 849.4, "bills": 22, "charge": 71.2, "net": 849.4}, {"date": "2026-01-20", "total": 1606.75, "bills": 44, "charge": 134.44, "net": 1606.75}, {"date": "2026-01-21", "total": 1162.4, "bills": 31, "charge": 88.98, "net": 1162.4}, {"date": "2026-01-22", "total": 1036.85, "bills": 31, "charge": 90.04, "net": 1036.85}, {"date": "2026-01-23", "total": 1372.35, "bills": 35, "charge": 118.91, "net": 1372.35}, {"date": "2026-01-24", "total": 2327.75, "bills": 49, "charge": 200.99, "net": 2327.75}, {"date": "2026-01-25", "total": 2098.95, "bills": 53, "charge": 174.81, "net": 2098.95}, {"date": "2026-01-26", "total": 1272.1, "bills": 31, "charge": 98.6, "net": 1272.1}, {"date": "2026-01-27", "total": 869.7, "bills": 28, "charge": 75.27, "net": 869.7}, {"date": "2026-01-28", "total": 1355.2, "bills": 29, "charge": 114.03, "net": 1355.2}, {"date": "2026-01-29", "total": 949.35, "bills": 23, "charge": 78.65, "net": 949.35}, {"date": "2026-01-30", "total": 1518.25, "bills": 39, "charge": 121.13, "net": 1518.25}, {"date": "2026-01-31", "total": 1668.5, "bills": 42, "charge": 144.03, "net": 1668.5}]}, "2026-02": {"month": "2026-02", "total_sales": 29069.25, "total_bills": 701, "aov": 41.47, "total_service_charge": 2431.57, "days_count": 28, "daily_sales": [{"date": "2026-02-01", "total": 1377.25, "bills": 28, "charge": 113.07, "net": 1377.25}, {"date": "2026-02-02", "total": 1188.85, "bills": 28, "charge": 107.71, "net": 1188.85}, {"date": "2026-02-03", "total": 1098.65, "bills": 27, "charge": 87.72, "net": 1098.65}, {"date": "2026-02-04", "total": 1087.25, "bills": 29, "charge": 94.8, "net": 1087.25}, {"date": "2026-02-05", "total": 939.5, "bills": 26, "charge": 68.47, "net": 939.5}, {"date": "2026-02-06", "total": 1211.25, "bills": 30, "charge": 96.34, "net": 1211.25}, {"date": "2026-02-07", "total": 1723.15, "bills": 39, "charge": 149.63, "net": 1723.15}, {"date": "2026-02-08", "total": 1801.5, "bills": 39, "charge": 159.35, "net": 1801.5}, {"date": "2026-02-09", "total": 1206.15, "bills": 32, "charge": 94.44, "net": 1206.15}, {"date": "2026-02-10", "total": 754.8, "bills": 23, "charge": 63.94, "net": 754.8}, {"date": "2026-02-11", "total": 980.5, "bills": 23, "charge": 85.81, "net": 980.5}, {"date": "2026-02-12", "total": 922.6, "bills": 26, "charge": 78.66, "net": 922.6}, {"date": "2026-02-13", "total": 1771.0, "bills": 37, "charge": 148.06, "net": 1771.0}, {"date": "2026-02-14", "total": 1927.1, "bills": 42, "charge": 170.06, "net": 1927.1}, {"date": "2026-02-15", "total": 1164.75, "bills": 22, "charge": 103.1, "net": 1164.75}, {"date": "2026-02-16", "total": 257.35, "bills": 8, "charge": 15.96, "net": 257.35}, {"date": "2026-02-17", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-18", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-19", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-20", "total": 0.0, "bills": 0, "charge": 0.0, "net": 0.0}, {"date": "2026-02-21", "total": 1343.75, "bills": 34, "charge": 108.41, "net": 1343.75}, {"date": "2026-02-22", "total": 1068.1, "bills": 27, "charge": 95.57, "net": 1068.1}, {"date": "2026-02-23", "total": 1002.75, "bills": 25, "charge": 82.06, "net": 1002.75}, {"date": "2026-02-24", "total": 970.2, "bills": 25, "charge": 70.03, "net": 970.2}, {"date": "2026-02-25", "total": 1105.45, "bills": 29, "charge": 91.41, "net": 1105.45}, {"date": "2026-02-26", "total": 956.9, "bills": 29, "charge": 78.35, "net": 956.9}, {"date": "2026-02-27", "total": 1505.7, "bills": 32, "charge": 124.5, "net": 1505.7}, {"date": "2026-02-28", "total": 1704.75, "bills": 41, "charge": 144.12, "net": 1704.75}]}, "2026-03": {"month": "2026-03", "total_sales": 44574.15, "total_bills": 1142, "aov": 39.03, "total_service_charge": 3692.21, "days_count": 31, "daily_sales": [{"date": "2026-03-01", "total": 1985.75, "bills": 46, "charge": 173.51, "net": 1985.75}, {"date": "2026-03-02", "total": 1573.7, "bills": 40, "charge": 134.58, "net": 1573.7}, {"date": "2026-03-03", "total": 1138.05, "bills": 27, "charge": 98.79, "net": 1138.05}, {"date": "2026-03-04", "total": 1212.6, "bills": 28, "charge": 109.92, "net": 1212.6}, {"date": "2026-03-05", "total": 967.1, "bills": 28, "charge": 79.45, "net": 967.1}, {"date": "2026-03-06", "total": 1760.3, "bills": 43, "charge": 138.54, "net": 1760.3}, {"date": "2026-03-07", "total": 2455.45, "bills": 59, "charge": 204.59, "net": 2455.45}, {"date": "2026-03-08", "total": 1301.4, "bills": 34, "charge": 115.14, "net": 1301.4}, {"date": "2026-03-09", "total": 531.15, "bills": 18, "charge": 46.03, "net": 531.15}, {"date": "2026-03-10", "total": 1415.1, "bills": 34, "charge": 123.6, "net": 1415.1}, {"date": "2026-03-11", "total": 1241.85, "bills": 36, "charge": 99.6, "net": 1241.85}, {"date": "2026-03-12", "total": 1544.6, "bills": 38, "charge": 131.86, "net": 1544.6}, {"date": "2026-03-13", "total": 1106.5, "bills": 30, "charge": 94.82, "net": 1106.5}, {"date": "2026-03-14", "total": 1153.05, "bills": 33, "charge": 83.35, "net": 1153.05}, {"date": "2026-03-15", "total": 2178.25, "bills": 57, "charge": 179.29, "net": 2178.25}, {"date": "2026-03-16", "total": 1321.45, "bills": 40, "charge": 96.83, "net": 1321.45}, {"date": "2026-03-17", "total": 1219.8, "bills": 33, "charge": 97.64, "net": 1219.8}, {"date": "2026-03-18", "total": 1249.1, "bills": 39, "charge": 102.7, "net": 1249.1}, {"date": "2026-03-19", "total": 1263.6, "bills": 33, "charge": 108.03, "net": 1263.6}, {"date": "2026-03-20", "total": 1870.95, "bills": 45, "charge": 151.34, "net": 1870.95}, {"date": "2026-03-21", "total": 1847.15, "bills": 45, "charge": 142.75, "net": 1847.15}, {"date": "2026-03-22", "total": 1188.4, "bills": 34, "charge": 102.2, "net": 1188.4}, {"date": "2026-03-23", "total": 1873.5, "bills": 49, "charge": 154.83, "net": 1873.5}, {"date": "2026-03-24", "total": 1600.75, "bills": 34, "charge": 121.32, "net": 1600.75}, {"date": "2026-03-25", "total": 1039.0, "bills": 28, "charge": 86.36, "net": 1039.0}, {"date": "2026-03-26", "total": 919.2, "bills": 26, "charge": 80.5, "net": 919.2}, {"date": "2026-03-27", "total": 1722.0, "bills": 38, "charge": 147.12, "net": 1722.0}, {"date": "2026-03-28", "total": 1637.7, "bills": 42, "charge": 140.78, "net": 1637.7}, {"date": "2026-03-29", "total": 1182.2, "bills": 29, "charge": 99.32, "net": 1182.2}, {"date": "2026-03-30", "total": 2169.8, "bills": 49, "charge": 170.4, "net": 2169.8}, {"date": "2026-03-31", "total": 904.7, "bills": 27, "charge": 77.02, "net": 904.7}]}, "2026-04": {"month": "2026-04", "total_sales": 36099.4, "total_bills": 895, "aov": 40.33, "total_service_charge": 2931.46, "days_count": 30, "daily_sales": [{"date": "2026-04-01", "total": 1008.0, "bills": 26, "charge": 82.43, "net": 1008.0}, {"date": "2026-04-02", "total": 928.5, "bills": 23, "charge": 77.3, "net": 928.5}, {"date": "2026-04-03", "total": 1859.85, "bills": 48, "charge": 152.06, "net": 1859.85}, {"date": "2026-04-04", "total": 1858.65, "bills": 38, "charge": 157.18, "net": 1858.65}, {"date": "2026-04-05", "total": 1298.45, "bills": 31, "charge": 106.79, "net": 1298.45}, {"date": "2026-04-06", "total": 1052.35, "bills": 27, "charge": 84.53, "net": 1052.35}, {"date": "2026-04-07", "total": 1220.05, "bills": 34, "charge": 95.63, "net": 1220.05}, {"date": "2026-04-08", "total": 1407.95, "bills": 34, "charge": 113.41, "net": 1407.95}, {"date": "2026-04-09", "total": 819.85, "bills": 22, "charge": 68.49, "net": 819.85}, {"date": "2026-04-10", "total": 1584.05, "bills": 36, "charge": 131.6, "net": 1584.05}, {"date": "2026-04-11", "total": 1739.1, "bills": 45, "charge": 146.84, "net": 1739.1}, {"date": "2026-04-12", "total": 1585.4, "bills": 38, "charge": 129.59, "net": 1585.4}, {"date": "2026-04-13", "total": 1156.7, "bills": 27, "charge": 100.03, "net": 1156.7}, {"date": "2026-04-14", "total": 736.05, "bills": 23, "charge": 47.38, "net": 736.05}, {"date": "2026-04-15", "total": 871.0, "bills": 25, "charge": 70.64, "net": 871.0}, {"date": "2026-04-16", "total": 574.05, "bills": 17, "charge": 43.36, "net": 574.05}, {"date": "2026-04-17", "total": 1251.55, "bills": 31, "charge": 82.39, "net": 1251.55}, {"date": "2026-04-18", "total": 1663.7, "bills": 35, "charge": 136.59, "net": 1663.7}, {"date": "2026-04-19", "total": 1292.05, "bills": 29, "charge": 115.56, "net": 1292.05}, {"date": "2026-04-20", "total": 1147.75, "bills": 30, "charge": 96.7, "net": 1147.75}, {"date": "2026-04-21", "total": 877.0, "bills": 22, "charge": 65.04, "net": 877.0}, {"date": "2026-04-22", "total": 578.5, "bills": 16, "charge": 45.91, "net": 578.5}, {"date": "2026-04-23", "total": 1235.9, "bills": 33, "charge": 108.89, "net": 1235.9}, {"date": "2026-04-24", "total": 1389.2, "bills": 31, "charge": 108.51, "net": 1389.2}, {"date": "2026-04-25", "total": 1632.6, "bills": 42, "charge": 136.64, "net": 1632.6}, {"date": "2026-04-26", "total": 1196.3, "bills": 27, "charge": 97.95, "net": 1196.3}, {"date": "2026-04-27", "total": 661.1, "bills": 15, "charge": 57.75, "net": 661.1}, {"date": "2026-04-28", "total": 1009.65, "bills": 26, "charge": 81.42, "net": 1009.65}, {"date": "2026-04-29", "total": 1208.25, "bills": 31, "charge": 93.62, "net": 1208.25}, {"date": "2026-04-30", "total": 1255.85, "bills": 33, "charge": 97.23, "net": 1255.85}]}, "2026-05": {"month": "2026-05", "total_sales": 33535.6, "total_bills": 837, "aov": 40.07, "total_service_charge": 2714.64, "days_count": 31, "daily_sales": [{"date": "2026-05-01", "total": 1519.6, "bills": 33, "charge": 121.61, "net": 1519.6}, {"date": "2026-05-02", "total": 1294.2, "bills": 35, "charge": 98.14, "net": 1294.2}, {"date": "2026-05-03", "total": 1134.55, "bills": 27, "charge": 95.49, "net": 1134.55}, {"date": "2026-05-04", "total": 518.6, "bills": 17, "charge": 42.53, "net": 518.6}, {"date": "2026-05-05", "total": 630.75, "bills": 22, "charge": 39.42, "net": 630.75}, {"date": "2026-05-06", "total": 1002.6, "bills": 22, "charge": 84.22, "net": 1002.6}, {"date": "2026-05-07", "total": 735.25, "bills": 19, "charge": 56.61, "net": 735.25}, {"date": "2026-05-08", "total": 924.95, "bills": 26, "charge": 74.63, "net": 924.95}, {"date": "2026-05-09", "total": 1418.8, "bills": 29, "charge": 121.34, "net": 1418.8}, {"date": "2026-05-10", "total": 981.75, "bills": 25, "charge": 81.32, "net": 981.75}, {"date": "2026-05-11", "total": 1167.25, "bills": 23, "charge": 93.14, "net": 1167.25}, {"date": "2026-05-12", "total": 724.2, "bills": 20, "charge": 55.3, "net": 724.2}, {"date": "2026-05-13", "total": 757.95, "bills": 24, "charge": 57.71, "net": 757.95}, {"date": "2026-05-14", "total": 882.9, "bills": 22, "charge": 72.89, "net": 882.9}, {"date": "2026-05-15", "total": 992.0, "bills": 26, "charge": 69.2, "net": 992.0}, {"date": "2026-05-16", "total": 2026.7, "bills": 44, "charge": 177.34, "net": 2026.7}, {"date": "2026-05-17", "total": 1476.05, "bills": 33, "charge": 112.97, "net": 1476.05}, {"date": "2026-05-18", "total": 764.85, "bills": 20, "charge": 60.98, "net": 764.85}, {"date": "2026-05-19", "total": 849.3, "bills": 25, "charge": 68.18, "net": 849.3}, {"date": "2026-05-20", "total": 1074.05, "bills": 29, "charge": 94.21, "net": 1074.05}, {"date": "2026-05-21", "total": 688.7, "bills": 17, "charge": 62.24, "net": 688.7}, {"date": "2026-05-22", "total": 1158.3, "bills": 29, "charge": 102.15, "net": 1158.3}, {"date": "2026-05-23", "total": 1396.85, "bills": 36, "charge": 113.4, "net": 1396.85}, {"date": "2026-05-24", "total": 1195.7, "bills": 29, "charge": 102.93, "net": 1195.7}, {"date": "2026-05-25", "total": 862.9, "bills": 22, "charge": 72.16, "net": 862.9}, {"date": "2026-05-26", "total": 1216.5, "bills": 25, "charge": 93.84, "net": 1216.5}, {"date": "2026-05-27", "total": 1136.35, "bills": 29, "charge": 94.49, "net": 1136.35}, {"date": "2026-05-28", "total": 1081.95, "bills": 26, "charge": 90.43, "net": 1081.95}, {"date": "2026-05-29", "total": 1643.95, "bills": 42, "charge": 126.32, "net": 1643.95}, {"date": "2026-05-30", "total": 1366.9, "bills": 34, "charge": 110.54, "net": 1366.9}, {"date": "2026-05-31", "total": 911.2, "bills": 27, "charge": 68.91, "net": 911.2}]}, "2026-06": {"month": "2026-06", "total_sales": 34416.8, "total_bills": 858, "aov": 40.11, "total_service_charge": 2814.98, "days_count": 30, "daily_sales": [{"date": "2026-06-01", "total": 1234.45, "bills": 29, "charge": 106.91, "net": 1234.45}, {"date": "2026-06-02", "total": 1313.45, "bills": 30, "charge": 112.66, "net": 1313.45}, {"date": "2026-06-03", "total": 1400.65, "bills": 34, "charge": 101.51, "net": 1400.65}, {"date": "2026-06-04", "total": 1503.95, "bills": 35, "charge": 122.78, "net": 1503.95}, {"date": "2026-06-05", "total": 778.6, "bills": 21, "charge": 64.94, "net": 778.6}, {"date": "2026-06-06", "total": 1542.8, "bills": 42, "charge": 133.5, "net": 1542.8}, {"date": "2026-06-07", "total": 1487.75, "bills": 27, "charge": 132.2, "net": 1487.75}, {"date": "2026-06-08", "total": 777.1, "bills": 19, "charge": 58.29, "net": 777.1}, {"date": "2026-06-09", "total": 1182.1, "bills": 26, "charge": 97.47, "net": 1182.1}, {"date": "2026-06-10", "total": 1167.45, "bills": 28, "charge": 92.29, "net": 1167.45}, {"date": "2026-06-11", "total": 1193.65, "bills": 30, "charge": 93.97, "net": 1193.65}, {"date": "2026-06-12", "total": 1313.55, "bills": 37, "charge": 110.32, "net": 1313.55}, {"date": "2026-06-13", "total": 1243.9, "bills": 34, "charge": 98.68, "net": 1243.9}, {"date": "2026-06-14", "total": 1442.25, "bills": 35, "charge": 119.25, "net": 1442.25}, {"date": "2026-06-15", "total": 915.5, "bills": 25, "charge": 72.91, "net": 915.5}, {"date": "2026-06-16", "total": 1189.9, "bills": 28, "charge": 87.43, "net": 1189.9}, {"date": "2026-06-17", "total": 1233.95, "bills": 27, "charge": 111.81, "net": 1233.95}, {"date": "2026-06-18", "total": 1089.55, "bills": 32, "charge": 83.92, "net": 1089.55}, {"date": "2026-06-19", "total": 1112.15, "bills": 34, "charge": 87.96, "net": 1112.15}, {"date": "2026-06-20", "total": 1536.9, "bills": 42, "charge": 128.65, "net": 1536.9}, {"date": "2026-06-21", "total": 854.7, "bills": 24, "charge": 66.98, "net": 854.7}, {"date": "2026-06-22", "total": 687.95, "bills": 22, "charge": 52.71, "net": 687.95}, {"date": "2026-06-23", "total": 565.1, "bills": 16, "charge": 45.62, "net": 565.1}, {"date": "2026-06-24", "total": 773.25, "bills": 22, "charge": 64.09, "net": 773.25}, {"date": "2026-06-25", "total": 785.25, "bills": 22, "charge": 64.02, "net": 785.25}, {"date": "2026-06-26", "total": 1067.9, "bills": 25, "charge": 89.97, "net": 1067.9}, {"date": "2026-06-27", "total": 1681.45, "bills": 37, "charge": 149.7, "net": 1681.45}, {"date": "2026-06-28", "total": 1458.2, "bills": 29, "charge": 115.38, "net": 1458.2}, {"date": "2026-06-29", "total": 898.85, "bills": 22, "charge": 66.05, "net": 898.85}, {"date": "2026-06-30", "total": 984.55, "bills": 24, "charge": 83.01, "net": 984.55}]}, "2026-07": {"month": "2026-07", "total_sales": 33078.3, "total_bills": 797, "aov": 41.5, "total_service_charge": 2763.87, "days_count": 31, "daily_sales": [{"date": "2026-07-01", "total": 786.65, "bills": 22, "charge": 64.75, "net": 786.65}, {"date": "2026-07-02", "total": 739.45, "bills": 20, "charge": 56.69, "net": 739.45}, {"date": "2026-07-03", "total": 1309.4, "bills": 30, "charge": 109.31, "net": 1309.4}, {"date": "2026-07-04", "total": 1249.65, "bills": 34, "charge": 103.99, "net": 1249.65}, {"date": "2026-07-05", "total": 1172.1, "bills": 21, "charge": 106.57, "net": 1172.1}, {"date": "2026-07-06", "total": 639.35, "bills": 15, "charge": 49.74, "net": 639.35}, {"date": "2026-07-07", "total": 750.95, "bills": 19, "charge": 64.21, "net": 750.95}, {"date": "2026-07-08", "total": 776.4, "bills": 24, "charge": 53.5, "net": 776.4}, {"date": "2026-07-09", "total": 704.3, "bills": 18, "charge": 59.26, "net": 704.3}, {"date": "2026-07-10", "total": 1400.9, "bills": 32, "charge": 110.08, "net": 1400.9}, {"date": "2026-07-11", "total": 1932.25, "bills": 45, "charge": 154.72, "net": 1932.25}, {"date": "2026-07-12", "total": 1369.35, "bills": 34, "charge": 108.22, "net": 1369.35}, {"date": "2026-07-13", "total": 1143.4, "bills": 32, "charge": 93.23, "net": 1143.4}, {"date": "2026-07-14", "total": 756.8, "bills": 22, "charge": 60.15, "net": 756.8}, {"date": "2026-07-15", "total": 964.9, "bills": 22, "charge": 76.19, "net": 964.9}, {"date": "2026-07-16", "total": 695.7, "bills": 17, "charge": 55.85, "net": 695.7}, {"date": "2026-07-17", "total": 797.6, "bills": 21, "charge": 69.46, "net": 797.6}, {"date": "2026-07-18", "total": 1971.4, "bills": 39, "charge": 176.44, "net": 1971.4}, {"date": "2026-07-19", "total": 817.35, "bills": 18, "charge": 69.98, "net": 817.35}, {"date": "2026-07-20", "total": 1022.75, "bills": 27, "charge": 86.86, "net": 1022.75}, {"date": "2026-07-21", "total": 1453.75, "bills": 34, "charge": 122.09, "net": 1453.75}, {"date": "2026-07-22", "total": 833.65, "bills": 22, "charge": 72.09, "net": 833.65}, {"date": "2026-07-23", "total": 678.3, "bills": 18, "charge": 56.98, "net": 678.3}, {"date": "2026-07-24", "total": 884.2, "bills": 26, "charge": 66.44, "net": 884.2}, {"date": "2026-07-25", "total": 1956.85, "bills": 41, "charge": 166.94, "net": 1956.85}, {"date": "2026-07-26", "total": 1019.0, "bills": 23, "charge": 88.15, "net": 1019.0}, {"date": "2026-07-27", "total": 1160.2, "bills": 23, "charge": 105.48, "net": 1160.2}, {"date": "2026-07-28", "total": 978.3, "bills": 25, "charge": 85.52, "net": 978.3}, {"date": "2026-07-29", "total": 871.45, "bills": 19, "charge": 71.84, "net": 871.45}, {"date": "2026-07-30", "total": 909.65, "bills": 23, "charge": 80.18, "net": 909.65}, {"date": "2026-07-31", "total": 1332.3, "bills": 31, "charge": 118.96, "net": 1332.3}]}, "2026-08": {"month": "2026-08", "total_sales": 37490.75, "total_bills": 904, "aov": 41.47, "total_service_charge": 3146.97, "days_count": 31, "daily_sales": [{"date": "2026-08-01", "total": 1546.25, "bills": 40, "charge": 125.1, "net": 1546.25}, {"date": "2026-08-02", "total": 1358.2, "bills": 30, "charge": 118.88, "net": 1358.2}, {"date": "2026-08-03", "total": 938.75, "bills": 25, "charge": 80.17, "net": 938.75}, {"date": "2026-08-04", "total": 1180.8, "bills": 31, "charge": 92.78, "net": 1180.8}, {"date": "2026-08-05", "total": 656.5, "bills": 19, "charge": 51.32, "net": 656.5}, {"date": "2026-08-06", "total": 845.05, "bills": 19, "charge": 75.57, "net": 845.05}, {"date": "2026-08-07", "total": 1131.0, "bills": 29, "charge": 91.68, "net": 1131.0}, {"date": "2026-08-08", "total": 1591.15, "bills": 38, "charge": 140.07, "net": 1591.15}, {"date": "2026-08-09", "total": 2081.1, "bills": 41, "charge": 186.14, "net": 2081.1}, {"date": "2026-08-10", "total": 1281.0, "bills": 33, "charge": 103.53, "net": 1281.0}, {"date": "2026-08-11", "total": 1003.55, "bills": 27, "charge": 83.37, "net": 1003.55}, {"date": "2026-08-12", "total": 991.65, "bills": 24, "charge": 81.15, "net": 991.65}, {"date": "2026-08-13", "total": 919.35, "bills": 22, "charge": 83.57, "net": 919.35}, {"date": "2026-08-14", "total": 1000.45, "bills": 26, "charge": 78.29, "net": 1000.45}, {"date": "2026-08-15", "total": 2218.05, "bills": 51, "charge": 185.92, "net": 2218.05}, {"date": "2026-08-16", "total": 939.2, "bills": 24, "charge": 75.95, "net": 939.2}, {"date": "2026-08-17", "total": 1225.55, "bills": 29, "charge": 105.76, "net": 1225.55}, {"date": "2026-08-18", "total": 969.9, "bills": 22, "charge": 81.6, "net": 969.9}, {"date": "2026-08-19", "total": 937.85, "bills": 30, "charge": 71.18, "net": 937.85}, {"date": "2026-08-20", "total": 1238.3, "bills": 33, "charge": 102.73, "net": 1238.3}, {"date": "2026-08-21", "total": 1698.4, "bills": 41, "charge": 141.94, "net": 1698.4}, {"date": "2026-08-22", "total": 1229.3, "bills": 29, "charge": 103.39, "net": 1229.3}, {"date": "2026-08-23", "total": 1539.95, "bills": 31, "charge": 133.52, "net": 1539.95}, {"date": "2026-08-24", "total": 1501.9, "bills": 31, "charge": 128.15, "net": 1501.9}, {"date": "2026-08-25", "total": 925.1, "bills": 21, "charge": 81.66, "net": 925.1}, {"date": "2026-08-26", "total": 1017.65, "bills": 25, "charge": 82.97, "net": 1017.65}, {"date": "2026-08-27", "total": 462.1, "bills": 15, "charge": 30.1, "net": 462.1}, {"date": "2026-08-28", "total": 1095.0, "bills": 27, "charge": 88.66, "net": 1095.0}, {"date": "2026-08-29", "total": 1626.4, "bills": 35, "charge": 145.61, "net": 1626.4}, {"date": "2026-08-30", "total": 1088.8, "bills": 28, "charge": 92.4, "net": 1088.8}, {"date": "2026-08-31", "total": 1252.5, "bills": 28, "charge": 103.81, "net": 1252.5}]}, "2026-09": {"month": "2026-09", "total_sales": 20378.75, "total_bills": 520, "aov": 39.19, "total_service_charge": 1697.44, "days_count": 19, "daily_sales": [{"date": "2026-09-01", "total": 557.45, "bills": 18, "charge": 49.93, "net": 557.45}, {"date": "2026-09-02", "total": 921.65, "bills": 26, "charge": 79.37, "net": 921.65}, {"date": "2026-09-03", "total": 1407.1, "bills": 29, "charge": 127.91, "net": 1407.1}, {"date": "2026-09-04", "total": 983.5, "bills": 28, "charge": 79.0, "net": 983.5}, {"date": "2026-09-05", "total": 1494.8, "bills": 38, "charge": 118.71, "net": 1494.8}, {"date": "2026-09-06", "total": 1309.85, "bills": 34, "charge": 114.13, "net": 1309.85}, {"date": "2026-09-07", "total": 1085.5, "bills": 27, "charge": 92.13, "net": 1085.5}, {"date": "2026-09-08", "total": 940.75, "bills": 26, "charge": 79.47, "net": 940.75}, {"date": "2026-09-09", "total": 1001.85, "bills": 30, "charge": 87.29, "net": 1001.85}, {"date": "2026-09-10", "total": 954.3, "bills": 21, "charge": 71.06, "net": 954.3}, {"date": "2026-09-11", "total": 1114.8, "bills": 29, "charge": 95.15, "net": 1114.8}, {"date": "2026-09-12", "total": 1120.25, "bills": 26, "charge": 97.42, "net": 1120.25}, {"date": "2026-09-13", "total": 1569.2, "bills": 33, "charge": 137.7, "net": 1569.2}, {"date": "2026-09-14", "total": 685.05, "bills": 19, "charge": 55.86, "net": 685.05}, {"date": "2026-09-15", "total": 787.35, "bills": 19, "charge": 59.16, "net": 787.35}, {"date": "2026-09-16", "total": 1426.95, "bills": 37, "charge": 116.87, "net": 1426.95}, {"date": "2026-09-17", "total": 732.2, "bills": 17, "charge": 64.42, "net": 732.2}, {"date": "2026-09-18", "total": 887.1, "bills": 25, "charge": 60.47, "net": 887.1}, {"date": "2026-09-19", "total": 1399.1, "bills": 38, "charge": 111.39, "net": 1399.1}]}};
 
     let CATALOG_DATA = [];
 
     // 状态
-    let expensesList = [
+    let expensesList = [];
+    let customRevenueList = []; // 店主手动录入的线下团餐/非POS营收
+    let dayNotesMap = {};      // 每日营业备忘字典 { '2026-09-01': '早晚班交接正常' }
+    let suppliersList = [];
+    let deliveryList = [];
+    let activeMonth = "2026-09";
+
+    // 图表引用
+    let chartTrend = null;
+    let chartDonut = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initDates();
+      loadDataFromStorage();
+      loadLivePOSFromStorage();
+      renderAllViews();
+      initCharts();
+      lucide.createIcons();
+
+      // 页面加载完成后，自动在后台静默发起一次 POS 实时同步（获取最新当天与本月数据，无需用户点击）
+      setTimeout(() => {
+        fetchLivePOSSales('2026-09', false);
+      }, 500);
+    });
+
+    // 主题切换逻辑 (白天/暗夜)
+    function initTheme() {
+      const savedTheme = localStorage.getItem('laiwan_finance_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcons(savedTheme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('laiwan_finance_theme', nextTheme);
+      updateThemeIcons(nextTheme);
+
+      if (chartTrend && chartDonut) {
+        initCharts();
+      }
+    }
+
+    function updateThemeIcons(theme) {
+      const sun = document.getElementById('theme-icon-sun');
+      const moon = document.getElementById('theme-icon-moon');
+      if (!sun || !moon) return;
+      if (theme === 'dark') {
+        sun.classList.remove('hidden');
+        moon.classList.add('hidden');
+      } else {
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+      }
+    }
+
+    function initDates() {
+      const today = new Date().toISOString().split('T')[0];
+      const liveElem = document.getElementById('live-datetime');
+      if (liveElem) liveElem.innerText = today;
+      const inpExp = document.getElementById('inp-exp-date');
+      if (inpExp) inpExp.value = today;
+      const inpRev = document.getElementById('inp-rev-date');
+      if (inpRev) inpRev.value = today;
+    }
+
+    // 数据载入：开支、备忘、供应商对账
+    function loadDataFromStorage() {
+            // 0. POS 销售数据浏览器缓存 (保持一键同步的最新数据)
+      const cachedPos = localStorage.getItem('laiwan_pos_sales_cache');
+      if (cachedPos) {
+        try {
+          const parsedPos = JSON.parse(cachedPos);
+          if (parsedPos && typeof parsedPos === 'object') {
+            Object.assign(POS_SALES_HISTORY, parsedPos);
+          }
+        } catch(e) {}
+      }
+
+      // 1. 杂支
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v2');
+      if (localExp) {
+        try { expensesList = JSON.parse(localExp); } catch(e) {}
+      }
+      if (!expensesList || expensesList.length === 0) {
+        expensesList = [
           { id: 'exp_rent_2026-01', date: '2026-01-01', category: '店铺租金', name: '2026年01月门市租金', amount: 7000.0, payment: 'Maybank', ref: 'RENT-2026-01', handled: '老板', notes: '1月份门市租金 (5月前旧租金 RM7,000)' },
           { id: 'exp_rent_2026-02', date: '2026-02-01', category: '店铺租金', name: '2026年02月门市租金', amount: 7000.0, payment: 'Maybank', ref: 'RENT-2026-02', handled: '老板', notes: '2月份门市租金 (5月前旧租金 RM7,000)' },
           { id: 'exp_rent_2026-03', date: '2026-03-01', category: '店铺租金', name: '2026年03月门市租金', amount: 7000.0, payment: 'Maybank', ref: 'RENT-2026-03', handled: '老板', notes: '3月份门市租金 (5月前旧租金 RM7,000)' },
@@ -1626,6 +1712,25 @@ function doPost(e) {
           { id: 'exp_sal_a_2026-10', date: '2026-10-28', category: '员工薪资与福利', name: '2026年10月员工A薪资', amount: 1900.0, payment: '银行转账', ref: 'PAY-EMPA-2026-10', handled: '店长', notes: '固定月薪 RM 1,900' },
           { id: 'exp_sal_b_2026-10', date: '2026-10-28', category: '员工薪资与福利', name: '2026年10月员工B薪资', amount: 2000.0, payment: '银行转账', ref: 'PAY-EMPB-2026-10', handled: '店长', notes: '固定月薪 RM 2,000' },
           { id: 'exp_sal_c_2026-10', date: '2026-10-28', category: '员工薪资与福利', name: '2026年10月员工C薪资', amount: 2400.0, payment: '银行转账', ref: 'PAY-EMPC-2026-10', handled: '店长', notes: '固定月薪 RM 2,400' },
+          { id: 'exp_fp-comm-202601', date: '2026-01-31', category: '外卖平台佣金抽成', name: '1月份 Foodpanda 平台 30% 佣金扣款', amount: 1994.25, payment: '平台账单扣除', ref: 'FP-COMM-202601', handled: 'Foodpanda', notes: 'Foodpanda 325 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202601', date: '2026-01-31', category: '杂项维修与维护', name: '1月份 Foodpanda 折扣与营销扣款', amount: 3381.63, payment: '平台账单扣除', ref: 'FP-MKTG-202601', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-202602', date: '2026-02-28', category: '外卖平台佣金抽成', name: '2月份 Foodpanda 平台 30% 佣金扣款', amount: 1764.42, payment: '平台账单扣除', ref: 'FP-COMM-202602', handled: 'Foodpanda', notes: 'Foodpanda 269 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202602', date: '2026-02-28', category: '杂项维修与维护', name: '2月份 Foodpanda 折扣与营销扣款', amount: 2998.23, payment: '平台账单扣除', ref: 'FP-MKTG-202602', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-202603', date: '2026-03-31', category: '外卖平台佣金抽成', name: '3月份 Foodpanda 平台 30% 佣金扣款', amount: 2446.36, payment: '平台账单扣除', ref: 'FP-COMM-202603', handled: 'Foodpanda', notes: 'Foodpanda 379 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202603', date: '2026-03-31', category: '杂项维修与维护', name: '3月份 Foodpanda 折扣与营销扣款', amount: 4172.64, payment: '平台账单扣除', ref: 'FP-MKTG-202603', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-202604', date: '2026-04-30', category: '外卖平台佣金抽成', name: '4月份 Foodpanda 平台 30% 佣金扣款', amount: 2025.05, payment: '平台账单扣除', ref: 'FP-COMM-202604', handled: 'Foodpanda', notes: 'Foodpanda 322 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202604', date: '2026-04-30', category: '杂项维修与维护', name: '4月份 Foodpanda 折扣与营销扣款', amount: 3241.85, payment: '平台账单扣除', ref: 'FP-MKTG-202604', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-202605', date: '2026-05-31', category: '外卖平台佣金抽成', name: '5月份 Foodpanda 平台 30% 佣金扣款', amount: 2168.3, payment: '平台账单扣除', ref: 'FP-COMM-202605', handled: 'Foodpanda', notes: 'Foodpanda 342 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202605', date: '2026-05-31', category: '杂项维修与维护', name: '5月份 Foodpanda 折扣与营销扣款', amount: 3550.31, payment: '平台账单扣除', ref: 'FP-MKTG-202605', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-202606', date: '2026-06-30', category: '外卖平台佣金抽成', name: '6月份 Foodpanda 平台 30% 佣金扣款', amount: 1896.64, payment: '平台账单扣除', ref: 'FP-COMM-202606', handled: 'Foodpanda', notes: 'Foodpanda 309 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202606', date: '2026-06-30', category: '杂项维修与维护', name: '6月份 Foodpanda 折扣与营销扣款', amount: 3018.59, payment: '平台账单扣除', ref: 'FP-MKTG-202606', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-202607', date: '2026-07-31', category: '外卖平台佣金抽成', name: '7月份 Foodpanda 平台 30% 佣金扣款', amount: 1776.17, payment: '平台账单扣除', ref: 'FP-COMM-202607', handled: 'Foodpanda', notes: 'Foodpanda 300 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202607', date: '2026-07-31', category: '杂项维修与维护', name: '7月份 Foodpanda 折扣与营销扣款', amount: 2764.01, payment: '平台账单扣除', ref: 'FP-MKTG-202607', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-202608', date: '2026-08-31', category: '外卖平台佣金抽成', name: '8月份 Foodpanda 平台 30% 佣金扣款', amount: 1816.89, payment: '平台账单扣除', ref: 'FP-COMM-202608', handled: 'Foodpanda', notes: 'Foodpanda 282 单平台佣金结算' },
+          { id: 'exp_fp-mktg-202608', date: '2026-08-31', category: '杂项维修与维护', name: '8月份 Foodpanda 折扣与营销扣款', amount: 2851.66, payment: '平台账单扣除', ref: 'FP-MKTG-202608', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+          { id: 'exp_fp-comm-09', date: '2026-09-29', category: '外卖平台佣金抽成', name: '9月份 Foodpanda 平台 30% 佣金扣款', amount: 1694.69, payment: '平台账单扣除', ref: 'FP-COMM-09', handled: 'Foodpanda', notes: 'Foodpanda 292 单平台 30% 基础佣金结算' },
+          { id: 'exp_fp-mktg-09', date: '2026-09-29', category: '打包与外卖耗材', name: '9月份 Foodpanda 平台曝光营销与广告费', amount: 1113.81, payment: '平台账单扣除', ref: 'FP-MKTG-09', handled: 'Foodpanda', notes: 'Foodpanda 首页曝光、搜索优先与活动营销扣款' },
+          { id: 'exp_fp-disc-09', date: '2026-09-29', category: '杂项维修与维护', name: '9月份 Foodpanda 商家自付折价券补贴', amount: 1679.34, payment: '平台账单扣除', ref: 'FP-DISC-09', handled: 'Foodpanda', notes: 'Foodpanda 平台内店铺自营满减折价券' },
           { id: 'exp_water_09', date: '2026-09-02', category: '水费', name: '8月份水费账单', amount: 185.4, payment: 'JomPAY', ref: 'SAJ-89102', handled: '店长', notes: '门市用水' },
           { id: 'exp_tnb_09', date: '2026-09-03', category: '电费', name: '8月份商业电费', amount: 920.8, payment: 'TNB Online', ref: 'TNB-229104', handled: '店长', notes: '长时间熬汤电费' },
           { id: 'exp_gas_09', date: '2026-09-03', category: '煤气费', name: '后厨商用煤气4桶', amount: 280.0, payment: '现金', ref: 'GAS-1029', handled: '主管', notes: 'RM 70/桶' },
@@ -1663,7 +1768,7 @@ function doPost(e) {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v5');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v2');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -1686,118 +1791,14 @@ function doPost(e) {
             id: 'del_2',
             month: '2026-09',
             platform: 'Foodpanda',
-            gross: 8839.90,
-            commission: 1694.69,
-            adsPromo: 2793.15,
-            adjustments: 6.12,
-            net: 4138.60,
-            rate: '53.2%',
-            ref: 'FP-INV-202609',
-            notes: 'Foodpanda 9月官方发票结单 (292单 | 账画RM8,839.90 | 抽成RM1,694.69 | 推广与折扣RM2,793.15 | 到手净打款RM4,138.60)'
-          },
-          {
-            id: 'del_fp_202601',
-            month: '2026-01',
-            platform: 'Foodpanda',
-            gross: 9995.60,
-            commission: 1994.25,
-            adsPromo: 3381.63,
-            adjustments: 11.15,
-            net: 4367.57,
-            rate: '53.8%',
-            ref: 'FP-INV-202601',
-            notes: 'Foodpanda 1月官方发票结单 (325单 | 账面RM9,995.60 | 抽成RM1,994.25 | 折扣与营销RM3,381.63 | 补贴RM11.15 | 净到账RM4,367.57)'
-          },
-          {
-            id: 'del_fp_202602',
-            month: '2026-02',
-            platform: 'Foodpanda',
-            gross: 8800.20,
-            commission: 1764.42,
-            adsPromo: 2998.23,
-            adjustments: 0.00,
-            net: 3786.06,
-            rate: '54.1%',
-            ref: 'FP-INV-202602',
-            notes: 'Foodpanda 2月官方发票结单 (269单 | 账面RM8,800.20 | 抽成RM1,764.42 | 折扣与营销RM2,998.23 | 净到账RM3,786.06)'
-          },
-          {
-            id: 'del_fp_202603',
-            month: '2026-03',
-            platform: 'Foodpanda',
-            gross: 12405.40,
-            commission: 2446.36,
-            adsPromo: 4172.64,
-            adjustments: 8.50,
-            net: 5454.50,
-            rate: '53.4%',
-            ref: 'FP-INV-202603',
-            notes: 'Foodpanda 3月官方发票结单 (379单 | 账面RM12,405.40 | 抽成RM2,446.36 | 折扣与营销RM4,172.64 | 补贴RM8.50 | 净到账RM5,454.50)'
-          },
-          {
-            id: 'del_fp_202604',
-            month: '2026-04',
-            platform: 'Foodpanda',
-            gross: 9968.00,
-            commission: 2025.05,
-            adsPromo: 3241.85,
-            adjustments: 7.14,
-            net: 4428.21,
-            rate: '52.8%',
-            ref: 'FP-INV-202604',
-            notes: 'Foodpanda 4月官方发票结单 (322单 | 账面RM9,968.00 | 抽成RM2,025.05 | 折扣与营销RM3,241.85 | 补贴RM7.14 | 净到账RM4,428.21)'
-          },
-          {
-            id: 'del_fp_202605',
-            month: '2026-05',
-            platform: 'Foodpanda',
-            gross: 10794.10,
-            commission: 2168.30,
-            adsPromo: 3550.31,
-            adjustments: 0.00,
-            net: 4762.86,
-            rate: '53.0%',
-            ref: 'FP-INV-202605',
-            notes: 'Foodpanda 5月官方发票结单 (342单 | 账面RM10,794.10 | 抽成RM2,168.30 | 折扣与营销RM3,550.31 | 净到账RM4,762.86)'
-          },
-          {
-            id: 'del_fp_202606',
-            month: '2026-06',
-            platform: 'Foodpanda',
-            gross: 9462.30,
-            commission: 1896.64,
-            adsPromo: 3018.59,
-            adjustments: 0.00,
-            net: 4288.86,
-            rate: '52.0%',
-            ref: 'FP-INV-202606',
-            notes: 'Foodpanda 6月官方发票结单 (309单 | 账面RM9,462.30 | 抽成RM1,896.64 | 折扣与营销RM3,018.59 | 净到账RM4,288.86)'
-          },
-          {
-            id: 'del_fp_202607',
-            month: '2026-07',
-            platform: 'Foodpanda',
-            gross: 9086.10,
-            commission: 1776.17,
-            adsPromo: 2764.01,
-            adjustments: 9.56,
-            net: 4328.97,
-            rate: '50.0%',
-            ref: 'FP-INV-202607',
-            notes: 'Foodpanda 7月官方发票结单 (300单 | 账面RM9,086.10 | 抽成RM1,776.17 | 折扣与营销RM2,764.01 | 补贴RM9.56 | 净到账RM4,328.97)'
-          },
-          {
-            id: 'del_fp_202608',
-            month: '2026-08',
-            platform: 'Foodpanda',
-            gross: 9330.30,
-            commission: 1816.89,
-            adsPromo: 2851.66,
-            adjustments: 19.86,
-            net: 4452.69,
-            rate: '50.0%',
-            ref: 'FP-INV-202608',
-            notes: 'Foodpanda 8月官方发票结单 (282单 | 账面RM9,330.30 | 抽成RM1,816.89 | 折扣与营销RM2,851.66 | 补贴RM19.86 | 净到账RM4,452.69)'
+            gross: 4800.0,
+            commission: 1440.0,
+            adsPromo: 150.0,
+            adjustments: 0.0,
+            net: 3210.0,
+            rate: '33.1%',
+            ref: 'FP-STMT-202609',
+            notes: 'Panda 9月结单 (抽佣30% + 促销广告补贴RM150)'
           },
           {
             id: 'del_3',
@@ -1818,7 +1819,7 @@ function doPost(e) {
     }
 
     function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v7', JSON.stringify(expensesList));
+      localStorage.setItem('laiwan_finance_expenses_v2', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
@@ -1830,7 +1831,7 @@ function doPost(e) {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v5', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v2', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
@@ -1965,7 +1966,7 @@ function doPost(e) {
       const tbody = document.getElementById('tbody-monthly-summary');
       tbody.innerHTML = '';
 
-      const monthsList = ['2026-10', '2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02', '2026-01'];
+      const monthsList = ['2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02', '2026-01'];
 
       monthsList.forEach(mKey => {
         const mData = POS_SALES_HISTORY[mKey];
@@ -2782,7 +2783,7 @@ function doPost(e) {
       const canvasTrend = document.getElementById('chart-monthly-trend');
       if (canvasTrend) {
         const ctxTrend = canvasTrend.getContext('2d');
-        const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10'];
+        const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'];
         const labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月 (实时)'];
         
         const salesData = months.map(m => POS_SALES_HISTORY[m]?.total_sales || 0);
@@ -2888,7 +2889,7 @@ function doPost(e) {
     // 直连 OPTIMY POS API 实时拉取最新每日营收流水 (浏览器纯前端直连 · 零后台 · 零Token消耗)
     // -------------------------------------------------------------
     async function fetchLivePOSSales(targetMonth = null, showToast = false) {
-      const monthToFetch = targetMonth || activeMonth || "2026-10";
+      const monthToFetch = targetMonth || activeMonth || "2026-09";
       
       const spinner1 = document.getElementById('refresh-spinner');
       const spinner2 = document.getElementById('pos-sync-icon');
@@ -2918,7 +2919,7 @@ function doPost(e) {
         params.append('branch_id', '118');
         params.append('month', monthToFetch);
 
-        const resp = await fetch('https://api.optimy.com.my/apiv3/report/index.php', {
+        const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
           body: params.toString()
@@ -3029,7 +3030,7 @@ function doPost(e) {
 
     // 全年度逐月批量直连拉取
     async function fetchAllMonthsLive(showToast = false) {
-      const months = ['2026-10', '2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02', '2026-01'];
+      const months = ['2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04', '2026-03', '2026-02', '2026-01'];
       let updatedCount = 0;
       for (const m of months) {
         try {
@@ -3040,7 +3041,7 @@ function doPost(e) {
           params.append('month', m);
 
           try {
-            const resp = await fetch('https://api.optimy.com.my/apiv3/report/index.php', {
+            const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
               method: 'POST',
               headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
               body: params.toString()
@@ -3084,7 +3085,7 @@ function doPost(e) {
       renderAllViews();
       initCharts();
       if (showToast) {
-        alert(`✅ 已完成 2026 全年 9 个月份 POS 数据同步！共同步 ${updatedCount} 个月份的真实流水。`);
+        alert(`✅ 已完成 2026 全年 9 个月份 POS 数据同步！共拉取 ${updatedCount} 个月份的真实流水。`);
       }
     }
 
@@ -3330,7 +3331,7 @@ function doPost(e) {
       try {
         // 1. 组装每日营收流水 (包含 2026年 1~9月全部 262 天 POS 真实历史 + 线下营收)
         const salesRows = [];
-        const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10'];
+        const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'];
         months.forEach(m => {
           const mData = POS_SALES_HISTORY[m];
           if (mData && mData.daily_sales) {
