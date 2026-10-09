@@ -243,7 +243,8 @@
           <div class="flex items-center gap-2 w-full md:w-auto">
             <span class="text-xs font-medium whitespace-nowrap" style="color: var(--text-secondary);">月份切换:</span>
             <select id="month-picker" onchange="onMonthChange(this.value)" class="text-xs border rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
-              <option value="2026-09" selected>2026年 9月 (当月实时 · POS已记17天)</option>
+              <option value="2026-10" selected>2026年 10月 (当月实时 · POS直连)</option>
+              <option value="2026-09">2026年 9月 (POS 30天真实全量流水)</option>
               <option value="2026-08">2026年 8月 (POS 31天真实流水)</option>
               <option value="2026-07">2026年 7月 (POS 31天真实流水)</option>
               <option value="2026-06">2026年 6月 (POS 30天真实流水)</option>
@@ -1580,7 +1581,7 @@ function doPost(e) {
     let dayNotesMap = {};      // 每日营业备忘字典 { '2026-09-01': '早晚班交接正常' }
     let suppliersList = [];
     let deliveryList = [];
-    let activeMonth = "2026-09";
+    let activeMonth = "2026-10";
 
     // 图表引用
     let chartTrend = null;
@@ -1597,7 +1598,7 @@ function doPost(e) {
 
       // 页面加载完成后，自动在后台静默发起一次 POS 实时同步（获取最新当天与本月数据，无需用户点击）
       setTimeout(() => {
-        fetchLivePOSSales('2026-09', false);
+        fetchLivePOSSales('2026-10', false);
       }, 500);
     });
 
@@ -1661,7 +1662,7 @@ function doPost(e) {
       }
 
       // 1. 杂支
-      const localExp = localStorage.getItem('laiwan_finance_expenses_v9');
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v10');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
@@ -1773,7 +1774,7 @@ function doPost(e) {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v9');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v10');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -1826,8 +1827,8 @@ function doPost(e) {
     
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租 (RM 7000/RM 7500) 与 4名员工薪资 (RM 10,300) 吗？")) {
-        localStorage.removeItem('laiwan_finance_expenses_v9');
-        localStorage.removeItem('laiwan_finance_delivery_v9');
+        localStorage.removeItem('laiwan_finance_expenses_v10');
+        localStorage.removeItem('laiwan_finance_delivery_v10');
         expensesList = [];
         deliveryList = [];
         loadDataFromStorage();
@@ -1837,7 +1838,7 @@ function doPost(e) {
     }
 
 function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v9', JSON.stringify(expensesList));
+      localStorage.setItem('laiwan_finance_expenses_v10', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
@@ -1849,7 +1850,7 @@ function saveExpensesToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v9', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v10', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
@@ -2907,7 +2908,7 @@ function saveExpensesToStorage() {
     // 直连 OPTIMY POS API 实时拉取最新每日营收流水 (浏览器纯前端直连 · 零后台 · 零Token消耗)
     // -------------------------------------------------------------
     async function fetchLivePOSSales(targetMonth = null, showToast = false) {
-      const monthToFetch = targetMonth || activeMonth || "2026-09";
+      const monthToFetch = targetMonth || activeMonth || "2026-10";
       
       const spinner1 = document.getElementById('refresh-spinner');
       const spinner2 = document.getElementById('pos-sync-icon');
@@ -2937,7 +2938,7 @@ function saveExpensesToStorage() {
         params.append('branch_id', '118');
         params.append('month', monthToFetch);
 
-        const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
+        const resp = await fetch('https://api.optimy.com.my/apiv3/report/index.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
           body: params.toString()
@@ -3059,7 +3060,7 @@ function saveExpensesToStorage() {
           params.append('month', m);
 
           try {
-            const resp = await fetch('https://api.optimy.com.my/apiv2/report/index.php', {
+            const resp = await fetch('https://api.optimy.com.my/apiv3/report/index.php', {
               method: 'POST',
               headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
               body: params.toString()
