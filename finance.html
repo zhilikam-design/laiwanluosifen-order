@@ -476,6 +476,7 @@
           <button onclick="applyPresetExpense('gas')" class="text-xs px-3 py-2 rounded-xl border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
             🔥 煤气4桶 RM280
           </button>
+          <button onclick="resetDefaultExpensesToLatest()" class="text-xs px-3 py-2 rounded-xl border font-bold text-amber-500 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20 transition flex items-center gap-1" title="一键重置载入最新 7500 房租与员工薪资">🔄 重置载入最新房租薪资</button>
           <button onclick="openAddExpenseModal()" class="text-xs px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-md shadow-rose-600/30 flex items-center gap-1.5 transition">
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>记一笔开支</span>
@@ -1643,7 +1644,11 @@ function doPost(e) {
     }
 
     // 数据载入：开支、备忘、供应商对账
-    function loadDataFromStorage() {
+        function loadDataFromStorage() {
+      // 自动清除旧版本浏览器缓存，强行载入最新真实的 房租(7000/7500) 与 员工薪资(10300) 数据
+      ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8'].forEach(k => localStorage.removeItem(k));
+
             // 0. POS 销售数据浏览器缓存 (保持一键同步的最新数据)
       const cachedPos = localStorage.getItem('laiwan_pos_sales_cache');
       if (cachedPos) {
@@ -1656,7 +1661,7 @@ function doPost(e) {
       }
 
       // 1. 杂支
-      const localExp = localStorage.getItem('laiwan_finance_expenses_v2');
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v9');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
@@ -1768,7 +1773,7 @@ function doPost(e) {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v2');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v9');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -1818,8 +1823,21 @@ function doPost(e) {
       }
     }
 
-    function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v2', JSON.stringify(expensesList));
+    
+    function resetDefaultExpensesToLatest() {
+      if (confirm("确定重置载入最新的房租 (RM 7000/RM 7500) 与 4名员工薪资 (RM 10,300) 吗？")) {
+        localStorage.removeItem('laiwan_finance_expenses_v9');
+        localStorage.removeItem('laiwan_finance_delivery_v9');
+        expensesList = [];
+        deliveryList = [];
+        loadDataFromStorage();
+        renderAllViews();
+        alert("✅ 已成功载入最新 7500 房租与员工薪资台账！");
+      }
+    }
+
+function saveExpensesToStorage() {
+      localStorage.setItem('laiwan_finance_expenses_v9', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
@@ -1831,7 +1849,7 @@ function doPost(e) {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v2', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v9', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
