@@ -433,15 +433,16 @@
           <table class="w-full text-left text-xs sm:text-sm">
             <thead class="uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-muted);">
               <tr>
-                <th class="py-3 px-4">核算月份</th>
-                <th class="py-3 px-4 font-bold text-emerald-600 dark:text-emerald-400">POS 实收营业额</th>
-                <th class="py-3 px-4">订单单量</th>
-                <th class="py-3 px-4">客单价 (AOV)</th>
-                <th class="py-3 px-4">服务费 (10%)</th>
-                <th class="py-3 px-4" style="color: var(--accent-amber);">食材原料成本 (COGS)</th>
-                <th class="py-3 px-4" style="color: var(--accent-rose);">运营日常杂支 (OPEX)</th>
-                <th class="py-3 px-4 font-black" style="color: var(--accent-emerald);">净利润</th>
-                <th class="py-3 px-4 text-right">数据状态</th>
+                <th class="py-3 px-3">核算月份</th>
+                <th class="py-3 px-3">POS 柜台实收</th>
+                <th class="py-3 px-3 font-bold text-sky-500">外卖到手实收</th>
+                <th class="py-3 px-3 font-black text-emerald-500 dark:text-emerald-400">全店总营业额</th>
+                <th class="py-3 px-3">全店总单量</th>
+                <th class="py-3 px-3">综合客单价</th>
+                <th class="py-3 px-3" style="color: var(--accent-amber);">食材成本 (COGS)</th>
+                <th class="py-3 px-3" style="color: var(--accent-rose);">运营杂支 (OPEX)</th>
+                <th class="py-3 px-3 font-black" style="color: var(--accent-emerald);">全店净利润</th>
+                <th class="py-3 px-3 text-right">数据状态</th>
               </tr>
             </thead>
             <tbody id="tbody-monthly-summary" class="divide-y mono" style="border-color: var(--border-subtle);">
@@ -1662,12 +1663,14 @@ function doPost(e) {
       }
 
       // 1. 杂支
-      const localExp = localStorage.getItem('laiwan_finance_expenses_v10');
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v11');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
       if (!expensesList || expensesList.length === 0) {
         expensesList = [
+          { id: 'exp_grab_comm_202601', date: '2026-01-31', category: '外卖平台佣金抽成', name: '1月份 GrabFood 平台 30% 佣金扣款', amount: 5841.25, payment: '平台账单扣除', ref: 'GF-COMM-202601', handled: 'Grab', notes: 'GrabFood 560 单平台佣金结算 (RM5,841.25)' },
+          { id: 'exp_grab_mktg_202601', date: '2026-01-31', category: '杂项维修与维护', name: '1月份 GrabFood 商家自付折扣与营销扣款', amount: 2046.51, payment: '平台账单扣除', ref: 'GF-MKTG-202601', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM1528.55 + 营销成功费RM491.37 + HotDeals广告RM26.59' },
           { id: 'exp_rent_2026-01', date: '2026-01-01', category: '店铺租金', name: '2026年01月门市租金', amount: 7000.0, payment: 'Maybank', ref: 'RENT-2026-01', handled: '老板', notes: '1月份门市租金 (5月前旧租金 RM7,000)' },
           { id: 'exp_rent_2026-02', date: '2026-02-01', category: '店铺租金', name: '2026年02月门市租金', amount: 7000.0, payment: 'Maybank', ref: 'RENT-2026-02', handled: '老板', notes: '2月份门市租金 (5月前旧租金 RM7,000)' },
           { id: 'exp_rent_2026-03', date: '2026-03-01', category: '店铺租金', name: '2026年03月门市租金', amount: 7000.0, payment: 'Maybank', ref: 'RENT-2026-03', handled: '老板', notes: '3月份门市租金 (5月前旧租金 RM7,000)' },
@@ -1774,12 +1777,25 @@ function doPost(e) {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v10');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v11');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
       if (!deliveryList || deliveryList.length === 0) {
         deliveryList = [
+          {
+            id: 'del_grab_202601',
+            month: '2026-01',
+            platform: 'GrabFood',
+            gross: 19762.41,
+            commission: 5841.25,
+            adsPromo: 2046.51,
+            adjustments: 75.21,
+            net: 11949.86,
+            rate: '39.5%',
+            ref: 'GF-STMT-202601',
+            notes: 'GrabFood 1月官方周报结单 (560单 | 账面RM19,762.41 | 抽佣RM5,841.25 | 折扣与营销RM2,046.51 | 补偿RM75.21 | 净打款RM11,949.86)'
+          },
           {
             id: 'del_1',
             month: '2026-09',
@@ -1827,8 +1843,8 @@ function doPost(e) {
     
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租 (RM 7000/RM 7500) 与 4名员工薪资 (RM 10,300) 吗？")) {
-        localStorage.removeItem('laiwan_finance_expenses_v10');
-        localStorage.removeItem('laiwan_finance_delivery_v10');
+        localStorage.removeItem('laiwan_finance_expenses_v11');
+        localStorage.removeItem('laiwan_finance_delivery_v11');
         expensesList = [];
         deliveryList = [];
         loadDataFromStorage();
@@ -1838,7 +1854,7 @@ function doPost(e) {
     }
 
 function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v10', JSON.stringify(expensesList));
+      localStorage.setItem('laiwan_finance_expenses_v11', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
@@ -1850,7 +1866,7 @@ function saveExpensesToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v10', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v11', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
