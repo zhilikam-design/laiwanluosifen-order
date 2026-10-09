@@ -1648,8 +1648,8 @@ function doPost(e) {
     // 数据载入：开支、备忘、供应商对账
         function loadDataFromStorage() {
       // 自动清除旧版本浏览器缓存，强行载入最新真实的 房租(7000/7500) 与 员工薪资(10300) 数据
-      ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12'].forEach(k => localStorage.removeItem(k));
-      ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8','laiwan_finance_delivery_v11','laiwan_finance_delivery_v12'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12','laiwan_finance_expenses_v13'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8','laiwan_finance_delivery_v11','laiwan_finance_delivery_v12','laiwan_finance_delivery_v13'].forEach(k => localStorage.removeItem(k));
 
             // 0. POS 销售数据浏览器缓存 (保持一键同步的最新数据)
       const cachedPos = localStorage.getItem('laiwan_pos_sales_cache');
@@ -1663,7 +1663,7 @@ function doPost(e) {
       }
 
       // 1. 杂支
-      const localExp = localStorage.getItem('laiwan_finance_expenses_v13');
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v14');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
@@ -1731,10 +1731,12 @@ function doPost(e) {
           { id: 'exp_grab_mktg_202603', date: '2026-03-31', category: '杂项维修与维护', name: '3月份 GrabFood 商家自付折扣与营销扣款', amount: 753.27, payment: '平台账单扣除', ref: 'GF-MKTG-202603', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM572.04 + 营销成功费RM169.27 + HotDeals广告RM11.96' },
           { id: 'exp_fp-comm-202603', date: '2026-03-31', category: '外卖平台佣金抽成', name: '3月份 Foodpanda 平台 30% 佣金扣款', amount: 2446.36, payment: '平台账单扣除', ref: 'FP-COMM-202603', handled: 'Foodpanda', notes: 'Foodpanda 379 单平台佣金结算' },
           { id: 'exp_fp-mktg-202603', date: '2026-03-31', category: '杂项维修与维护', name: '3月份 Foodpanda 折扣与营销扣款', amount: 4172.64, payment: '平台账单扣除', ref: 'FP-MKTG-202603', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
-                    { id: 'exp_grab_comm_202604', date: '2026-04-12', category: '外卖平台佣金抽成', name: '4月份(上半月) GrabFood 平台佣金扣款', amount: 824.05, payment: '平台账单扣除', ref: 'GF-COMM-202604', handled: 'Grab', notes: 'GrabFood 01/04-12/04共88单平台佣金结算 (RM824.05)' },
-          { id: 'exp_grab_mktg_202604', date: '2026-04-12', category: '杂项维修与维护', name: '4月份(上半月) GrabFood 商家自付折扣与营销扣款', amount: 373.54, payment: '平台账单扣除', ref: 'GF-MKTG-202604', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM278.96 + 营销成功费RM88.84 + HotDeals广告RM5.74' },
+                    { id: 'exp_grab_comm_202604', date: '2026-04-30', category: '外卖平台佣金抽成', name: '4月份 GrabFood 平台佣金扣款', amount: 2788.58, payment: '平台账单扣除', ref: 'GF-COMM-202604', handled: 'Grab', notes: 'GrabFood 全月共282单平台佣金结算 (RM2,788.58)' },
+          { id: 'exp_grab_mktg_202604', date: '2026-04-30', category: '杂项维修与维护', name: '4月份 GrabFood 商家自付折扣与营销扣款', amount: 1202.35, payment: '平台账单扣除', ref: 'GF-MKTG-202604', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM906.51 + 营销成功费RM279.02 + HotDeals广告RM16.82' },
           { id: 'exp_fp-comm-202604', date: '2026-04-30', category: '外卖平台佣金抽成', name: '4月份 Foodpanda 平台 30% 佣金扣款', amount: 2025.05, payment: '平台账单扣除', ref: 'FP-COMM-202604', handled: 'Foodpanda', notes: 'Foodpanda 322 单平台佣金结算' },
           { id: 'exp_fp-mktg-202604', date: '2026-04-30', category: '杂项维修与维护', name: '4月份 Foodpanda 折扣与营销扣款', amount: 3241.85, payment: '平台账单扣除', ref: 'FP-MKTG-202604', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
+                    { id: 'exp_grab_comm_202605', date: '2026-05-17', category: '外卖平台佣金抽成', name: '5月份(前17天) GrabFood 平台佣金扣款', amount: 1686.34, payment: '平台账单扣除', ref: 'GF-COMM-202605', handled: 'Grab', notes: 'GrabFood 01/05-17/05共163单平台佣金结算 (RM1,686.34)' },
+          { id: 'exp_grab_mktg_202605', date: '2026-05-17', category: '杂项维修与维护', name: '5月份(前17天) GrabFood 商家自付折扣与营销扣款', amount: 681.10, payment: '平台账单扣除', ref: 'GF-MKTG-202605', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM524.23 + 营销成功费RM146.18 + HotDeals广告RM10.69' },
           { id: 'exp_fp-comm-202605', date: '2026-05-31', category: '外卖平台佣金抽成', name: '5月份 Foodpanda 平台 30% 佣金扣款', amount: 2168.3, payment: '平台账单扣除', ref: 'FP-COMM-202605', handled: 'Foodpanda', notes: 'Foodpanda 342 单平台佣金结算' },
           { id: 'exp_fp-mktg-202605', date: '2026-05-31', category: '杂项维修与维护', name: '5月份 Foodpanda 折扣与营销扣款', amount: 3550.31, payment: '平台账单扣除', ref: 'FP-MKTG-202605', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
           { id: 'exp_fp-comm-202606', date: '2026-06-30', category: '外卖平台佣金抽成', name: '6月份 Foodpanda 平台 30% 佣金扣款', amount: 1896.64, payment: '平台账单扣除', ref: 'FP-COMM-202606', handled: 'Foodpanda', notes: 'Foodpanda 309 单平台佣金结算' },
@@ -1783,7 +1785,7 @@ function doPost(e) {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v13');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v14');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -1874,18 +1876,18 @@ function doPost(e) {
             notes: 'Foodpanda 3月官方发票结单 (379单 | 账面RM12,405.40 | 抽佣RM2,446.36 | 折扣优惠券RM4,172.64 | 净打款RM5,454.50)'
           },
                     {
-            id: 'del_grab_202604_mid',
+            id: 'del_grab_202604',
             month: '2026-04',
             platform: 'GrabFood',
-            gross: 3038.58,
-            commission: 824.05,
-            adsPromo: 373.54,
-            adjustments: 13.61,
-            net: 1854.60,
-            orders: 88,
-            rate: '39.0%',
-            ref: 'GF-STMT-202604-MID',
-            notes: 'GrabFood 4月上半月官方周报结单 (01/04-12/04共88单 | 账面RM3,038.58 | 抽佣RM824.05 | 折扣与营销RM373.54 | 补偿+RM13.61 | 净打款RM1,854.60)'
+            gross: 9911.74,
+            commission: 2788.58,
+            adsPromo: 1202.35,
+            adjustments: 27.65,
+            net: 5948.46,
+            orders: 282,
+            rate: '40.0%',
+            ref: 'GF-STMT-202604',
+            notes: 'GrabFood 4月官方全月汇总结单 (全月全量共282单 | 账面RM9,911.74 | 抽佣RM2,788.58 | 折扣与营销RM1,202.35 | 补偿调整+RM27.65 | 净打款RM5,948.46)'
           },
           {
             id: 'del_fp_202604',
@@ -1900,6 +1902,20 @@ function doPost(e) {
             rate: '55.6%',
             ref: 'FP-STMT-202604',
             notes: 'Foodpanda 4月官方发票结单 (322单 | 账面RM9,968.00 | 抽佣RM2,025.05 | 折扣优惠券RM3,241.85 | 净打款RM4,428.21)'
+          },
+                    {
+            id: 'del_grab_202605_mid',
+            month: '2026-05',
+            platform: 'GrabFood',
+            gross: 5905.44,
+            commission: 1686.34,
+            adsPromo: 681.10,
+            adjustments: 170.84,
+            net: 3708.84,
+            orders: 163,
+            rate: '37.2%',
+            ref: 'GF-STMT-202605-MID',
+            notes: 'GrabFood 5月前17天官方周报结单 (01/05-17/05共163单 | 账面RM5,905.44 | 抽佣RM1,686.34 | 折扣与营销RM681.10 | 补偿+RM170.84 | 净打款RM3,708.84)'
           },
           {
             id: 'del_fp_202605',
@@ -2007,8 +2023,8 @@ function doPost(e) {
     
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租 (RM 7000/RM 7500) 与 4名员工薪资 (RM 10,300) 吗？")) {
-        localStorage.removeItem('laiwan_finance_expenses_v13');
-        localStorage.removeItem('laiwan_finance_delivery_v13');
+        localStorage.removeItem('laiwan_finance_expenses_v14');
+        localStorage.removeItem('laiwan_finance_delivery_v14');
         expensesList = [];
         deliveryList = [];
         loadDataFromStorage();
@@ -2018,7 +2034,7 @@ function doPost(e) {
     }
 
 function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v13', JSON.stringify(expensesList));
+      localStorage.setItem('laiwan_finance_expenses_v14', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
@@ -2030,7 +2046,7 @@ function saveExpensesToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v13', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v14', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
