@@ -115,6 +115,58 @@
     "badge": "👑 招牌脱骨"
   },
   {
+    "id": "S7",
+    "cat": "汤螺蛳粉",
+    "name": "S7 鲜肉螺蛳粉 XianRou Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "精选滑嫩鲜肉片，肉香鲜美，醇厚浓郁",
+    "img": "images/S7.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "S8",
+    "cat": "汤螺蛳粉",
+    "name": "S8 锅烧螺蛳粉 GuoShao Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "传统脆皮锅烧，外皮酥脆内里肉质细嫩",
+    "img": "images/S8.jpeg",
+    "badge": "🔥 经典锅烧"
+  },
+  {
+    "id": "S9",
+    "cat": "汤螺蛳粉",
+    "name": "S9 叉烧螺蛳粉 ChaShao Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "蜜汁特制厚切叉烧，咸甜适口与酸辣红汤完美融合",
+    "img": "images/S9.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "S10",
+    "cat": "汤螺蛳粉",
+    "name": "S10 卤香肥肠螺蛳粉 FeiChuang Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "香卤肥肠软糯有嚼劲，处理干净卤香扑鼻",
+    "img": "images/S10.jpeg",
+    "badge": "⭐ 肥肠爱好者"
+  },
+  {
     "id": "S11",
     "cat": "汤螺蛳粉",
     "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup",
@@ -126,6 +178,19 @@
     "desc": "柔韧顺滑纯粮桂林米粉，原汁醇汤清香开胃",
     "img": "images/S11.jpeg",
     "badge": ""
+  },
+  {
+    "id": "S12",
+    "cat": "汤螺蛳粉",
+    "name": "S12 秘制猪脚螺蛳粉 Pig's Trotter Luosifen",
+    "price": 15.99,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "大块胶原蛋白慢火炖猪脚，软烂脱骨浓香四溢",
+    "img": "images/S12.jpeg",
+    "badge": "🍖 软烂脱骨"
   },
   {
     "id": "S13",
@@ -204,6 +269,84 @@
     "desc": "香煎金黄荷包蛋拌入特调干捞酱汁，酸辣浓醇",
     "img": "images/D3.jpeg",
     "badge": ""
+  },
+  {
+    "id": "D4",
+    "cat": "招牌干捞",
+    "name": "D4 台湾香肠干捞粉 TW Sausage Dry Luosifen",
+    "price": 15.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "焦香香肠搭配浓郁干捞酱汁，咸甜开胃",
+    "img": "images/D4.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D5",
+    "cat": "招牌干捞",
+    "name": "D5 卤香肥肠干捞粉 FeiChuang Dry Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "Q弹爽滑卤肥肠遇上特调干捞酱汁，浓香爆口",
+    "img": "images/D5.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D6",
+    "cat": "招牌干捞",
+    "name": "D6 嫩滑鲜肉干捞粉 XianRou Dry Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "大片嫩滑鲜肉与干捞特调红酱深度融合",
+    "img": "images/D6.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D7",
+    "cat": "招牌干捞",
+    "name": "D7 脆皮锅烧干捞粉 GuoShao Dry Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "黄金酥脆锅烧肉拌入干捞粉，酥脆爆汁",
+    "img": "images/D7.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D8",
+    "cat": "招牌干捞",
+    "name": "D8 蜜汁叉烧干捞粉 ChaShao Dry Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "经典厚切蜜汁叉烧拌粉，甜咸交织别具风味",
+    "img": "images/D8.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D9",
+    "cat": "招牌干捞",
+    "name": "D9 秘制牛腩干捞粉 Beef Brisket Dry Luosifen",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "大块软烂牛腩裹满特调干捞酱汁，肉感满满",
+    "img": "images/D9.jpeg",
+    "badge": "🥩 大块牛腩"
   },
   {
     "id": "D10",
@@ -595,6 +738,16 @@
     "badge": ""
   },
   {
+    "id": "F20",
+    "cat": "饮品甜品",
+    "name": "F20 葡萄爱玉冰 Grape Ice Jelly",
+    "price": 6.0,
+    "mods": [],
+    "desc": "清爽葡萄果香与晶莹爱玉冻的冰凉碰撞",
+    "img": "images/F20.jpeg",
+    "badge": ""
+  },
+  {
     "id": "F21",
     "cat": "饮品甜品",
     "name": "F21 苹果味爱玉冰 Apple Ice Jelly",
@@ -602,6 +755,16 @@
     "mods": [],
     "desc": "清爽苹果果香搭配Q弹爱玉冻，冰爽沁心",
     "img": "images/F21.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "F22",
+    "cat": "饮品甜品",
+    "name": "F22 阿萨姆原味奶茶 Original Assam Milk Tea",
+    "price": 5.5,
+    "mods": [],
+    "desc": "经典原味阿萨姆红茶奶茶，醇香顺滑",
+    "img": "images/F22.jpeg",
     "badge": ""
   }
 ]
