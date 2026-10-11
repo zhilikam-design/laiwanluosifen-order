@@ -1749,7 +1749,8 @@ function doPost(e) {
         function loadDataFromStorage() {
       // 自动清除旧版本浏览器缓存，强行载入最新真实的 房租(7000/7500) 与 员工薪资(10300) 数据
       ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12','laiwan_finance_expenses_v13','laiwan_finance_expenses_v14','laiwan_finance_expenses_v15','laiwan_finance_expenses_v16','laiwan_finance_expenses_v17','laiwan_finance_expenses_v18'].forEach(k => localStorage.removeItem(k));
-      ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8','laiwan_finance_delivery_v11','laiwan_finance_delivery_v12','laiwan_finance_delivery_v13','laiwan_finance_delivery_v14','laiwan_finance_delivery_v15','laiwan_finance_delivery_v16','laiwan_finance_delivery_v17','laiwan_finance_delivery_v18'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_suppliers_v1','laiwan_finance_suppliers_v2'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8','laiwan_finance_delivery_v11','laiwan_finance_delivery_v12','laiwan_finance_delivery_v13','laiwan_finance_delivery_v14','laiwan_finance_delivery_v15','laiwan_finance_delivery_v16','laiwan_finance_delivery_v17','laiwan_finance_delivery_v18','laiwan_finance_delivery_v19'].forEach(k => localStorage.removeItem(k));
 
             // 0. POS 销售数据浏览器缓存 (保持一键同步的最新数据)
       const cachedPos = localStorage.getItem('laiwan_pos_sales_cache');
@@ -1878,24 +1879,17 @@ function doPost(e) {
         try { customRevenueList = JSON.parse(localCustomRev); } catch(e) {}
       }
 
-      // 4. 供应商进货账单
-      const localSupp = localStorage.getItem('laiwan_finance_suppliers_v2');
-      if (localSupp) {
-        try { suppliersList = JSON.parse(localSupp); } catch(e) {}
-      }
-      if (!suppliersList || suppliersList.length === 0) {
-        suppliersList = [
-          { id: 'sup_1', date: '2026-09-01', supplier: '南洋生鲜批发', category: '生鲜肉类与骨头', invNo: 'INV-8821', amount: 1290.0, status: '已结清', receiptNo: 'OR-20260905', items: '牛腩20kg, 猪骨30kg, 肥肠10kg' },
-          { id: 'sup_2', date: '2026-09-02', supplier: '柳韵中国调料海运', category: '干货与专用配料', invNo: 'INV-5502', amount: 3450.0, status: '未付款', receiptNo: '', items: '螺蛳粉干米粉30箱, 酸笋10桶' },
-          { id: 'sup_3', date: '2026-09-03', supplier: '运达食品包装', category: '包装耗材', invNo: 'INV-3109', amount: 580.0, status: '未付款', receiptNo: '', items: '外卖打包碗5箱, 外卖袋3箱' },
-          { id: 'sup_4', date: '2026-09-04', supplier: '本地巴刹蔬菜', category: '巴刹时蔬', invNo: 'CASH-0904', amount: 185.0, status: '已结清', receiptNo: '巴刹单0904', items: '葱姜蒜、时令蔬菜、鲜木耳' },
-          { id: 'sup_5', date: '2026-09-05', supplier: '南洋生鲜批发', category: '生鲜肉类与骨头', invNo: 'INV-8860', amount: 960.0, status: '未付款', receiptNo: '', items: '猪筒骨40kg, 五花肉15kg' }
-        ];
+      // 4. 供应商进货账单 (真实记账模式：初始为空，绝不插入任何模拟 sample 数据，刷新绝不反弹)
+      const localSupp = localStorage.getItem('laiwan_finance_suppliers_v3');
+      if (localSupp !== null) {
+        try { suppliersList = JSON.parse(localSupp); } catch(e) { suppliersList = []; }
+      } else {
+        suppliersList = [];
         saveSuppliersToStorage();
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v19');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v20');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -2153,20 +2147,7 @@ function doPost(e) {
             ref: 'FP-STMT-202609',
             notes: 'Foodpanda 9月官方发票全量核销 (29天共292单 | 账面RM8,839.90 | 抽佣RM1,694.69 | 折扣券营销与SST RM3,012.73 | 补差+RM6.12 | 净打款RM4,138.60)'
           },
-          {
-            id: 'del_shopee_202609',
-            month: '2026-09',
-            platform: 'ShopeeFood',
-            gross: 3200.0,
-            commission: 896.0,
-            adsPromo: 100.0,
-            adjustments: 0.0,
-            net: 2204.0,
-            orders: 90,
-            rate: '31.1%',
-            ref: 'SF-STMT-202609',
-            notes: 'ShopeeFood 9月结单 (90单 | 抽佣28% + 广告位扣款RM100 | 净到账RM2,204.00)'
-          },
+
           {
             id: 'del_grab_202610_early',
             month: '2026-10',
@@ -2190,7 +2171,8 @@ function doPost(e) {
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租 (RM 7000/RM 7500) 与 4名员工薪资 (RM 10,300) 吗？")) {
         localStorage.removeItem('laiwan_finance_expenses_v19');
-        localStorage.removeItem('laiwan_finance_delivery_v19');
+        localStorage.removeItem('laiwan_finance_delivery_v20');
+        localStorage.removeItem('laiwan_finance_suppliers_v3');
         expensesList = [];
         deliveryList = [];
         loadDataFromStorage();
@@ -2206,13 +2188,13 @@ function saveExpensesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
     }
     function saveSuppliersToStorage() {
-      localStorage.setItem('laiwan_finance_suppliers_v2', JSON.stringify(suppliersList));
+      localStorage.setItem('laiwan_finance_suppliers_v3', JSON.stringify(suppliersList));
     }
     function saveCustomRevToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v19', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v20', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
