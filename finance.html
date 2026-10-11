@@ -384,7 +384,7 @@
                 <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-500"></i>
                 <span>月度营收、总成本与净利润趋势</span>
               </h3>
-              <p class="text-xs mt-0.5" style="color: var(--text-muted);">2026 年 POS 真实核定月度数据与当月记账汇总</p>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">2026 年全店总营收 (POS门市实收 + 外卖净到账) 对比经营总成本与净利润</p>
             </div>
             <span class="text-xs px-2.5 py-1 rounded-lg border font-medium mono" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">
               单位: RM (MYR)
@@ -1565,6 +1565,106 @@ function doPost(e) {
     </div>
   </div>
 
+
+  <!-- 模态框: 录入 / 编辑 供应商进货账单 (INVENTORY / SUPPLIERS) -->
+  <div id="modal-supplier" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="fin-card rounded-2xl p-6 w-full max-w-lg border shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b" style="border-color: var(--border-subtle);">
+        <h3 class="text-base font-bold text-current flex items-center gap-2">
+          <i data-lucide="truck" class="w-5 h-5 text-amber-500"></i>
+          <span id="modal-supplier-title">录入供应商进货账单</span>
+        </h3>
+        <button onclick="closeSupplierModal()" class="text-slate-400 hover:text-current">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 快捷供应商预设 -->
+      <div class="mb-4" id="supplier-preset-box">
+        <label class="text-[11px] mb-1.5 block" style="color: var(--text-muted);">常用供应商快速填入:</label>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="fillSupplierPreset('南洋生鲜批发', '生鲜肉类与骨头', '牛腩20kg, 猪骨30kg, 肥肠10kg')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">🥩 南洋生鲜 (肉类骨头)</button>
+          <button type="button" onclick="fillSupplierPreset('柳韵中国调料海运', '干货与专用配料', '柳州干米粉, 螺蛳香料底料, 原产地酸笋')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">🌶️ 柳韵调料 (米粉酸笋底料)</button>
+          <button type="button" onclick="fillSupplierPreset('新山鲜蔬农庄', '蔬菜与鲜蛋', '新鲜青菜, 鸡蛋, 葱姜蒜')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">🥬 鲜蔬农庄 (蔬菜鸡蛋)</button>
+          <button type="button" onclick="fillSupplierPreset('Austin蛋品冷冻', '冷冻丸子与配菜', '龙虾丸, 海鲜豆腐, 炸肉圆')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">🍡 Austin冷冻 (火锅丸子配菜)</button>
+          <button type="button" onclick="fillSupplierPreset('宝岛饮品包装', '外卖耗材与包装', '外卖定制汤碗, 封口膜, 打包袋')" class="text-[11px] px-2.5 py-1 rounded-lg border font-medium transition" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-secondary);">📦 宝岛包装 (外卖餐具耗材)</button>
+        </div>
+      </div>
+
+      <form id="form-supplier" onsubmit="saveSupplierRecord(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="edit-supplier-id" value="">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">进货到货日期</label>
+            <input type="date" id="inp-supp-date" required class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">供货类别</label>
+            <select id="inp-supp-cat" required class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="生鲜肉类与骨头">生鲜肉类与骨头</option>
+              <option value="干货与专用配料">干货与专用配料 (米粉/酸笋/底料)</option>
+              <option value="蔬菜与鲜蛋">蔬菜与鲜蛋</option>
+              <option value="冷冻丸子与配菜">冷冻丸子与配菜</option>
+              <option value="外卖耗材与包装">外卖耗材与包装</option>
+              <option value="调味酱汁与油品">调味酱汁与油品</option>
+              <option value="其他采购耗材">其他采购耗材</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">供应商商号/抬头</label>
+            <input type="text" id="inp-supp-supplier" required placeholder="如: 南洋生鲜批发" class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">发票/送货单号 (DO / Inv No)</label>
+            <input type="text" id="inp-supp-inv" placeholder="如: INV-8821 或 DO-20261011" class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500 mono" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">账单金额 (RM)</label>
+            <input type="number" step="0.01" id="inp-supp-amount" required placeholder="0.00" class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500 mono font-bold" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--accent-amber);">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1" style="color: var(--text-secondary);">付款状态</label>
+            <select id="inp-supp-status" required class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500 font-semibold" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="已结清">✅ 已结清 (Paid)</option>
+              <option value="未付款" selected>⏳ 未付款 (Unpaid / 挂账)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1" style="color: var(--text-secondary);">主要订购货物说明 / 品名明细</label>
+          <input type="text" id="inp-supp-items" placeholder="如: 牛腩20kg, 猪骨30kg, 肥肠10kg" class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1" style="color: var(--text-secondary);">核销付款凭证号 / 转账收据 (选填)</label>
+          <input type="text" id="inp-supp-receipt" placeholder="如: MBB-TRX-99882 或 OR-20261011" class="border rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-amber-500 mono" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+        </div>
+
+        <div class="pt-2 flex items-center justify-between gap-2 border-t" style="border-color: var(--border-subtle);">
+          <button type="button" id="btn-delete-supplier" onclick="deleteCurrentSupplier()" class="hidden px-3.5 py-2 rounded-xl border border-rose-500/40 text-rose-500 hover:bg-rose-500/10 font-semibold transition">
+            删除该笔进货
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closeSupplierModal()" class="px-3.5 py-2 rounded-xl border font-semibold transition" style="border-color: var(--border-subtle); color: var(--text-secondary);">
+              取消
+            </button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold shadow-md shadow-amber-600/30 transition">
+              <span id="btn-supplier-submit-text">确认保存进货</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT LOGIC ENGINE -->
   <script>
     // 1. 数据常量
@@ -2542,34 +2642,52 @@ function saveExpensesToStorage() {
 
       const list = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
 
-      list.forEach(item => {
-        total += item.amount;
-        const isPaid = item.status.includes('已结清');
-        if (isPaid) paid += item.amount; else unpaid += item.amount;
-
+      if (list.length === 0) {
         const tr = document.createElement('tr');
-        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
         tr.innerHTML = `
-          <td class="py-3 px-4 mono text-xs" style="color: var(--text-muted);">${item.date}</td>
-          <td class="py-3 px-4 font-bold text-current">${item.supplier}</td>
-          <td class="py-3 px-4 text-xs" style="color: var(--text-muted);">${item.category}</td>
-          <td class="py-3 px-4 mono text-xs font-semibold">${item.invNo}</td>
-          <td class="py-3 px-4 mono font-bold" style="color: var(--accent-amber);">RM ${item.amount.toFixed(2)}</td>
-          <td class="py-3 px-4">
-            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold ${isPaid ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'}">
-              ${item.status}
-            </span>
-          </td>
-          <td class="py-3 px-4 mono text-xs" style="color: var(--text-muted);">${item.receiptNo || '-'}</td>
-          <td class="py-3 px-4 text-xs" style="color: var(--text-secondary);">${item.items}</td>
-          <td class="py-3 px-4 text-right">
-            <button onclick="toggleSupplierStatus('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold transition" style="border-color: var(--border-subtle); color: var(--text-secondary);">
-              ${isPaid ? '标记待付' : '核销结清'}
-            </button>
+          <td colspan="9" class="py-8 text-center" style="color: var(--text-muted);">
+            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <p class="font-medium text-xs sm:text-sm">当前核算期间 (${activeMonth === 'ALL' ? '2026全年' : activeMonth}) 暂无进货账单记录</p>
+            <p class="text-xs opacity-75 mt-1">点击右上角【新增进货账单】即可录入供应商发票或送货单，随时支持修改与删除。</p>
           </td>
         `;
         tbody.appendChild(tr);
-      });
+      } else {
+        list.forEach(item => {
+          total += item.amount;
+          const isPaid = item.status.includes('已结清');
+          if (isPaid) paid += item.amount; else unpaid += item.amount;
+
+          const tr = document.createElement('tr');
+          tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
+          tr.innerHTML = `
+            <td class="py-3 px-4 mono text-xs" style="color: var(--text-muted);">${item.date}</td>
+            <td class="py-3 px-4 font-bold text-current">${item.supplier}</td>
+            <td class="py-3 px-4 text-xs" style="color: var(--text-muted);">${item.category}</td>
+            <td class="py-3 px-4 mono text-xs font-semibold">${item.invNo}</td>
+            <td class="py-3 px-4 mono font-bold" style="color: var(--accent-amber);">RM ${item.amount.toFixed(2)}</td>
+            <td class="py-3 px-4">
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-bold ${isPaid ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'}">
+                ${item.status}
+              </span>
+            </td>
+            <td class="py-3 px-4 mono text-xs" style="color: var(--text-muted);">${item.receiptNo || '-'}</td>
+            <td class="py-3 px-4 text-xs" style="color: var(--text-secondary);">${item.items}</td>
+            <td class="py-3 px-4 text-right whitespace-nowrap">
+              <button onclick="editSupplier('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 mr-1.5 transition" title="修改该笔进货账单">
+                修改
+              </button>
+              <button onclick="deleteSupplier('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-rose-600 hover:bg-rose-500/10 mr-1.5 transition" title="删除该笔进货记录">
+                删除
+              </button>
+              <button onclick="toggleSupplierStatus('${item.id}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold transition" style="border-color: var(--border-subtle); color: var(--text-secondary);">
+                ${isPaid ? '标记待付' : '核销结清'}
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
 
       document.getElementById('supp-sum-total').innerText = `RM ${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
       document.getElementById('supp-sum-unpaid').innerText = `RM ${unpaid.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
@@ -2806,6 +2924,108 @@ function saveExpensesToStorage() {
       }
     }
 
+    // -------------------------------------------------------------
+    // TAB 4: 供应商进货账单 MODAL & CRUD ACTIONS
+    // -------------------------------------------------------------
+    function openAddSupplierModal() {
+      document.getElementById('modal-supplier-title').innerText = "录入供应商进货账单";
+      document.getElementById('edit-supplier-id').value = "";
+      document.getElementById('btn-supplier-submit-text').innerText = "确认保存进货";
+      document.getElementById('btn-delete-supplier').classList.add('hidden');
+      document.getElementById('supplier-preset-box').classList.remove('hidden');
+
+      document.getElementById('inp-supp-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('inp-supp-cat').value = "生鲜肉类与骨头";
+      document.getElementById('inp-supp-supplier').value = "";
+      document.getElementById('inp-supp-inv').value = "";
+      document.getElementById('inp-supp-amount').value = "";
+      document.getElementById('inp-supp-status').value = "未付款";
+      document.getElementById('inp-supp-items').value = "";
+      document.getElementById('inp-supp-receipt').value = "";
+
+      document.getElementById('modal-supplier').classList.remove('hidden');
+    }
+
+    function closeSupplierModal() {
+      document.getElementById('modal-supplier').classList.add('hidden');
+    }
+
+    function fillSupplierPreset(supp, cat, items) {
+      document.getElementById('inp-supp-supplier').value = supp;
+      document.getElementById('inp-supp-cat').value = cat;
+      document.getElementById('inp-supp-items').value = items;
+    }
+
+    function editSupplier(id) {
+      const item = suppliersList.find(x => x.id === id);
+      if (!item) return;
+
+      document.getElementById('modal-supplier-title').innerText = "修改供应商进货账单";
+      document.getElementById('edit-supplier-id').value = item.id;
+      document.getElementById('btn-supplier-submit-text').innerText = "保存修改";
+      document.getElementById('btn-delete-supplier').classList.remove('hidden');
+      document.getElementById('supplier-preset-box').classList.add('hidden');
+
+      document.getElementById('inp-supp-date').value = item.date;
+      document.getElementById('inp-supp-cat').value = item.category;
+      document.getElementById('inp-supp-supplier').value = item.supplier;
+      document.getElementById('inp-supp-inv').value = item.invNo || '';
+      document.getElementById('inp-supp-amount').value = item.amount;
+      document.getElementById('inp-supp-status').value = item.status;
+      document.getElementById('inp-supp-items').value = item.items || '';
+      document.getElementById('inp-supp-receipt').value = item.receiptNo || '';
+
+      document.getElementById('modal-supplier').classList.remove('hidden');
+    }
+
+    function saveSupplierRecord(e) {
+      e.preventDefault();
+      const editId = document.getElementById('edit-supplier-id').value;
+      const date = document.getElementById('inp-supp-date').value;
+      const category = document.getElementById('inp-supp-cat').value;
+      const supplier = document.getElementById('inp-supp-supplier').value.trim();
+      const invNo = document.getElementById('inp-supp-inv').value.trim() || ('INV-' + Math.floor(1000 + Math.random()*9000));
+      const amount = parseFloat(document.getElementById('inp-supp-amount').value) || 0;
+      const status = document.getElementById('inp-supp-status').value;
+      const items = document.getElementById('inp-supp-items').value.trim() || '食材原料';
+      const receiptNo = document.getElementById('inp-supp-receipt').value.trim() || (status.includes('已结清') ? ('OR-' + date.replace(/-/g, '')) : '');
+
+      if (editId) {
+        const idx = suppliersList.findIndex(x => x.id === editId);
+        if (idx !== -1) {
+          suppliersList[idx] = { id: editId, date, supplier, category, invNo, amount, status, receiptNo, items };
+        }
+      } else {
+        const newRecord = {
+          id: 'sup_' + Date.now(),
+          date, supplier, category, invNo, amount, status, receiptNo, items
+        };
+        suppliersList.unshift(newRecord);
+      }
+
+      saveSuppliersToStorage();
+      closeSupplierModal();
+      renderAllViews();
+    }
+
+    function deleteSupplier(id) {
+      const item = suppliersList.find(x => x.id === id);
+      if (!item) return;
+      if (confirm(`⚠️ 确认删除这笔进货账单吗？\n\n供应商: 【${item.supplier}】\n单号: ${item.invNo}\n金额: RM ${item.amount.toFixed(2)}\n货物: ${item.items}`)) {
+        suppliersList = suppliersList.filter(x => x.id !== id);
+        saveSuppliersToStorage();
+        renderAllViews();
+      }
+    }
+
+    function deleteCurrentSupplier() {
+      const editId = document.getElementById('edit-supplier-id').value;
+      if (editId) {
+        closeSupplierModal();
+        deleteSupplier(editId);
+      }
+    }
+
     function toggleSupplierStatus(id) {
       const item = suppliersList.find(s => s.id === id);
       if (!item) return;
@@ -2873,36 +3093,43 @@ function saveExpensesToStorage() {
     // TAB 7: 损益表 (P&L) 动态计算与排版 (基于 POS 真实营业与已录成本)
     // -------------------------------------------------------------
     function renderPnLStatement() {
-      let totalSales = 0;
+      let counterSales = 0;
       if (activeMonth === 'ALL') {
-        Object.values(POS_SALES_HISTORY).forEach(m => totalSales += m.total_sales);
+        Object.values(POS_SALES_HISTORY).forEach(m => counterSales += m.total_sales);
       } else if (POS_SALES_HISTORY[activeMonth]) {
-        totalSales = POS_SALES_HISTORY[activeMonth].total_sales;
+        counterSales = POS_SALES_HISTORY[activeMonth].total_sales;
       }
+
+      const curDel = deliveryList.filter(d => activeMonth === 'ALL' || d.month === activeMonth);
+      const delNetPayout = curDel.reduce((a, b) => a + (b.net || 0), 0);
+      const totalRevenue = counterSales + delNetPayout;
 
       const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
       const totalCogs = currentSupp.reduce((a, b) => a + b.amount, 0);
 
-      const currentExp = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      // 纯门店运营开销 (排除外卖佣金扣款，因为delNetPayout已经是净打款)
+      const currentExp = expensesList.filter(e => {
+        if (activeMonth !== 'ALL' && !e.date.startsWith(activeMonth)) return false;
+        if (e.category && e.category.includes('外卖平台佣金')) return false;
+        if (e.id && (e.id.includes('comm') || e.id.includes('grab_mktg') || e.id.includes('fp-mktg') || e.id.includes('fp-disc'))) return false;
+        return true;
+      });
       const totalOpex = currentExp.reduce((a, b) => a + b.amount, 0);
 
-      const grossProfit = totalSales - totalCogs;
-      const grossMargin = totalSales > 0 ? ((grossProfit / totalSales) * 100).toFixed(1) : "0.0";
+      const grossProfit = totalRevenue - totalCogs;
+      const grossMargin = totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100).toFixed(1) : "0.0";
 
       const netProfit = grossProfit - totalOpex;
-      const netMargin = totalSales > 0 ? ((netProfit / totalSales) * 100).toFixed(1) : "0.0";
+      const netMargin = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : "0.0";
 
       const safePnlSet = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.innerText = val;
       };
 
-      safePnlSet('pnl-counter-rev', `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
-      const curDel = deliveryList.filter(d => activeMonth === 'ALL' || d.month === activeMonth);
-      const delNetPayout = curDel.reduce((a, b) => a + (b.net || 0), 0);
+      safePnlSet('pnl-counter-rev', `RM ${counterSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
       safePnlSet('pnl-delivery-rev', `RM ${delNetPayout.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
-      totalSales += delNetPayout;
-      safePnlSet('pnl-total-rev', `RM ${totalSales.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
+      safePnlSet('pnl-total-rev', `RM ${totalRevenue.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
       safePnlSet('pnl-total-cogs', `RM ${totalCogs.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
       safePnlSet('pnl-gross-profit', `RM ${grossProfit.toLocaleString('en-US', {minimumFractionDigits: 2})} (毛利率 ${grossMargin}%)`);
       safePnlSet('pnl-total-opex', `RM ${totalOpex.toLocaleString('en-US', {minimumFractionDigits: 2})}`);
@@ -3106,7 +3333,7 @@ function saveExpensesToStorage() {
       const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
       const textColor = isDark ? '#94a3b8' : '#475569';
 
-      // 1. 月度对比走势柱状图 (覆盖 2026 年 1~9 月所有 9 个月份的 POS 真实销售)
+      // 1. 月度对比走势柱状图 (全店营收 = POS门市实收 + 外卖打款到账，扣除进货与固定杂支的真实净利)
       if (chartTrend) chartTrend.destroy();
       const canvasTrend = document.getElementById('chart-monthly-trend');
       if (canvasTrend) {
@@ -3114,12 +3341,32 @@ function saveExpensesToStorage() {
         const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10'];
         const labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月 (进行中)'];
         
-        const salesData = months.map(m => POS_SALES_HISTORY[m]?.total_sales || 0);
-        const profitData = months.map(m => {
-          const sales = POS_SALES_HISTORY[m]?.total_sales || 0;
-          const opex = expensesList.filter(e => e.date.startsWith(m)).reduce((a,b)=>a+b.amount, 0);
-          const cogs = suppliersList.filter(s => s.date.startsWith(m)).reduce((a,b)=>a+b.amount, 0);
-          return sales - cogs - opex;
+        const posData = [];
+        const delivData = [];
+        const totalSalesData = [];
+        const costData = [];
+        const profitData = [];
+
+        months.forEach(m => {
+          const pos = POS_SALES_HISTORY[m]?.total_sales || 0;
+          const del = deliveryList.filter(d => d.month === m).reduce((a, b) => a + (b.net || 0), 0);
+          const totalRev = +(pos + del).toFixed(2);
+          
+          const cogs = suppliersList.filter(s => s.date.startsWith(m)).reduce((a, b) => a + b.amount, 0);
+          const storeOpex = expensesList.filter(e => {
+            if (!e.date.startsWith(m)) return false;
+            if (e.category && e.category.includes('外卖平台佣金')) return false;
+            if (e.id && (e.id.includes('comm') || e.id.includes('grab_mktg') || e.id.includes('fp-mktg') || e.id.includes('fp-disc'))) return false;
+            return true;
+          }).reduce((a, b) => a + b.amount, 0);
+          const totalCost = +(cogs + storeOpex).toFixed(2);
+          const netProfit = +(totalRev - totalCost).toFixed(2);
+
+          posData.push(pos);
+          delivData.push(del);
+          totalSalesData.push(totalRev);
+          costData.push(totalCost);
+          profitData.push(netProfit);
         });
 
         chartTrend = new Chart(ctxTrend, {
@@ -3128,15 +3375,21 @@ function saveExpensesToStorage() {
             labels: labels,
             datasets: [
               {
-                label: 'POS 真实营业额 (RM)',
-                data: salesData,
+                label: '全店总营收 (含外卖打款)',
+                data: totalSalesData,
                 backgroundColor: 'rgba(16, 185, 129, 0.85)',
                 borderRadius: 6
               },
               {
-                label: '结余营业净利润 (RM)',
+                label: '经营总成本 (进货+杂支)',
+                data: costData,
+                backgroundColor: 'rgba(245, 158, 11, 0.85)',
+                borderRadius: 6
+              },
+              {
+                label: '全店营业净利润 (实收到手)',
                 data: profitData,
-                backgroundColor: 'rgba(56, 189, 248, 0.85)',
+                backgroundColor: 'rgba(56, 189, 248, 0.95)',
                 borderRadius: 6
               }
             ]
@@ -3145,7 +3398,25 @@ function saveExpensesToStorage() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } } }
+              legend: { 
+                labels: { 
+                  color: textColor, 
+                  font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } 
+                } 
+              },
+              tooltip: {
+                callbacks: {
+                  afterBody: function(context) {
+                    const idx = context[0].dataIndex;
+                    const p = posData[idx];
+                    const d = delivData[idx];
+                    return [
+                      `  • 门市 POS 实收: RM ${p.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
+                      `  • 外卖净打款到账: RM ${d.toLocaleString('en-US', {minimumFractionDigits: 2})}`
+                    ];
+                  }
+                }
+              }
             },
             scales: {
               x: { ticks: { color: textColor }, grid: { color: gridColor } },
@@ -3439,36 +3710,47 @@ function saveExpensesToStorage() {
 
     function exportPnLToExcel() {
       let csv = "来碗 · 柳州螺蛳粉 (Austin Heights) - 综合损益表 (P&L)\n";
-      csv += `核算期间: ${activeMonth === 'ALL' ? '2026年 1~9月 全年累计' : activeMonth}\n\n`;
+      csv += `核算期间: ${activeMonth === 'ALL' ? '2026年 1~10月 全年累计' : activeMonth}\n\n`;
       csv += "项目类别,项目明细,金额 (RM)\n";
 
-      let periodSales = 0;
+      let counterSales = 0;
       if (activeMonth === 'ALL') {
-        Object.values(POS_SALES_HISTORY).forEach(m => periodSales += m.total_sales);
+        Object.values(POS_SALES_HISTORY).forEach(m => counterSales += m.total_sales);
       } else if (POS_SALES_HISTORY[activeMonth]) {
-        periodSales = POS_SALES_HISTORY[activeMonth].total_sales;
+        counterSales = POS_SALES_HISTORY[activeMonth].total_sales;
       }
+
+      const curDel = deliveryList.filter(d => activeMonth === 'ALL' || d.month === activeMonth);
+      const delNetPayout = curDel.reduce((a, b) => a + (b.net || 0), 0);
+      const totalRevenue = counterSales + delNetPayout;
 
       const currentSupp = suppliersList.filter(s => activeMonth === 'ALL' || s.date.startsWith(activeMonth));
       const totalCogs = currentSupp.reduce((a, b) => a + b.amount, 0);
 
-      const currentExp = expensesList.filter(e => activeMonth === 'ALL' || e.date.startsWith(activeMonth));
+      const currentExp = expensesList.filter(e => {
+        if (activeMonth !== 'ALL' && !e.date.startsWith(activeMonth)) return false;
+        if (e.category && e.category.includes('外卖平台佣金')) return false;
+        if (e.id && (e.id.includes('comm') || e.id.includes('grab_mktg') || e.id.includes('fp-mktg') || e.id.includes('fp-disc'))) return false;
+        return true;
+      });
       const totalOpex = currentExp.reduce((a, b) => a + b.amount, 0);
 
-      const netProfit = periodSales - totalCogs - totalOpex;
+      const grossProfit = totalRevenue - totalCogs;
+      const netProfit = grossProfit - totalOpex;
 
-      csv += `一、营业收入,Optimy POS 门店实收营业额,${periodSales.toFixed(2)}\n`;
-      csv += `一、营业收入,全店总营业额合计,${periodSales.toFixed(2)}\n\n`;
+      csv += `一、营业收入,Optimy POS 门店柜台实收,${counterSales.toFixed(2)}\n`;
+      csv += `一、营业收入,外卖平台到手净打款 (Grab + Panda),${delNetPayout.toFixed(2)}\n`;
+      csv += `一、营业收入,全店总营业额合计,${totalRevenue.toFixed(2)}\n\n`;
 
-      csv += `二、营业直接成本,生鲜肉类与食材进货(已录入),${totalCogs.toFixed(2)}\n`;
-      csv += `二、营业直接成本,直接成本合计 (COGS),${totalCogs.toFixed(2)}\n\n`;
+      csv += `二、营业直接成本,生鲜肉类与食材进货 (COGS),${totalCogs.toFixed(2)}\n`;
+      csv += `二、营业直接成本,毛利额 (Gross Profit),${grossProfit.toFixed(2)}\n\n`;
 
       currentExp.forEach(it => {
-        csv += `三、运营日常杂支,${it.name} [${it.category}],${it.amount.toFixed(2)}\n`;
+        csv += `三、门店运营杂支,${it.name} [${it.category}],${it.amount.toFixed(2)}\n`;
       });
-      csv += `三、运营日常杂支,运营杂支合计 (OPEX),${totalOpex.toFixed(2)}\n\n`;
+      csv += `三、门店运营杂支,运营杂支合计 (OPEX),${totalOpex.toFixed(2)}\n\n`;
 
-      csv += `四、净利润,营业结余净利润,${netProfit.toFixed(2)}\n`;
+      csv += `四、净利润,全店营业结余净利润,${netProfit.toFixed(2)}\n`;
 
       const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
