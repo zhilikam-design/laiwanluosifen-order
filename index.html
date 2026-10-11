@@ -1418,9 +1418,9 @@
                   "spicy",
                   "addons"
             ],
-            "desc": "地道原汤经典螺蛳粉 + 招牌吸汤大炸蛋 + 清凉解渴饮料组合",
+            "desc": "地道原汤经典螺蛳粉 + 招牌吸汤大炸蛋 + 清凉解渴饮料组合（仅限周一至周五 11:00-18:00 供应）",
             "img": "images/SET_01.jpeg",
-            "badge": "🔥 爆款套餐"
+            "badge": "⏰ 周一至五 11:00-18:00"
       },
       {
             "id": "SET-02",
@@ -1430,9 +1430,9 @@
             "mods": [
                   "addons"
             ],
-            "desc": "粒粒金黄大火现炒饭 + 特色炸物小吃 + 冰爽冷饮组合",
+            "desc": "粒粒金黄大火现炒饭 + 特色炸物小吃 + 冰爽冷饮组合（仅限周一至周五 11:00-18:00 供应）",
             "img": "images/SET_02.jpeg",
-            "badge": "🍳 经典主食"
+            "badge": "⏰ 周一至五 11:00-18:00"
       },
       {
             "id": "SET-03",
@@ -1442,9 +1442,9 @@
             "mods": [
                   "addons"
             ],
-            "desc": "大火爆炒锅气满满桂林米粉 + 招牌炸物小吃 + 冰爽冷饮组合",
+            "desc": "大火爆炒锅气满满桂林米粉 + 招牌炸物小吃 + 冰爽冷饮组合（仅限周一至周五 11:00-18:00 供应）",
             "img": "images/SET_03.jpeg",
-            "badge": "🔥 爆炒锅气"
+            "badge": "⏰ 周一至五 11:00-18:00"
       },
       {
             "id": "S1",
@@ -2256,6 +2256,22 @@
       return null;
     }
 
+        // 校验超值套餐供应时段 (仅限周一至周五 11:00 ~ 18:00, UTC+8 马来西亚时间)
+    function isValueComboAvailableNow() {
+      try {
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const myTime = new Date(utc + (3600000 * 8));
+        const day = myTime.getDay(); // 0 是周日, 1~5 是周一至五, 6 是周六
+        const mins = myTime.getHours() * 60 + myTime.getMinutes();
+        const isWeekday = (day >= 1 && day <= 5);
+        const isTimeSlot = (mins >= 660 && mins < 1080); // 11:00 (660分) ~ 18:00 (1080分)
+        return isWeekday && isTimeSlot;
+      } catch(e) {
+        return true;
+      }
+    }
+
     function renderCategoryTabs() {
       const cats = ["全部", "超值套餐", "汤螺蛳粉", "招牌干捞", "炒粉炒饭", "特色小吃", "饮品甜品"];
       const nav = document.getElementById("categoryNavBar");
@@ -2297,10 +2313,21 @@
         const items = MENU.filter(p => p.cat === cat);
         if (items.length === 0) return;
 
+        const isComboCat = (cat === '超值套餐');
+        const comboAvail = isValueComboAvailableNow();
+
         html += `
-          <div class="category-section-title">
-            <span class="cat-title-text">${CAT_ICONS[cat] || '📌'} ${cat}</span>
-            <span class="cat-title-count">${items.length} 道精选</span>
+          <div class="category-section-title" style="${isComboCat ? 'flex-direction:column; align-items:flex-start; gap:6px;' : ''}">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+              <span class="cat-title-text">${CAT_ICONS[cat] || '📌'} ${cat}</span>
+              <span class="cat-title-count">${items.length} 道精选</span>
+            </div>
+            ${isComboCat ? `
+              <div style="font-size:12px; font-weight:600; color:${comboAvail ? '#10b981' : '#f59e0b'}; display:inline-flex; align-items:center; gap:6px; background:${comboAvail ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)'}; padding:4px 10px; border-radius:8px; border:1px solid ${comboAvail ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'};">
+                <span>⏰ 供应时段：周一至周五 11:00 - 18:00</span>
+                <span style="background:${comboAvail ? '#10b981' : '#f59e0b'}; color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; font-weight:700;">${comboAvail ? '供应中' : '非供应时段'}</span>
+              </div>
+            ` : ''}
           </div>
           <div class="food-card-grid">
         `;
@@ -2335,13 +2362,20 @@
     /* REDESIGNED CARD HTML: Image on top right, Red button placed BELOW the image */
     function buildFoodCardHTML(p) {
       const hasMods = p.mods && p.mods.length > 0;
+      const isCombo = (p.cat === '超值套餐' || p.id.startsWith('SET-'));
+      const comboAvail = isValueComboAvailableNow();
+      const isAvailable = !isCombo || comboAvail;
+
       return `
-        <div class="food-card" onclick="handleCardClick('${p.id}')">
+        <div class="food-card ${!isAvailable ? 'time-locked-card' : ''}" style="${!isAvailable ? 'opacity:0.85;' : ''}" onclick="handleCardClick('${p.id}')">
           <div class="food-card-content">
             <div class="food-card-top">
-              <span class="food-code-tag">${p.id}</span>
+              <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-bottom:4px;">
+                <span class="food-code-tag">${p.id}</span>
+                ${isCombo ? `<span class="food-badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;">⏰ 周一至五 11:00-18:00</span>` : ''}
+                ${p.badge ? `<span class="food-badge">${p.badge}</span>` : ''}
+              </div>
               <h3 class="food-title">${p.name}</h3>
-              ${p.badge ? `<span class="food-badge">${p.badge}</span>` : ''}
               <p class="food-desc">${p.desc || ''}</p>
             </div>
             <div class="food-price-row">
@@ -2362,8 +2396,11 @@
                 </div>
               `}
             </div>
-            <button class="add-action-btn" onclick="event.stopPropagation(); handleCardClick('${p.id}')" aria-label="加购 ${p.name}">
-              ${hasMods ? '选配料 +' : '加入 +'}
+            <button class="add-action-btn" 
+                    style="${!isAvailable ? 'background:#64748b; font-size:11px;' : ''}"
+                    onclick="event.stopPropagation(); handleCardClick('${p.id}')" 
+                    aria-label="${isAvailable ? (hasMods ? '选配料 +' : '加入 +') : '非供应时段'}">
+              ${isAvailable ? (hasMods ? '选配料 +' : '加入 +') : '非供应时段'}
             </button>
           </div>
         </div>
@@ -2373,6 +2410,12 @@
     function handleCardClick(id) {
       activeItem = MENU.find(p => p.id === id);
       if (!activeItem) return;
+
+      if ((activeItem.cat === '超值套餐' || activeItem.id.startsWith('SET-')) && !isValueComboAvailableNow()) {
+        alert("⏰ 【超值套餐】仅限周一至周五 11:00 ~ 18:00 (工作日限定) 供应哦！\n当前非供应时段，欢迎选购经典单点螺蛳粉或其他美味佳肴！");
+        return;
+      }
+
       if (!activeItem.mods || activeItem.mods.length === 0) {
         addToCartDirect(activeItem);
       } else {
@@ -2614,6 +2657,11 @@
       if (!name) return alert("请填写顾客姓名！");
       if (!phone) return alert("请填写联络电话！");
       if (currentOrderMode === '外送' && !addr) return alert("请填写送餐地址！");
+
+      const hasComboInCart = cart.some(it => it.id.startsWith('SET-'));
+      if (hasComboInCart && !isValueComboAvailableNow()) {
+        return alert("⏰ 订单中包含【超值套餐】，该套餐仅限周一至周五 11:00 ~ 18:00 订购！\n当前非供应时段，请移除套餐后再提交订单哦。");
+      }
 
       const totals = calculateCartTotals();
       let lines = [
