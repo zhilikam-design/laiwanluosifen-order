@@ -375,7 +375,7 @@
   },
   {
     "id": "B1",
-    "cat": "炒的系列",
+    "cat": "爆炒系列",
     "name": "B1 现炒螺蛳粉 Fried Luosifen",
     "price": 15.8,
     "mods": [
@@ -387,7 +387,7 @@
   },
   {
     "id": "B2",
-    "cat": "炒的系列",
+    "cat": "爆炒系列",
     "name": "B2 现炒羊城米粉 Wok-Fried YangCheng Mee Hoon",
     "price": 12.8,
     "mods": [
@@ -399,7 +399,7 @@
   },
   {
     "id": "B3",
-    "cat": "炒的系列",
+    "cat": "爆炒系列",
     "name": "B3 黄金炒饭 Fried Rice",
     "price": 12.8,
     "mods": [
