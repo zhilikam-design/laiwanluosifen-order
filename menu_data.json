@@ -27,57 +27,57 @@
   {
     "id": "SET-03",
     "cat": "超值套餐",
-    "name": "香炒米粉套餐 Fried Bee Hoon Set",
+    "name": "香炒羊城米粉套餐 Fried YangCheng Bee Hoon Set",
     "price": 15.9,
     "mods": [
       "addons"
     ],
-    "desc": "大火爆炒锅气满满桂林米粉 + 招牌炸物小吃 + 冰爽冷饮组合（仅限周一至周五 11:00-18:00 供应）",
+    "desc": "镬气满满香炒细幼羊城米粉 + 招牌炸物小吃 + 冰爽冷饮组合（仅限周一至周五 11:00-18:00 供应）",
     "img": "images/SET_03.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
   {
     "id": "S1",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S1 原味螺蛳粉 Original Luosifen",
     "price": 12.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "精选广西石螺与大骨慢火久熬浓汤，地道酸辣鲜爽",
+    "desc": "精选广西石螺与大骨慢火久熬浓汤，搭配爽脆酸笋、腐竹、木耳与顺滑米粉，地道酸辣鲜爽",
     "img": "images/S1.jpeg",
     "badge": "🌟 经典老柳州"
   },
   {
     "id": "S2",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen",
     "price": 14.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "金黄溏心香煎荷包蛋，搭配浓郁螺蛳汤粉",
+    "desc": "金黄香煎荷包蛋搭配浓郁螺蛳汤粉，蛋香浓郁酸辣开胃",
     "img": "images/S2.jpeg",
     "badge": ""
   },
   {
     "id": "S3",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen",
     "price": 15.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "现炸蓬松黄金大炸蛋，浸汤3秒吸饱酸辣神仙红汤",
+    "desc": "进店必点！现炸蓬松黄金大炸蛋，浸汤3秒吸饱酸辣神仙红汤，一口爆汁",
     "img": "images/S3.jpeg",
     "badge": "🔥 进店必点"
   },
   {
     "id": "S4",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S4 台湾香肠螺蛳粉 TW Sausage Luosifen",
     "price": 15.8,
     "mods": [
@@ -90,7 +90,7 @@
   },
   {
     "id": "S5",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S5 广式腊肠螺蛳粉 CN Sausage Luosifen",
     "price": 15.8,
     "mods": [
@@ -103,7 +103,7 @@
   },
   {
     "id": "S6",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S6 虎皮凤爪螺蛳粉 Chicken Feet Luosifen",
     "price": 16.8,
     "mods": [
@@ -115,8 +115,46 @@
     "badge": "👑 招牌脱骨"
   },
   {
+    "id": "S14",
+    "cat": "汤面系列",
+    "name": "S14 焦香午餐肉螺蛳粉 Crispy Luncheon Meat Luosifen",
+    "price": 16.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "严选厚切午餐肉慢煎至双面焦香酥脆，吸附鲜浓螺蛳汤汁",
+    "img": "images/S14.jpeg",
+    "badge": "✨ 新品推荐"
+  },
+  {
+    "id": "S16",
+    "cat": "汤面系列",
+    "name": "S16 卤牛肉粒米线 Braised Diced Beef Mee Sua",
+    "price": 16.8,
+    "mods": [
+      "addons"
+    ],
+    "desc": "精选慢火秘卤软烂牛腩切粒（足料大粒），搭配顺滑福建面线与清甜骨汤，肉香浓郁温和养胃（不辣）",
+    "img": "images/S16.jpeg",
+    "badge": "🥩 足料牛肉粒"
+  },
+  {
+    "id": "S12",
+    "cat": "汤面系列",
+    "name": "S12 秘制猪脚螺蛳粉 Pig's Trotter Luosifen",
+    "price": 15.99,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "大块胶原蛋白慢火炖猪脚，软烂脱骨浓香四溢",
+    "img": "images/S12.jpeg",
+    "badge": "🍖 软烂脱骨"
+  },
+  {
     "id": "S7",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S7 鲜肉螺蛳粉 XianRou Luosifen",
     "price": 19.8,
     "mods": [
@@ -129,7 +167,7 @@
   },
   {
     "id": "S8",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S8 锅烧螺蛳粉 GuoShao Luosifen",
     "price": 19.8,
     "mods": [
@@ -142,7 +180,7 @@
   },
   {
     "id": "S9",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S9 叉烧螺蛳粉 ChaShao Luosifen",
     "price": 19.8,
     "mods": [
@@ -155,7 +193,7 @@
   },
   {
     "id": "S10",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S10 卤香肥肠螺蛳粉 FeiChuang Luosifen",
     "price": 19.8,
     "mods": [
@@ -167,34 +205,8 @@
     "badge": "⭐ 肥肠爱好者"
   },
   {
-    "id": "S11",
-    "cat": "汤螺蛳粉",
-    "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup",
-    "price": 12.8,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "柔韧顺滑纯粮桂林米粉，原汁醇汤清香开胃",
-    "img": "images/S11.jpeg",
-    "badge": ""
-  },
-  {
-    "id": "S12",
-    "cat": "汤螺蛳粉",
-    "name": "S12 秘制猪脚螺蛳粉 Pig's Trotter Luosifen",
-    "price": 15.99,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "大块胶原蛋白慢火炖猪脚，软烂脱骨浓香四溢",
-    "img": "images/S12.jpeg",
-    "badge": "🍖 软烂脱骨"
-  },
-  {
     "id": "S13",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S13 秘制牛腩螺蛳粉 Beef Brisket Luosifen",
     "price": 19.8,
     "mods": [
@@ -206,21 +218,8 @@
     "badge": "🥩 大块牛腩"
   },
   {
-    "id": "S14",
-    "cat": "汤螺蛳粉",
-    "name": "S14 焦香午餐肉螺蛳粉 Crispy Luncheon Meat Luosifen",
-    "price": 16.8,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "严选厚切午餐肉慢煎至双面焦香酥脆，吸附鲜浓螺蛳汤汁",
-    "img": "images/S14.jpeg",
-    "badge": "✨ 新品推荐"
-  },
-  {
     "id": "S15",
-    "cat": "汤螺蛳粉",
+    "cat": "汤面系列",
     "name": "S15 焦香午餐肉炸蛋螺蛳粉 Combo Luncheon Meat & Fried Egg Luosifen",
     "price": 19.8,
     "mods": [
@@ -228,142 +227,155 @@
       "addons"
     ],
     "desc": "焦香厚切午餐肉 + 吸汤大炸蛋豪华CP组合，一口肉香一口蛋香",
-    "img": "",
+    "img": "images/S14.jpeg",
     "badge": "👑 豪华双拼"
   },
   {
+    "id": "S11",
+    "cat": "汤面系列",
+    "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup",
+    "price": 12.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "柔韧顺滑纯粮桂林米粉，原汁醇汤清香开胃（不辣）",
+    "img": "images/S11.jpeg",
+    "badge": ""
+  },
+  {
     "id": "D1",
-    "cat": "招牌干捞",
-    "name": "D1 炸蛋干捞螺蛳粉 Deep Fried Egg Dry Luosifen",
+    "cat": "干捞系列",
+    "name": "D1 炸蛋干捞粉 Deep-Fried Egg Dry Rice Noodles",
     "price": 15.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "吸汤黄金大炸蛋淋上特制酸辣干捞浓酱，拌粉绝配",
+    "desc": "现炸黄金大炸蛋淋上特制酸辣干捞浓酱，与柔韧米粉、炸腐竹、花生深度热拌，蛋香浓醇",
     "img": "images/D1.jpeg",
     "badge": "🥢 浓郁干捞"
   },
   {
     "id": "D2",
-    "cat": "招牌干捞",
-    "name": "D2 原味干捞螺蛳粉 Dry Luosifen",
+    "cat": "干捞系列",
+    "name": "D2 螺蛳干捞粉 Signature Dry Luosifen",
     "price": 13.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "秘调浓稠干捞香辣酱汁与酸笋腐竹深度拌匀，根根裹酱",
+    "desc": "螺蛳专属经典：秘调浓稠干捞香辣酱汁与正宗酸笋、木耳、腐竹、花生深度热拌，根根裹酱够味",
     "img": "images/D2.jpeg",
-    "badge": ""
+    "badge": "🌟 螺蛳经典"
   },
   {
     "id": "D3",
-    "cat": "招牌干捞",
-    "name": "D3 煎蛋干捞螺蛳粉 Fried Egg Dry Luosifen",
+    "cat": "干捞系列",
+    "name": "D3 煎蛋干捞粉 Fried Egg Dry Rice Noodles",
     "price": 14.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "香煎金黄荷包蛋拌入特调干捞酱汁，酸辣浓醇",
+    "desc": "香煎金黄荷包蛋拌入特调干捞浓酱，搭配香脆花生与炸腐竹，酸辣浓醇咸香开胃",
     "img": "images/D3.jpeg",
     "badge": ""
   },
   {
     "id": "D4",
-    "cat": "招牌干捞",
-    "name": "D4 台湾香肠干捞粉 TW Sausage Dry Luosifen",
+    "cat": "干捞系列",
+    "name": "D4 台湾香肠干捞粉 Taiwanese Sausage Dry Rice Noodles",
     "price": 15.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "焦香香肠搭配浓郁干捞酱汁，咸甜开胃",
+    "desc": "外皮焦脆微甜多汁的台湾香肠切片，拌入特调干捞米粉与炸腐竹，咸甜焦香风味绝佳",
     "img": "images/D4.jpeg",
     "badge": ""
   },
   {
-    "id": "D5",
-    "cat": "招牌干捞",
-    "name": "D5 卤香肥肠干捞粉 FeiChuang Dry Luosifen",
-    "price": 19.8,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "Q弹爽滑卤肥肠遇上特调干捞酱汁，浓香爆口",
-    "img": "images/D5.jpeg",
-    "badge": ""
-  },
-  {
-    "id": "D6",
-    "cat": "招牌干捞",
-    "name": "D6 嫩滑鲜肉干捞粉 XianRou Dry Luosifen",
-    "price": 19.8,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "大片嫩滑鲜肉与干捞特调红酱深度融合",
-    "img": "images/D6.jpeg",
-    "badge": ""
-  },
-  {
-    "id": "D7",
-    "cat": "招牌干捞",
-    "name": "D7 脆皮锅烧干捞粉 GuoShao Dry Luosifen",
-    "price": 19.8,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "黄金酥脆锅烧肉拌入干捞粉，酥脆爆汁",
-    "img": "images/D7.jpeg",
-    "badge": ""
-  },
-  {
-    "id": "D8",
-    "cat": "招牌干捞",
-    "name": "D8 蜜汁叉烧干捞粉 ChaShao Dry Luosifen",
-    "price": 19.8,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "经典厚切蜜汁叉烧拌粉，甜咸交织别具风味",
-    "img": "images/D8.jpeg",
-    "badge": ""
-  },
-  {
-    "id": "D9",
-    "cat": "招牌干捞",
-    "name": "D9 秘制牛腩干捞粉 Beef Brisket Dry Luosifen",
-    "price": 19.8,
-    "mods": [
-      "spicy",
-      "addons"
-    ],
-    "desc": "大块软烂牛腩裹满特调干捞酱汁，肉感满满",
-    "img": "images/D9.jpeg",
-    "badge": "🥩 大块牛腩"
-  },
-  {
     "id": "D10",
-    "cat": "招牌干捞",
-    "name": "D10 焦香午餐肉干捞粉 Crispy Luncheon Meat Dry Luosifen",
+    "cat": "干捞系列",
+    "name": "D10 焦香午餐肉干捞粉 Crispy Luncheon Meat Dry Rice Noodles",
     "price": 17.8,
     "mods": [
       "spicy",
       "addons"
     ],
-    "desc": "双面微焦厚切午餐肉与浓醇干捞酱汁热拌，咸香爆汁",
+    "desc": "现煎3大厚片焦香午餐肉与浓醇干捞酱汁、炸腐竹、花生热拌，焦香扑鼻咸香爆汁",
     "img": "images/D10.jpeg",
     "badge": "✨ 新品推荐"
   },
   {
+    "id": "D5",
+    "cat": "干捞系列",
+    "name": "D5 肥肠干捞粉 Braised Pork Intestines Dry Rice Noodles",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "手工洗净慢卤软糯肥肠，遇上特调干捞浓酱与炸腐竹，浓香爆口Q弹有嚼劲",
+    "img": "images/D5.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D6",
+    "cat": "干捞系列",
+    "name": "D6 鲜肉干捞粉 Sliced Pork Dry Rice Noodles",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "大片滑嫩鲜猪肉裹满特调干捞红酱与炸腐竹、花生，鲜香入味大口过瘾",
+    "img": "images/D6.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D7",
+    "cat": "干捞系列",
+    "name": "D7 锅烧干捞粉 Crispy Pork Belly (Guo Shao) Dry Rice Noodles",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "传统黄金脆皮锅烧五花肉拌入干捞米粉，外皮咔滋酥脆内里多汁，拌酱风味极佳",
+    "img": "images/D7.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D8",
+    "cat": "干捞系列",
+    "name": "D8 叉烧干捞粉 Char Siew BBQ Pork Dry Rice Noodles",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "蜜汁特制厚切叉烧拌入特调干捞米粉与炸腐竹，甜咸交织别具风味",
+    "img": "images/D8.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "D9",
+    "cat": "干捞系列",
+    "name": "D9 牛腩干捞粉 Braised Beef Brisket Dry Rice Noodles",
+    "price": 19.8,
+    "mods": [
+      "spicy",
+      "addons"
+    ],
+    "desc": "大块软烂牛腩淋上原汁牛腩卤汁与特调干捞浓酱，肉感满满浓香扑鼻",
+    "img": "images/D9.jpeg",
+    "badge": "🥩 大块牛腩"
+  },
+  {
     "id": "B1",
-    "cat": "炒粉炒饭",
+    "cat": "炒的系列",
     "name": "B1 现炒螺蛳粉 Fried Luosifen",
     "price": 15.8,
     "mods": [
@@ -375,25 +387,25 @@
   },
   {
     "id": "B2",
-    "cat": "炒粉炒饭",
-    "name": "B2 经典炒米粉 Fried Mee Hoon",
+    "cat": "炒的系列",
+    "name": "B2 现炒羊城米粉 Wok-Fried YangCheng Mee Hoon",
     "price": 12.8,
     "mods": [
       "addons"
     ],
-    "desc": "大火快炒香气扑鼻，粉条筋道根根分明",
+    "desc": "选用正宗传统细幼羊城米粉，猛火爆炒锅气扑鼻！粉条柔韧分明、吸饱鲜香酱汁干香不油腻（不辣）",
     "img": "images/B2.jpeg",
-    "badge": ""
+    "badge": "🔥 传统羊城米粉"
   },
   {
     "id": "B3",
-    "cat": "炒粉炒饭",
+    "cat": "炒的系列",
     "name": "B3 黄金炒饭 Fried Rice",
     "price": 12.8,
     "mods": [
       "addons"
     ],
-    "desc": "粒粒分明金黄喷香，传统大火炒制经典滋味",
+    "desc": "粒粒分明金黄喷香，传统大火炒制经典滋味（不辣）",
     "img": "images/B3.jpeg",
     "badge": ""
   },
@@ -455,6 +467,26 @@
     "mods": [],
     "desc": "金黄香脆海鲜风味豆腐，鲜香软嫩",
     "img": "images/C23.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "C1",
+    "cat": "特色小吃",
+    "name": "C1 手工水饺 Homemade Dumplings",
+    "price": 12.8,
+    "mods": [],
+    "desc": "手工包制鲜肉饺子，皮薄馅大鲜嫩多汁",
+    "img": "images/C1.jpeg",
+    "badge": ""
+  },
+  {
+    "id": "C2",
+    "cat": "特色小吃",
+    "name": "C2 手工云吞 Homemade Wantan",
+    "price": 12.8,
+    "mods": [],
+    "desc": "传统手工新鲜猪肉云吞，皮薄顺滑",
+    "img": "images/C2.jpeg",
     "badge": ""
   },
   {
@@ -561,7 +593,7 @@
     "id": "F02",
     "cat": "饮品甜品",
     "name": "F02 矿泉水 Mineral Water",
-    "price": 2.0,
+    "price": 2,
     "mods": [],
     "desc": "纯净清凉瓶装矿泉水",
     "img": "images/F02.jpeg",
@@ -571,7 +603,7 @@
     "id": "F03",
     "cat": "饮品甜品",
     "name": "F03 康师傅冰红茶 Iced Black Tea",
-    "price": 4.0,
+    "price": 4,
     "mods": [],
     "desc": "螺蛳粉黄金解辣神器，柠檬红茶冰凉酸甜",
     "img": "images/F03.jpeg",
@@ -581,7 +613,7 @@
     "id": "F04",
     "cat": "饮品甜品",
     "name": "F04 竹蔗马蹄 Sugarcane Water Chestnut",
-    "price": 4.0,
+    "price": 4,
     "mods": [],
     "desc": "天然清甜降火，生津止渴",
     "img": "images/F04.jpeg",
@@ -591,7 +623,7 @@
     "id": "F05",
     "cat": "饮品甜品",
     "name": "F05 王老吉凉茶 Wong Lo Kat",
-    "price": 4.0,
+    "price": 4,
     "mods": [],
     "desc": "怕上火喝王老吉，吃辣必备正宗草本凉茶",
     "img": "images/F05.jpeg",
@@ -611,7 +643,7 @@
     "id": "F07",
     "cat": "饮品甜品",
     "name": "F07 冰糖雪梨 Rock Sugar Pear",
-    "price": 4.0,
+    "price": 4,
     "mods": [],
     "desc": "润喉清甜，滋润解腻",
     "img": "images/F07.jpeg",
@@ -621,7 +653,7 @@
     "id": "F08",
     "cat": "饮品甜品",
     "name": "F08 蜜桃乌龙茶 Peach Oolong",
-    "price": 4.0,
+    "price": 4,
     "mods": [],
     "desc": "馥郁果香与醇厚乌龙茶香完美融合",
     "img": "images/F08.jpeg",
@@ -641,7 +673,7 @@
     "id": "F10",
     "cat": "饮品甜品",
     "name": "F10 可口可乐 Coca-Cola",
-    "price": 4.0,
+    "price": 4,
     "mods": [],
     "desc": "冰镇经典碳酸汽水，劲爽气泡",
     "img": "images/F10.jpeg",
@@ -661,7 +693,7 @@
     "id": "F12",
     "cat": "饮品甜品",
     "name": "F12 冰镇豆奶 Soya Bean Milk",
-    "price": 5.0,
+    "price": 5,
     "mods": [],
     "desc": "香浓醇厚冷藏豆奶，清凉解辣",
     "img": "images/F12.jpeg",
@@ -671,7 +703,7 @@
     "id": "F13",
     "cat": "饮品甜品",
     "name": "F13 祖传八宝凉茶 Traditional Herbal Tea",
-    "price": 5.0,
+    "price": 5,
     "mods": [],
     "desc": "慢火熬制传统草本凉茶，清凉解热",
     "img": "images/F13.jpeg",
@@ -681,7 +713,7 @@
     "id": "F14",
     "cat": "饮品甜品",
     "name": "F14 蜂蜜菊花茶 Honey Chrysanthemum",
-    "price": 5.0,
+    "price": 5,
     "mods": [],
     "desc": "清甜蜂蜜搭配幽香菊花，舒爽降火",
     "img": "images/F14.jpeg",
@@ -691,7 +723,7 @@
     "id": "F15",
     "cat": "饮品甜品",
     "name": "F15 山楂酸梅汤 Hawthorn Plum Drink",
-    "price": 5.0,
+    "price": 5,
     "mods": [],
     "desc": "古法慢熬生津止渴，酸甜适口解油腻",
     "img": "images/F15.jpeg",
@@ -701,7 +733,7 @@
     "id": "F16",
     "cat": "饮品甜品",
     "name": "F16 香兰洛神花 Pandan Roselle",
-    "price": 5.0,
+    "price": 5,
     "mods": [],
     "desc": "东南亚香兰叶幽香遇上红润洛神花酸甜",
     "img": "images/F16.jpeg",
@@ -711,7 +743,7 @@
     "id": "F17",
     "cat": "饮品甜品",
     "name": "F17 新鲜甘蔗汁 Fresh Sugarcane Juice",
-    "price": 6.0,
+    "price": 6,
     "mods": [],
     "desc": "新鲜现榨甘蔗原汁，清甜爽口自然甘美",
     "img": "images/F17.jpeg",
@@ -721,7 +753,7 @@
     "id": "F18",
     "cat": "饮品甜品",
     "name": "F18 原味爱玉冰 Ice Jelly",
-    "price": 5.0,
+    "price": 5,
     "mods": [],
     "desc": "Q弹爽滑天然爱玉冻，冰镇透心凉",
     "img": "images/F18.jpeg",
@@ -731,7 +763,7 @@
     "id": "F19",
     "cat": "饮品甜品",
     "name": "F19 酸柑酸梅 Calamansi Sour Plum",
-    "price": 5.0,
+    "price": 5,
     "mods": [],
     "desc": "新鲜青金桔酸爽爆汁，配咸话梅生津开胃",
     "img": "images/F19.jpeg",
@@ -741,7 +773,7 @@
     "id": "F20",
     "cat": "饮品甜品",
     "name": "F20 葡萄爱玉冰 Grape Ice Jelly",
-    "price": 6.0,
+    "price": 6,
     "mods": [],
     "desc": "清爽葡萄果香与晶莹爱玉冻的冰凉碰撞",
     "img": "images/F20.jpeg",
@@ -751,7 +783,7 @@
     "id": "F21",
     "cat": "饮品甜品",
     "name": "F21 苹果味爱玉冰 Apple Ice Jelly",
-    "price": 6.0,
+    "price": 6,
     "mods": [],
     "desc": "清爽苹果果香搭配Q弹爱玉冻，冰爽沁心",
     "img": "images/F21.jpeg",
