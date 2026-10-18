@@ -1785,7 +1785,7 @@
   },
   {
     "id": "B1",
-    "cat": "炒的系列",
+    "cat": "爆炒系列",
     "name": "B1 现炒螺蛳粉 Fried Luosifen",
     "price": 15.8,
     "mods": [
@@ -1797,7 +1797,7 @@
   },
   {
     "id": "B2",
-    "cat": "炒的系列",
+    "cat": "爆炒系列",
     "name": "B2 现炒羊城米粉 Wok-Fried YangCheng Mee Hoon",
     "price": 12.8,
     "mods": [
@@ -1809,7 +1809,7 @@
   },
   {
     "id": "B3",
-    "cat": "炒的系列",
+    "cat": "爆炒系列",
     "name": "B3 黄金炒饭 Fried Rice",
     "price": 12.8,
     "mods": [
@@ -2251,7 +2251,7 @@
         if (match) {
           const json = JSON.parse(match[1]);
           if (json.status === 'ok' && json.table && json.table.rows && json.table.rows.length > 0) {
-            const validCategories = ["超值套餐", "汤面系列", "干捞系列", "炒的系列", "特色小吃", "饮品甜品"];
+            const validCategories = ["超值套餐", "汤面系列", "干捞系列", "爆炒系列", "特色小吃", "饮品甜品"];
             const list = [];
             json.table.rows.forEach(r => {
               const vals = r.c ? r.c.map(c => c ? (c.f || c.v) : '') : [];
@@ -2305,7 +2305,7 @@
     }
 
     function renderCategoryTabs() {
-      const cats = ["全部", "超值套餐", "汤面系列", "干捞系列", "炒的系列", "特色小吃", "饮品甜品"];
+      const cats = ["全部", "超值套餐", "汤面系列", "干捞系列", "爆炒系列", "特色小吃", "饮品甜品"];
       const nav = document.getElementById("categoryNavBar");
       nav.innerHTML = cats.map((c, i) => `
         <button class="cat-chip-btn ${i === 0 ? 'active' : ''}" onclick="filterCat('${c}', this)">
@@ -2337,7 +2337,7 @@
     function renderMenu(filterCat = "全部") {
       const feed = document.getElementById("menuFeed");
       const cats = filterCat === "全部" 
-        ? ["超值套餐", "汤面系列", "干捞系列", "炒的系列", "特色小吃", "饮品甜品"]
+        ? ["超值套餐", "汤面系列", "干捞系列", "爆炒系列", "特色小吃", "饮品甜品"]
         : [filterCat];
 
       let html = "";
