@@ -3,7 +3,7 @@
     "id": "SET-01",
     "cat": "超值套餐",
     "name": "招牌螺蛳粉汤套餐 Signature Luosifen Set",
-    "price": 17.9,
+    "price": 16.27,
     "mods": [
       "spicy",
       "addons"
@@ -16,7 +16,7 @@
     "id": "SET-02",
     "cat": "超值套餐",
     "name": "黄金炒饭套餐 Fried Rice Set",
-    "price": 15.9,
+    "price": 14.45,
     "mods": [
       "addons"
     ],
@@ -28,7 +28,7 @@
     "id": "SET-03",
     "cat": "超值套餐",
     "name": "香炒羊城米粉套餐 Fried YangCheng Bee Hoon Set",
-    "price": 15.9,
+    "price": 14.45,
     "mods": [
       "addons"
     ],
