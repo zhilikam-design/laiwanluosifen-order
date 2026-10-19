@@ -570,16 +570,6 @@
     "badge": ""
   },
   {
-    "id": "C11",
-    "cat": "特色小吃",
-    "name": "C11 炸云吞 (8个) Fried Wonton",
-    "price": 7.8,
-    "mods": [],
-    "desc": "金黄酥脆皮薄馅大，附送特制酸辣蘸酱 (8个)",
-    "img": "images/C11.jpeg",
-    "badge": ""
-  },
-  {
     "id": "F01",
     "cat": "饮品甜品",
     "name": "F01 Justea 绿茶 Green Tea",
