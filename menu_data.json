@@ -432,40 +432,40 @@
   {
     "id": "C20",
     "cat": "特色小吃",
-    "name": "C20 招牌龙虾丸 Signature Lobster Balls",
+    "name": "C20 招牌龙虾丸 (5粒) Signature Lobster Balls (5pcs)",
     "price": 5.9,
     "mods": [],
-    "desc": "鲜甜弹牙金黄炸龙虾丸，外酥里嫩",
+    "desc": "鲜甜弹牙金黄炸龙虾丸，外酥里嫩 (5粒)",
     "img": "images/C20.jpeg",
     "badge": ""
   },
   {
     "id": "C21",
     "cat": "特色小吃",
-    "name": "C21 秘制炸肉圆 Crispy Savory Meatballs",
+    "name": "C21 秘制炸肉圆 (5粒) Crispy Savory Meatballs (5pcs)",
     "price": 5.9,
     "mods": [],
-    "desc": "独家调味手工肉圆炸至金黄，香脆紧实多汁",
+    "desc": "独家调味手工肉圆炸至金黄，香脆紧实多汁 (5粒)",
     "img": "images/C21.jpeg",
     "badge": ""
   },
   {
     "id": "C22",
     "cat": "特色小吃",
-    "name": "C22 香脆豆腐 Crispy Golden Tofu",
+    "name": "C22 香脆豆腐 (5块) Crispy Golden Tofu (5pcs)",
     "price": 5.9,
     "mods": [],
-    "desc": "外酥里嫩金黄豆腐块，沾酱绝佳",
+    "desc": "外酥里嫩金黄豆腐块，沾酱绝佳 (5块)",
     "img": "images/C22.jpeg",
     "badge": ""
   },
   {
     "id": "C23",
     "cat": "特色小吃",
-    "name": "C23 黄金海鲜豆腐 Golden Seafood Tofu",
+    "name": "C23 黄金海鲜豆腐 (5块) Golden Seafood Tofu (5pcs)",
     "price": 5.9,
     "mods": [],
-    "desc": "金黄香脆海鲜风味豆腐，鲜香软嫩",
+    "desc": "金黄香脆海鲜风味豆腐，鲜香软嫩 (5块)",
     "img": "images/C23.jpeg",
     "badge": ""
   },
