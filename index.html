@@ -1352,11 +1352,11 @@
     let MENU = [];
     let cart = [];
     let activeItem = null;
-    let selectedSpicy = "微辣 Mild (推荐)";
+    let selectedSpicy = "微辣";
     let selectedStyle = "经典原汤 (Soup)";
-    let selectedComboSnack = "招牌龙虾丸 (5粒)";
-    let selectedNoodleType = "经典柳州米粉 (默认)";
-    let selectedScallion = "正常葱花 Normal";
+    let selectedComboSnack = "招牌龙虾丸 Signature Lobster Balls";
+    let selectedNoodleType = "N1-螺蛳粉";
+    let selectedScallion = "正常葱花";
     let selectedToppings = [];
     let selectedAddons = [];
     let currentOrderMode = '自取';
@@ -1374,87 +1374,85 @@
     };
 
     const MODIFIERS = {
+      // POS Group 6885: 小吃 (超值套餐搭配4选1)
       "combo_snack": {
         "title": "搭配特色小吃（4选1）",
         "options": [
-          { "name": "招牌龙虾丸 (5粒)", "price": 0 },
-          { "name": "香脆豆腐 (5块)", "price": 0 },
-          { "name": "秘制炸肉圆 (5粒)", "price": 0 },
-          { "name": "黄金海鲜豆腐 (5块)", "price": 0 }
+          { "name": "招牌龙虾丸 Signature Lobster Balls", "price": 0 },
+          { "name": "香脆豆腐 Crispy Golden Tofu", "price": 0 },
+          { "name": "秘制炸肉圆 Crispy Savory Meatballs", "price": 0 },
+          { "name": "黄金海鲜豆腐 Golden Seafood Tofu", "price": 0 }
         ]
       },
+      // POS Group 524: 粉类
       "noodle_type": {
-        "title": "粉类选择 (POS 选粉)",
+        "title": "粉类选择",
         "options": [
-          { "name": "经典螺蛳粉 (粗米粉 / 默认)", "price": 0 },
-          { "name": "细幼米粉 (桂林米粉 / Mee Hoon)", "price": 0 }
+          { "name": "N1-螺蛳粉", "price": 0 },
+          { "name": "N2-A1米粉", "price": 0 },
+          { "name": "N3-唯一面", "price": 0 },
+          { "name": "N4-面线", "price": 0 }
         ]
       },
+      // POS Group 526: 辣度
       "spicy": {
         "title": "辣度选择",
         "options": [
-          { "name": "不辣 Non-Spicy", "price": 0 },
-          { "name": "微辣 Mild (推荐)", "price": 0 },
-          { "name": "中辣 Medium", "price": 0 },
-          { "name": "重辣 Extra Spicy", "price": 0 }
+          { "name": "原味", "price": 0 },
+          { "name": "微辣", "price": 0 },
+          { "name": "中辣", "price": 0 },
+          { "name": "大辣", "price": 0 },
+          { "name": "特辣", "price": 0 }
         ]
       },
+      // POS Group 589: 葱花
       "scallion": {
         "title": "葱花定制",
         "options": [
-          { "name": "正常葱花 Normal", "price": 0 },
-          { "name": "不要青葱 (无葱)", "price": 0 },
-          { "name": "多葱花 Extra", "price": 0 },
-          { "name": "葱花另装 Separate", "price": 0 }
+          { "name": "正常葱花", "price": 0 },
+          { "name": "不要葱花", "price": 0 }
         ]
       },
+      // POS Group 585 & 586: 小料1 & 小料2
       "toppings": {
-        "title": "小料配料忌口（可多选，默认全部齐全）",
+        "title": "小料忌口（可多选，默认齐全）",
         "options": [
-          { "name": "不要酸笋 (No Sour Bamboo)" },
-          { "name": "不要腐竹 (No Yuba)" },
-          { "name": "不要豆角酸 (No Sour Beans)" },
-          { "name": "不要花生 (No Peanuts)" },
-          { "name": "不要木耳 (No Wood Ear)" },
-          { "name": "不要青菜 (No Vegetables)" }
+          { "name": "不要酸笋" },
+          { "name": "不要腐竹" },
+          { "name": "不要豆角酸" },
+          { "name": "不要花生" },
+          { "name": "不要木耳" },
+          { "name": "不要蔬菜" }
         ]
       },
+      // POS Group 525: 加料
       "addons": {
-        "title": "系统加料区 (POS Add-ons)",
+        "title": "加料区",
         "groups": [
           {
-            "group_name": "加料区 (荤菜 / 炸蛋 / 卤物)",
+            "group_name": "系统加料 (荤菜/炸蛋/配料)",
             "items": [
-              { "name": "E09 炸蛋 Deep-Fried Egg", "price": 3.0 },
-              { "name": "E01 台湾香肠 TW Sausage", "price": 3.0 },
-              { "name": "E10 凤爪 Chicken Feet", "price": 3.0 },
-              { "name": "E02 煎蛋 Fried Egg", "price": 2.0 },
-              { "name": "E03 卤蛋 Braised Egg", "price": 2.0 },
-              { "name": "E04 豆卜 Tau Pok", "price": 2.0 },
-              { "name": "E05 鹌鹑蛋 Quail Eggs", "price": 3.0 },
-              { "name": "E06 鲜肉 Xian Rou", "price": 8.0 },
-              { "name": "E07 叉烧 Cha Shao", "price": 8.0 },
-              { "name": "E08 锅烧 Guo Shao", "price": 8.0 },
-              { "name": "E12 肥肠 Fei Chuang", "price": 8.0 },
-              { "name": "E11 牛腩 Beef", "price": 9.0 },
-              { "name": "E13 猪脚 Pig's Trotter", "price": 10.8 }
-            ]
-          },
-          {
-            "group_name": "加菜 / 配菜加料 (小料加量)",
-            "items": [
-              { "name": "C12 加粉 Extra Noodle", "price": 2.0 },
-              { "name": "C16 酸笋加量 Extra Sour Bamboo", "price": 2.0 },
-              { "name": "C17 酸豆角加量 Extra Sour Beans", "price": 2.0 },
-              { "name": "C15 花生加量 Extra Peanuts", "price": 2.0 },
-              { "name": "C13 木耳加量 Extra Wood Ear", "price": 2.0 },
-              { "name": "C14 腐竹加量 Extra Yuba", "price": 2.0 }
+              { "name": "E9炸蛋", "price": 3.0 },
+              { "name": "E01台湾香肠", "price": 3.0 },
+              { "name": "E10 风爪", "price": 3.0 },
+              { "name": "E02煎蛋", "price": 2.0 },
+              { "name": "E03卤蛋", "price": 2.0 },
+              { "name": "E04豆卜", "price": 2.0 },
+              { "name": "E05鹌鹑蛋", "price": 3.0 },
+              { "name": "E06鲜肉", "price": 8.0 },
+              { "name": "E07叉烧", "price": 8.0 },
+              { "name": "E08锅烧", "price": 8.0 },
+              { "name": "E12肥肠", "price": 8.0 },
+              { "name": "E11牛腩", "price": 9.0 },
+              { "name": "E13猪脚", "price": 3.99 },
+              { "name": "E14铃铃卷-2pcs", "price": 3.0 },
+              { "name": "E14 焦香午餐肉 (3片)", "price": 4.5 },
+              { "name": "C12 加粉", "price": 2.0 }
             ]
           }
         ]
       }
     };
-
     const DEFAULT_MENU = [
   {
     "id": "SET-01",
@@ -2598,11 +2596,11 @@
     }
 
     function openModSheet() {
-      selectedSpicy = "微辣 Mild (推荐)";
+      selectedSpicy = "微辣";
       selectedStyle = "经典原汤 (Soup)";
-      selectedComboSnack = "招牌龙虾丸 (5粒)";
-      selectedNoodleType = "经典柳州米粉 (默认)";
-      selectedScallion = "正常葱花 Normal";
+      selectedComboSnack = "招牌龙虾丸 Signature Lobster Balls";
+      selectedNoodleType = "N1-螺蛳粉";
+      selectedScallion = "正常葱花";
       selectedToppings = [];
       selectedAddons = [];
 
@@ -2736,11 +2734,13 @@
           <div class="spec-group-title"><span>📝 特殊口味备注</span></div>
           <div class="quick-tags-box">
             <span class="quick-tag" onclick="appendNote('汤粉分开装')">+ 汤粉分开装</span>
-            <span class="quick-tag" onclick="appendNote('不要青葱')">+ 不要青葱</span>
+            <span class="quick-tag" onclick="appendNote('不要葱花')">+ 不要葱花</span>
             <span class="quick-tag" onclick="appendNote('不要酸笋')">+ 不要酸笋</span>
+            <span class="quick-tag" onclick="appendNote('不要腐竹')">+ 不要腐竹</span>
             <span class="quick-tag" onclick="appendNote('不要豆角酸')">+ 不要豆角酸</span>
-            <span class="quick-tag" onclick="appendNote('多放酸笋')">+ 多放酸笋</span>
-            <span class="quick-tag" onclick="appendNote('少油少盐')">+ 少油少盐</span>
+            <span class="quick-tag" onclick="appendNote('不要花生')">+ 不要花生</span>
+            <span class="quick-tag" onclick="appendNote('不要木耳')">+ 不要木耳</span>
+            <span class="quick-tag" onclick="appendNote('不要蔬菜')">+ 不要蔬菜</span>
           </div>
           <textarea id="sheetNoteInput" class="form-field-input" style="height:70px; padding:10px;" placeholder="在此输入特殊要求..."></textarea>
         </div>
