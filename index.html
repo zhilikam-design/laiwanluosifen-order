@@ -1354,6 +1354,7 @@
     let activeItem = null;
     let selectedSpicy = "微辣 Mild (推荐)";
     let selectedStyle = "经典原汤 (Soup)";
+    let selectedComboSnack = "招牌龙虾丸 (5粒)";
     let selectedAddons = [];
     let currentOrderMode = '自取';
 
@@ -1370,6 +1371,15 @@
     };
 
     const MODIFIERS = {
+      "combo_snack": {
+        "title": "搭配特色小吃（4选1）",
+        "options": [
+          { "name": "招牌龙虾丸 (5粒)", "price": 0 },
+          { "name": "香脆豆腐 (5块)", "price": 0 },
+          { "name": "秘制炸肉圆 (5粒)", "price": 0 },
+          { "name": "黄金海鲜豆腐 (5块)", "price": 0 }
+        ]
+      },
       "spicy": {
         "title": "辣度选择",
         "options": [
@@ -1422,37 +1432,40 @@
   {
     "id": "SET-01",
     "cat": "超值套餐",
-    "name": "招牌螺蛳粉汤套餐 Signature Luosifen Set",
+    "name": "招牌螺蛳粉超值套餐 Signature Luosifen Set",
     "price": 16.27,
     "mods": [
       "spicy",
+      "combo_snack",
       "addons"
     ],
-    "desc": "地道柳州原汤经典螺蛳粉 + 招牌现炸吸汤大炸蛋（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
+    "desc": "正宗柳州螺蛳粉 ＋ 招牌特色小吃4选1（龙虾丸5粒 / 香脆豆腐5块 / 秘制炸肉圆5粒 / 黄金海鲜豆腐5块，仅限周一至五 11:00-18:00）",
     "img": "images/SET_01.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
   {
     "id": "SET-02",
     "cat": "超值套餐",
-    "name": "黄金炒饭套餐 Fried Rice Set",
+    "name": "黄金炒饭超值套餐 Fried Rice Set",
     "price": 14.45,
     "mods": [
+      "combo_snack",
       "addons"
     ],
-    "desc": "粒粒金黄大火现炒饭 + 黄金秘制香脆炸鸡排（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
+    "desc": "镬气黄金现炒饭 ＋ 招牌特色小吃4选1（龙虾丸5粒 / 香脆豆腐5块 / 秘制炸肉圆5粒 / 黄金海鲜豆腐5块，仅限周一至五 11:00-18:00）",
     "img": "images/SET_02.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
   {
     "id": "SET-03",
     "cat": "超值套餐",
-    "name": "香炒羊城米粉套餐 Fried YangCheng Bee Hoon Set",
+    "name": "香炒羊城米粉超值套餐 Fried Mee Hoon Set",
     "price": 14.45,
     "mods": [
+      "combo_snack",
       "addons"
     ],
-    "desc": "镬气满满香炒细幼羊城米粉 + 黄金秘制香脆炸鸡排（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
+    "desc": "猛火爆炒细幼米粉 ＋ 招牌特色小吃4选1（龙虾丸5粒 / 香脆豆腐5块 / 秘制炸肉圆5粒 / 黄金海鲜豆腐5块，仅限周一至五 11:00-18:00）",
     "img": "images/SET_03.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
@@ -2458,6 +2471,7 @@
     function openModSheet() {
       selectedSpicy = "微辣 Mild (推荐)";
       selectedStyle = "经典原汤 (Soup)";
+      selectedComboSnack = "招牌龙虾丸 (5粒)";
       selectedAddons = [];
 
       document.getElementById("sheetItemTitle").innerText = activeItem.name;
@@ -2474,6 +2488,24 @@
             <div class="radio-pill-grid">
               ${MODIFIERS.spicy.options.map(opt => `
                 <div class="radio-pill-card ${opt.name === selectedSpicy ? 'active' : ''}" onclick="selectSpicy('${opt.name}', this)">
+                  ${opt.name}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (activeItem.mods && activeItem.mods.includes("combo_snack")) {
+        html += `
+          <div class="spec-group-box">
+            <div class="spec-group-title">
+              <span>🥟 搭配特色小吃（4选1）</span>
+              <span class="spec-required-badge">必选</span>
+            </div>
+            <div class="radio-pill-grid">
+              ${MODIFIERS.combo_snack.options.map(opt => `
+                <div class="radio-pill-card ${opt.name === selectedComboSnack ? 'active' : ''}" onclick="selectComboSnack('${opt.name}', this)">
                   ${opt.name}
                 </div>
               `).join('')}
@@ -2530,6 +2562,12 @@
       el.classList.add('active');
     }
 
+    function selectComboSnack(val, el) {
+      selectedComboSnack = val;
+      el.parentElement.querySelectorAll('.radio-pill-card').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
     function toggleAddon(name, price, el) {
       const idx = selectedAddons.findIndex(a => a.name === name);
       if (idx > -1) {
@@ -2578,6 +2616,7 @@
         basePrice: activeItem.price,
         unitPrice,
         spicy: activeItem.mods.includes("spicy") ? selectedSpicy : null,
+        comboSnack: activeItem.mods.includes("combo_snack") ? selectedComboSnack : null,
         addons: [...selectedAddons],
         notes,
         qty: 1
@@ -2683,7 +2722,8 @@
           <div>
             <div class="cart-item-name">${it.name}</div>
             <div class="cart-item-spec">
-              ${it.spicy ? it.spicy : ''} 
+              ${it.spicy ? it.spicy + ' ' : ''}
+              ${it.comboSnack ? '<span style="color:#b45309; font-weight:600;">[配: ' + it.comboSnack + ']</span> ' : ''}
               ${it.addons.map(a => '+' + a.name).join(' ')} 
               ${it.notes ? '(' + it.notes + ')' : ''}
             </div>
@@ -2765,6 +2805,7 @@
       cart.forEach((it, i) => {
         lines.push(`${i+1}. *${it.name}* x${it.qty}`);
         if (it.spicy) lines.push(`   - 辣度: ${it.spicy}`);
+        if (it.comboSnack) lines.push(`   - 搭配小吃: ${it.comboSnack}`);
         if (it.addons.length > 0) lines.push(`   - 加料: ${it.addons.map(a => a.name).join(', ')}`);
         if (it.notes) lines.push(`   - 备注: ${it.notes}`);
         lines.push(`   - 小计: RM ${(it.unitPrice * it.qty).toFixed(2)}`);
