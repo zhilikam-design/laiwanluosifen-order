@@ -2753,9 +2753,13 @@
             <span>餐点小计 (${totals.totalQty}件)</span>
             <span style="font-weight:600; color:#1e293b;">RM ${totals.itemsSubtotal.toFixed(2)}</span>
           </div>
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; color:#0f766e;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; color:#0f766e;">
             <span>📦 环保打包盒费 <span style="font-size:11px; color:#64748b;">${boxDetailStr}</span></span>
             <span style="font-weight:700;">+RM ${totals.packagingFee.toFixed(2)}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; color:#16a34a;">
+            <span>✨ 线上订餐服务费</span>
+            <span style="font-weight:700; color:#16a34a;">RM 0.00 (已撤销免收)</span>
           </div>
           <div style="height:1px; background:#cbd5e1; margin:8px 0;"></div>
           <div style="display:flex; justify-content:space-between; align-items:baseline; font-size:14px; font-weight:700; color:#0f172a;">
@@ -2817,7 +2821,8 @@
       if (totals.largeBoxes > 0) boxDetails.push(`大盒 ${totals.largeBoxes}个`);
       if (totals.smallBoxes > 0) boxDetails.push(`小盒 ${totals.smallBoxes}个`);
       const boxDetailStr = boxDetails.length > 0 ? ` (${boxDetails.join(' + ')})` : '';
-      lines.push(`*📦 环保打包盒费:* RM ${totals.packagingFee.toFixed(2)}${boxDetailStr}`);
+      lines.push(`*📦 环保打包盒费:* +RM ${totals.packagingFee.toFixed(2)}${boxDetailStr}`);
+      lines.push(`*服务费 (Service Charge):* RM 0.00 (已撤销免收 ✨)`);
       lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】*`);
       lines.push(`---------------------------------`);
       if (currentOrderMode === '外送') {
@@ -2872,7 +2877,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sheetName: '在线点餐订单总表',
-          headers: ['订单编号', '下单时间', '就餐方式', '顾客姓名', '联络电话', '送餐/就餐地址', '餐品明细', '餐品小计 (RM)', '税费服务费 (RM)', '实付总额 (RM)', '整单备注', '订单状态'],
+          headers: ['订单编号', '下单时间', '就餐方式', '顾客姓名', '联络电话', '送餐/就餐地址', '餐品明细', '餐品小计 (RM)', '打包盒费 (RM)', '服务费 (RM)', '实付总额 (RM)', '整单备注', '订单状态'],
           row: [
             order.orderId,
             order.time,
@@ -2882,7 +2887,8 @@
             order.address,
             order.items,
             order.subtotal,
-            order.tax,
+            totals.packagingFee.toFixed(2),
+            '0.00',
             order.total,
             order.remarks,
             order.status
