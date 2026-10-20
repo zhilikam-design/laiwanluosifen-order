@@ -1226,7 +1226,7 @@
           <span class="cart-badge-count" id="cartTotalBadge">0</span>
         </div>
         <div>
-          <div style="font-size: 11px; opacity: 0.85;">订单总计 (已含税)</div>
+          <div style="font-size: 11px; opacity: 0.85;">订单总计 (含打包盒)</div>
           <div class="cart-price-sum" id="cartTotalSumText">RM 0.00</div>
         </div>
       </div>
@@ -1277,6 +1277,7 @@
 
           <!-- Items List -->
           <div id="cartItemsList"></div>
+          <div id="cartFeeBreakdown" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin: 12px 0 16px;"></div>
 
           <!-- Form Fields -->
           <div class="form-field-wrap">
@@ -1356,7 +1357,7 @@
     let selectedAddons = [];
     let currentOrderMode = '自取';
 
-    const TAX_RATE = 0.10;
+    const TAX_RATE = 0;
     const STORE_WHATSAPP_NUMBER = "601159376363"; // +60 11-5937 6363
 
     const CAT_ICONS = {
@@ -1427,7 +1428,7 @@
       "spicy",
       "addons"
     ],
-    "desc": "地道原汤经典螺蛳粉 + 招牌吸汤大炸蛋 + 清凉解渴饮料组合（仅限周一至周五 11:00-18:00 供应）",
+    "desc": "地道柳州原汤经典螺蛳粉 + 招牌现炸吸汤大炸蛋（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
     "img": "images/SET_01.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
@@ -1439,7 +1440,7 @@
     "mods": [
       "addons"
     ],
-    "desc": "粒粒金黄大火现炒饭 + 特色炸物小吃 + 冰爽冷饮组合（仅限周一至周五 11:00-18:00 供应）",
+    "desc": "粒粒金黄大火现炒饭 + 黄金秘制香脆炸鸡排（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
     "img": "images/SET_02.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
@@ -1451,7 +1452,7 @@
     "mods": [
       "addons"
     ],
-    "desc": "镬气满满香炒细幼羊城米粉 + 招牌炸物小吃 + 冰爽冷饮组合（仅限周一至周五 11:00-18:00 供应）",
+    "desc": "镬气满满香炒细幼羊城米粉 + 黄金秘制香脆炸鸡排（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
     "img": "images/SET_03.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
@@ -2613,11 +2614,41 @@
     }
 
     function calculateCartTotals() {
+      let largeBoxes = 0;
+      let smallBoxes = 0;
+
+      cart.forEach(item => {
+        const id = item.id || '';
+        const qty = item.qty || 1;
+        // Large box (RM 1.00): Combos (SET-), Soup noodles (S), Dry noodles (D), Fried (B), Dumplings/Wantan (C1, C2)
+        if (id.startsWith('SET-') || id.startsWith('S') || id.startsWith('D') || id.startsWith('B') || id === 'C1' || id === 'C2') {
+          largeBoxes += qty;
+        } else if (id.startsWith('C')) {
+          // Small box (RM 0.50): Snacks (C3-C10, C18-C23, etc.)
+          smallBoxes += qty;
+        }
+        // F series (drinks) and addons require no box (RM 0.00)
+      });
+
       const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
       const itemsSubtotal = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
-      const taxAmount = Math.round(itemsSubtotal * TAX_RATE * 100) / 100;
-      const grandTotal = itemsSubtotal + taxAmount;
-      return { totalQty, itemsSubtotal, taxAmount, grandTotal };
+      const largeBoxFee = largeBoxes * 1.00;
+      const smallBoxFee = smallBoxes * 0.50;
+      const packagingFee = largeBoxFee + smallBoxFee;
+      const taxAmount = 0; // Tax rate set to 0 for transparent menu pricing
+      const grandTotal = itemsSubtotal + packagingFee + taxAmount;
+
+      return {
+        totalQty,
+        itemsSubtotal,
+        largeBoxes,
+        smallBoxes,
+        largeBoxFee,
+        smallBoxFee,
+        packagingFee,
+        taxAmount,
+        grandTotal
+      };
     }
 
     function openCartDrawer() {
@@ -2667,6 +2698,32 @@
           </div>
         </div>
       `).join('');
+
+      // Update fee breakdown in cart drawer
+      const totals = calculateCartTotals();
+      const breakdownEl = document.getElementById("cartFeeBreakdown");
+      if (breakdownEl) {
+        let boxDetails = [];
+        if (totals.largeBoxes > 0) boxDetails.push(`大盒 x${totals.largeBoxes} (RM ${totals.largeBoxFee.toFixed(2)})`);
+        if (totals.smallBoxes > 0) boxDetails.push(`小盒 x${totals.smallBoxes} (RM ${totals.smallBoxFee.toFixed(2)})`);
+        const boxDetailStr = boxDetails.length > 0 ? `(${boxDetails.join(' + ')})` : '';
+
+        breakdownEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; color:#475569;">
+            <span>餐点小计 (${totals.totalQty}件)</span>
+            <span style="font-weight:600; color:#1e293b;">RM ${totals.itemsSubtotal.toFixed(2)}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; color:#0f766e;">
+            <span>📦 环保打包盒费 <span style="font-size:11px; color:#64748b;">${boxDetailStr}</span></span>
+            <span style="font-weight:700;">+RM ${totals.packagingFee.toFixed(2)}</span>
+          </div>
+          <div style="height:1px; background:#cbd5e1; margin:8px 0;"></div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; font-size:14px; font-weight:700; color:#0f172a;">
+            <span>应付总计 (${currentOrderMode})</span>
+            <span style="font-size:18px; color:var(--color-primary); font-weight:800;">RM ${totals.grandTotal.toFixed(2)}</span>
+          </div>
+        `;
+      }
     }
 
     function changeQty(idx, delta) {
@@ -2715,7 +2772,11 @@
 
       lines.push(`---------------------------------`);
       lines.push(`*餐点小计:* RM ${totals.itemsSubtotal.toFixed(2)}`);
-      lines.push(`*包含税费(10%):* RM ${totals.taxAmount.toFixed(2)}`);
+      let boxDetails = [];
+      if (totals.largeBoxes > 0) boxDetails.push(`大盒 ${totals.largeBoxes}个`);
+      if (totals.smallBoxes > 0) boxDetails.push(`小盒 ${totals.smallBoxes}个`);
+      const boxDetailStr = boxDetails.length > 0 ? ` (${boxDetails.join(' + ')})` : '';
+      lines.push(`*📦 环保打包盒费:* RM ${totals.packagingFee.toFixed(2)}${boxDetailStr}`);
       lines.push(`*【应付总额: RM ${totals.grandTotal.toFixed(2)}】*`);
       lines.push(`---------------------------------`);
       if (currentOrderMode === '外送') {
