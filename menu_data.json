@@ -2,37 +2,40 @@
   {
     "id": "SET-01",
     "cat": "超值套餐",
-    "name": "招牌螺蛳粉汤套餐 Signature Luosifen Set",
+    "name": "招牌螺蛳粉超值套餐 Signature Luosifen Set",
     "price": 16.27,
     "mods": [
       "spicy",
+      "combo_snack",
       "addons"
     ],
-    "desc": "地道柳州原汤经典螺蛳粉 + 招牌现炸吸汤大炸蛋（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
+    "desc": "正宗柳州螺蛳粉 ＋ 招牌特色小吃4选1（龙虾丸5粒 / 香脆豆腐5块 / 秘制炸肉圆5粒 / 黄金海鲜豆腐5块，仅限周一至五 11:00-18:00）",
     "img": "images/SET_01.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
   {
     "id": "SET-02",
     "cat": "超值套餐",
-    "name": "黄金炒饭套餐 Fried Rice Set",
+    "name": "黄金炒饭超值套餐 Fried Rice Set",
     "price": 14.45,
     "mods": [
+      "combo_snack",
       "addons"
     ],
-    "desc": "粒粒金黄大火现炒饭 + 黄金秘制香脆炸鸡排（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
+    "desc": "镬气黄金现炒饭 ＋ 招牌特色小吃4选1（龙虾丸5粒 / 香脆豆腐5块 / 秘制炸肉圆5粒 / 黄金海鲜豆腐5块，仅限周一至五 11:00-18:00）",
     "img": "images/SET_02.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
   {
     "id": "SET-03",
     "cat": "超值套餐",
-    "name": "香炒羊城米粉套餐 Fried YangCheng Bee Hoon Set",
+    "name": "香炒羊城米粉超值套餐 Fried Mee Hoon Set",
     "price": 14.45,
     "mods": [
+      "combo_snack",
       "addons"
     ],
-    "desc": "镬气满满香炒细幼羊城米粉 + 黄金秘制香脆炸鸡排（超值双拼组合，仅限周一至五 11:00-18:00 供应）",
+    "desc": "猛火爆炒细幼米粉 ＋ 招牌特色小吃4选1（龙虾丸5粒 / 香脆豆腐5块 / 秘制炸肉圆5粒 / 黄金海鲜豆腐5块，仅限周一至五 11:00-18:00）",
     "img": "images/SET_03.jpeg",
     "badge": "⏰ 周一至五 11:00-18:00"
   },
