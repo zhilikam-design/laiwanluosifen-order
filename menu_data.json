@@ -5,7 +5,10 @@
     "name": "招牌螺蛳粉超值套餐 Signature Luosifen Set",
     "price": 16.27,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "combo_snack",
       "addons"
     ],
@@ -19,6 +22,8 @@
     "name": "黄金炒饭超值套餐 Fried Rice Set",
     "price": 14.45,
     "mods": [
+      "spicy",
+      "scallion",
       "combo_snack",
       "addons"
     ],
@@ -32,6 +37,8 @@
     "name": "香炒羊城米粉超值套餐 Fried Mee Hoon Set",
     "price": 14.45,
     "mods": [
+      "spicy",
+      "scallion",
       "combo_snack",
       "addons"
     ],
@@ -45,7 +52,10 @@
     "name": "S1 原味螺蛳粉 Original Luosifen",
     "price": 12.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "精选广西石螺与大骨慢火久熬浓汤，搭配爽脆酸笋、腐竹、木耳与顺滑米粉，地道酸辣鲜爽",
@@ -58,7 +68,10 @@
     "name": "S2 煎蛋螺蛳粉 Fried Egg Luosifen",
     "price": 14.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "金黄香煎荷包蛋搭配浓郁螺蛳汤粉，蛋香浓郁酸辣开胃",
@@ -71,7 +84,10 @@
     "name": "S3 炸蛋螺蛳粉 Deep-Fried Egg Luosifen",
     "price": 15.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "进店必点！现炸蓬松黄金大炸蛋，浸汤3秒吸饱酸辣神仙红汤，一口爆汁",
@@ -84,7 +100,10 @@
     "name": "S4 台湾香肠螺蛳粉 TW Sausage Luosifen",
     "price": 15.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "外皮微脆多汁台湾香肠，咸甜焦香遇上酸辣螺蛳汤",
@@ -97,7 +116,10 @@
     "name": "S5 广式腊肠螺蛳粉 CN Sausage Luosifen",
     "price": 15.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "经典风味腊肠肉香醇厚，传统地道搭配",
@@ -110,7 +132,10 @@
     "name": "S6 虎皮凤爪螺蛳粉 Chicken Feet Luosifen",
     "price": 16.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "广西秘制脱骨虎皮凤爪，软烂入味一吸脱骨",
@@ -123,7 +148,10 @@
     "name": "S14 焦香午餐肉螺蛳粉 Crispy Luncheon Meat Luosifen",
     "price": 16.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "严选厚切午餐肉慢煎至双面焦香酥脆，吸附鲜浓螺蛳汤汁",
@@ -136,6 +164,10 @@
     "name": "S16 卤牛肉粒米线 Braised Diced Beef Mee Sua",
     "price": 16.8,
     "mods": [
+      "noodle_type",
+      "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "精选慢火秘卤软烂牛腩切粒（足料大粒），搭配顺滑福建面线与清甜骨汤，肉香浓郁温和养胃（不辣）",
@@ -148,7 +180,10 @@
     "name": "S12 秘制猪脚螺蛳粉 Pig's Trotter Luosifen",
     "price": 15.99,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "大块胶原蛋白慢火炖猪脚，软烂脱骨浓香四溢",
@@ -161,7 +196,10 @@
     "name": "S7 鲜肉螺蛳粉 XianRou Luosifen",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "精选滑嫩鲜肉片，肉香鲜美，醇厚浓郁",
@@ -174,7 +212,10 @@
     "name": "S8 锅烧螺蛳粉 GuoShao Luosifen",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "传统脆皮锅烧，外皮酥脆内里肉质细嫩",
@@ -187,7 +228,10 @@
     "name": "S9 叉烧螺蛳粉 ChaShao Luosifen",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "蜜汁特制厚切叉烧，咸甜适口与酸辣红汤完美融合",
@@ -200,7 +244,10 @@
     "name": "S10 卤香肥肠螺蛳粉 FeiChuang Luosifen",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "香卤肥肠软糯有嚼劲，处理干净卤香扑鼻",
@@ -213,7 +260,10 @@
     "name": "S13 秘制牛腩螺蛳粉 Beef Brisket Luosifen",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "甄选大块牛腩慢火卤至软烂多汁，肉香浓郁",
@@ -226,7 +276,10 @@
     "name": "S15 焦香午餐肉炸蛋螺蛳粉 Combo Luncheon Meat & Fried Egg Luosifen",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "焦香厚切午餐肉 + 吸汤大炸蛋豪华CP组合，一口肉香一口蛋香",
@@ -239,7 +292,10 @@
     "name": "S11 桂林汤米粉 GuiLin Mee Hoon Soup",
     "price": 12.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "柔韧顺滑纯粮桂林米粉，原汁醇汤清香开胃（不辣）",
@@ -252,7 +308,10 @@
     "name": "D1 炸蛋干捞粉 Deep-Fried Egg Dry Rice Noodles",
     "price": 15.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "现炸黄金大炸蛋淋上特制酸辣干捞浓酱，与柔韧米粉、炸腐竹、花生深度热拌，蛋香浓醇",
@@ -265,7 +324,10 @@
     "name": "D2 螺蛳干捞粉 Signature Dry Luosifen",
     "price": 13.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "螺蛳专属经典：秘调浓稠干捞香辣酱汁与正宗酸笋、木耳、腐竹、花生深度热拌，根根裹酱够味",
@@ -278,7 +340,10 @@
     "name": "D3 煎蛋干捞粉 Fried Egg Dry Rice Noodles",
     "price": 14.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "香煎金黄荷包蛋拌入特调干捞浓酱，搭配香脆花生与炸腐竹，酸辣浓醇咸香开胃",
@@ -291,7 +356,10 @@
     "name": "D4 台湾香肠干捞粉 Taiwanese Sausage Dry Rice Noodles",
     "price": 15.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "外皮焦脆微甜多汁的台湾香肠切片，拌入特调干捞米粉与炸腐竹，咸甜焦香风味绝佳",
@@ -304,7 +372,10 @@
     "name": "D10 焦香午餐肉干捞粉 Crispy Luncheon Meat Dry Rice Noodles",
     "price": 17.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "现煎3大厚片焦香午餐肉与浓醇干捞酱汁、炸腐竹、花生热拌，焦香扑鼻咸香爆汁",
@@ -317,7 +388,10 @@
     "name": "D5 肥肠干捞粉 Braised Pork Intestines Dry Rice Noodles",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "手工洗净慢卤软糯肥肠，遇上特调干捞浓酱与炸腐竹，浓香爆口Q弹有嚼劲",
@@ -330,7 +404,10 @@
     "name": "D6 鲜肉干捞粉 Sliced Pork Dry Rice Noodles",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "大片滑嫩鲜猪肉裹满特调干捞红酱与炸腐竹、花生，鲜香入味大口过瘾",
@@ -343,7 +420,10 @@
     "name": "D7 锅烧干捞粉 Crispy Pork Belly (Guo Shao) Dry Rice Noodles",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "传统黄金脆皮锅烧五花肉拌入干捞米粉，外皮咔滋酥脆内里多汁，拌酱风味极佳",
@@ -356,7 +436,10 @@
     "name": "D8 叉烧干捞粉 Char Siew BBQ Pork Dry Rice Noodles",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "蜜汁特制厚切叉烧拌入特调干捞米粉与炸腐竹，甜咸交织别具风味",
@@ -369,7 +452,10 @@
     "name": "D9 牛腩干捞粉 Braised Beef Brisket Dry Rice Noodles",
     "price": 19.8,
     "mods": [
+      "noodle_type",
       "spicy",
+      "scallion",
+      "toppings",
       "addons"
     ],
     "desc": "大块软烂牛腩淋上原汁牛腩卤汁与特调干捞浓酱，肉感满满浓香扑鼻",
@@ -382,6 +468,8 @@
     "name": "B1 现炒螺蛳粉 Fried Luosifen",
     "price": 15.8,
     "mods": [
+      "spicy",
+      "scallion",
       "addons"
     ],
     "desc": "猛火大铁锅爆炒，锅气十足，螺蛳酱香与爽脆酸笋交织",
@@ -394,6 +482,8 @@
     "name": "B2 现炒羊城米粉 Wok-Fried YangCheng Mee Hoon",
     "price": 12.8,
     "mods": [
+      "spicy",
+      "scallion",
       "addons"
     ],
     "desc": "选用正宗传统细幼羊城米粉，猛火爆炒锅气扑鼻！粉条柔韧分明、吸饱鲜香酱汁干香不油腻（不辣）",
@@ -406,6 +496,8 @@
     "name": "B3 黄金炒饭 Fried Rice",
     "price": 12.8,
     "mods": [
+      "spicy",
+      "scallion",
       "addons"
     ],
     "desc": "粒粒分明金黄喷香，传统大火炒制经典滋味（不辣）",
@@ -477,7 +569,10 @@
     "cat": "特色小吃",
     "name": "C1 手工水饺 Homemade Dumplings",
     "price": 12.8,
-    "mods": [],
+    "mods": [
+      "scallion",
+      "addons"
+    ],
     "desc": "手工包制鲜肉饺子，皮薄馅大鲜嫩多汁",
     "img": "images/C1.jpeg",
     "badge": ""
@@ -487,7 +582,10 @@
     "cat": "特色小吃",
     "name": "C2 手工云吞 Homemade Wantan",
     "price": 12.8,
-    "mods": [],
+    "mods": [
+      "scallion",
+      "addons"
+    ],
     "desc": "传统手工新鲜猪肉云吞，皮薄顺滑",
     "img": "images/C2.jpeg",
     "badge": ""
