@@ -3,7 +3,7 @@
     "id": "SET-01",
     "cat": "超值套餐",
     "name": "招牌螺蛳粉超值套餐 Signature Luosifen Set",
-    "price": 16.27,
+    "price": 17.9,
     "mods": [
       "noodle_type",
       "spicy",
@@ -20,7 +20,7 @@
     "id": "SET-02",
     "cat": "超值套餐",
     "name": "黄金炒饭超值套餐 Fried Rice Set",
-    "price": 14.45,
+    "price": 15.9,
     "mods": [
       "spicy",
       "scallion",
@@ -35,7 +35,7 @@
     "id": "SET-03",
     "cat": "超值套餐",
     "name": "香炒羊城米粉超值套餐 Fried Mee Hoon Set",
-    "price": 14.45,
+    "price": 15.9,
     "mods": [
       "spicy",
       "scallion",
