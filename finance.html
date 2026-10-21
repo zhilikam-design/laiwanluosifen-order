@@ -186,7 +186,13 @@
         <button onclick="switchTab('suppliers')" id="nav-btn-suppliers" class="nav-tab-btn px-3.5 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="truck" class="w-4 h-4 text-amber-500"></i>
           <span>供应商进货对账</span>
-          <span id="nav-badge-suppliers" class="text-[10px] px-1.5 py-0.2 rounded-full mono font-bold" style="background: rgba(245,158,11,0.15); color: var(--accent-amber);">5</span>
+          <span id="nav-badge-suppliers" class="text-[10px] px-1.5 py-0.2 rounded-full mono font-bold" style="background: rgba(245,158,11,0.15); color: var(--accent-amber);">54</span>
+        </button>
+
+        <button onclick="switchTab('material-costs')" id="nav-btn-material-costs" class="nav-tab-btn px-3.5 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
+          <i data-lucide="scale" class="w-4 h-4 text-emerald-500"></i>
+          <span>材料成本价 (预警)</span>
+          <span id="nav-badge-material-costs" class="text-[10px] px-1.5 py-0.2 rounded-full mono font-bold" style="background: rgba(16,185,129,0.15); color: var(--accent-emerald);">62</span>
         </button>
         <button onclick="switchTab('delivery')" id="nav-btn-delivery" class="nav-tab-btn px-3.5 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="bike" class="w-4 h-4 text-sky-500"></i>
@@ -739,6 +745,164 @@
               </tr>
             </thead>
             <tbody id="tbody-ingredients" class="divide-y" style="border-color: var(--border-subtle);">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 4.5: 材料成本价与进价波动监控 (MATERIAL COSTS & ALERT) -->
+    <!-- ============================================================ -->
+    <div id="tab-content-material-costs" class="hidden space-y-6">
+      
+      <!-- 头部控制栏与预警说明 -->
+      <div class="fin-card rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
+              <i data-lucide="scale" class="w-5 h-5 text-emerald-500"></i>
+              <span>核心材料成本价库与进价波动预警</span>
+            </h2>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+              🟢 自动比对预警已激活
+            </span>
+          </div>
+          <p class="text-xs mt-1" style="color: var(--text-muted);">
+            实时监控 62 种生鲜猪肉、大骨、香料与主料的最新进货成本价。下次上传新发票时，若有单价涨跌，系统将即刻自动高亮提醒！
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <button onclick="openAddMaterialModal()" class="text-xs px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>手动录入材料单价</span>
+          </button>
+          <button onclick="exportMaterialCostsCsv()" class="text-xs px-3.5 py-2 rounded-xl border font-semibold transition flex items-center gap-1.5" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+            <i data-lucide="download" class="w-4 h-4 text-emerald-500"></i>
+            <span>导出成本库 (Excel / CSV)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 个核心监控指标卡片 -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">已建档监控材料</div>
+          <div class="text-2xl font-black mono mt-1 text-current" id="kpi-mat-count">62 <span class="text-xs font-normal" style="color:var(--text-muted);">种物料</span></div>
+          <div class="text-xs mt-1 text-emerald-600 dark:text-emerald-400">100% 覆盖核心食材</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">五花肉基准进价</div>
+          <div class="text-2xl font-black mono mt-1" style="color: var(--accent-amber);">RM 27.00 <span class="text-xs font-normal" style="color:var(--text-muted);">/kg</span></div>
+          <div class="text-xs mt-1" style="color: var(--text-muted);">全店第 1 大采购支出</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">进价下调品种 (利好)</div>
+          <div class="text-2xl font-black mono mt-1 text-emerald-600 dark:text-emerald-400">5 <span class="text-xs font-normal" style="color:var(--text-muted);">种降价</span></div>
+          <div class="text-xs mt-1 text-emerald-600 dark:text-emerald-400 font-semibold">猪脚/胡椒/草果/肉桂/大肠</div>
+        </div>
+        <div class="fin-card p-4 rounded-2xl">
+          <div class="text-xs" style="color: var(--text-muted);">进价上涨品种 (预警)</div>
+          <div class="text-2xl font-black mono mt-1" style="color: var(--accent-rose);">4 <span class="text-xs font-normal" style="color:var(--text-muted);">种涨价</span></div>
+          <div class="text-xs mt-1 font-semibold" style="color: var(--accent-rose);">板油/米粉/洗洁精/消毒水</div>
+        </div>
+      </div>
+
+      <!-- 近期价格变动预警公示条 -->
+      <div class="fin-card p-4 sm:p-5 rounded-2xl border-l-4" style="border-left-color: var(--accent-amber);">
+        <div class="flex items-center gap-2 mb-2 font-bold text-sm text-current">
+          <i data-lucide="bell-ring" class="w-4 h-4 text-amber-500"></i>
+          <span>近期材料成本价格变动实时日志 (最近已确认的发票变动)</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+          <div class="p-2.5 rounded-xl flex items-center justify-between" style="background: var(--bg-card-subtle);">
+            <div>
+              <span class="font-bold text-current">秘制猪脚 5in (000379)</span>
+              <span class="text-xs ml-2 opacity-75">发票 I-2606-00149 (06/11)</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+              🔻 RM 12.00 ➔ RM 10.00 (-16.7%)
+            </span>
+          </div>
+          <div class="p-2.5 rounded-xl flex items-center justify-between" style="background: var(--bg-card-subtle);">
+            <div>
+              <span class="font-bold text-current">砂拉越白胡椒粉 500G (000289)</span>
+              <span class="text-xs ml-2 opacity-75">发票 I-2609-00167 (09/11)</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+              🔻 RM 15.00 ➔ RM 12.00 (-20.0%)
+            </span>
+          </div>
+          <div class="p-2.5 rounded-xl flex items-center justify-between" style="background: var(--bg-card-subtle);">
+            <div>
+              <span class="font-bold text-current">爱家特级米粉 455G (000731)</span>
+              <span class="text-xs ml-2 opacity-75">发票 I-2604-00137 (04/25)</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400">
+              🔺 RM 8.00 ➔ RM 9.50 (+18.8%)
+            </span>
+          </div>
+          <div class="p-2.5 rounded-xl flex items-center justify-between" style="background: var(--bg-card-subtle);">
+            <div>
+              <span class="font-bold text-current">猪板油/背脂油 1KG (000035)</span>
+              <span class="text-xs ml-2 opacity-75">发票 I-2605-00145 (05/26)</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400">
+              🔺 RM 15.00 ➔ RM 17~18.00 (+20.0%)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 材料成本库总表 -->
+      <div class="fin-card rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-4 border-b" style="border-color: var(--border-subtle);">
+          <!-- 筛选分类 -->
+          <div class="flex flex-wrap items-center gap-1.5" id="mat-cat-pills">
+            <button onclick="filterMatCat('ALL')" class="mat-cat-btn active text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="ALL">全部 (62)</button>
+            <button onclick="filterMatCat('核心肉类')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="核心肉类">🥩 核心肉类</button>
+            <button onclick="filterMatCat('生鲜内脏')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="生鲜内脏">🫀 生鲜内脏</button>
+            <button onclick="filterMatCat('熬汤骨肉')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="熬汤骨肉">🥣 熬汤骨料</button>
+            <button onclick="filterMatCat('生鲜调味')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="生鲜调味">🧄 生姜与蒜</button>
+            <button onclick="filterMatCat('招牌加料')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="招牌加料">🌭 香肠加料</button>
+            <button onclick="filterMatCat('核心香料药膳')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="核心香料药膳">🌿 香料药膳</button>
+            <button onclick="filterMatCat('主食/面食')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="主食/面食">🍜 米粉面类</button>
+            <button onclick="filterMatCat('清洁卫生耗材')" class="mat-cat-btn text-xs px-3 py-1.5 rounded-lg font-semibold transition" data-cat="清洁卫生耗材">🧼 清洁消毒</button>
+          </div>
+
+          <!-- 搜索框与变动筛选 -->
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <select id="sel-mat-status" onchange="onMatStatusChange(this.value)" class="text-xs border rounded-xl px-2.5 py-2 focus:outline-none" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+              <option value="ALL">全部状态 (62)</option>
+              <option value="降价">🟢 进价降价 (5)</option>
+              <option value="涨价">🔴 进价上涨 (4)</option>
+              <option value="稳定">⚪ 价格稳定 (53)</option>
+            </select>
+            <input type="text" id="inp-mat-search" oninput="onMatSearch(this.value)" placeholder="搜索原料名称或物料编码..." class="text-xs border rounded-xl px-3.5 py-2 w-full sm:w-56 focus:outline-none focus:ring-1 focus:ring-emerald-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+        </div>
+
+        <!-- 详细表格 -->
+        <div class="overflow-x-auto mt-4 max-h-[600px] overflow-y-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="sticky top-0 z-10 backdrop-blur-md uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-header); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-3">物料编码</th>
+                <th class="py-3 px-3 font-bold text-current">材料名称与详细规格</th>
+                <th class="py-3 px-3">分类</th>
+                <th class="py-3 px-3">单位</th>
+                <th class="py-3 px-3 font-bold text-emerald-600 dark:text-emerald-400">最新成本价 (RM)</th>
+                <th class="py-3 px-3 font-semibold" style="color: var(--text-muted);">基准成本价</th>
+                <th class="py-3 px-3">价格变动状态</th>
+                <th class="py-3 px-3 mono">累计采购量</th>
+                <th class="py-3 px-3 mono font-bold text-current">累计总支出 (RM)</th>
+                <th class="py-3 px-3">成本与用途走势说明</th>
+                <th class="py-3 px-3 text-right">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-material-costs" class="divide-y" style="border-color: var(--border-subtle);">
             </tbody>
           </table>
         </div>
@@ -1790,7 +1954,195 @@ function doPost(e) {
     // 核心食材物料来货成本与单价追踪库 (62种原料)
     const INGREDIENTS_COST_DATABASE = [{"code": "000008", "name": "白糖 (SMH.GULA PASIR)", "cat": "调味干料", "uom": "pkt", "qty": 81.0, "amount": 259.2, "unit_cost": 3.2, "notes": "白糖标准进价 RM 3.20/包 (用于汤底熬煮调和)"}, {"code": "000029", "name": "鲜虾水饺皮 (CH.SHRIMP DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 8.0, "amount": 44.0, "unit_cost": 5.5, "notes": "水饺专用生面皮 RM 5.50/包"}, {"code": "000035", "name": "猪板油/背脂油 (SHH.LOIN FAT 1KG)", "cat": "生鲜肉类/油脂", "uom": "pkt", "qty": 66.0, "amount": 1155.0, "unit_cost": 17.5, "notes": "RM 15.00 ~ 18.50/包 (用于炼制招牌红油与料油)"}, {"code": "000043", "name": "优质梅花肉/猪颈肉 (GB.PORK MEAT COLLAR)", "cat": "生鲜肉类", "uom": "pkt", "qty": 61.4, "amount": 1535.0, "unit_cost": 25.0, "notes": "生鲜梅花肉 RM 25.00/包 (用于现炒肉丝与鲜肉加料)"}, {"code": "000055", "name": "大红浙醋 650ML (BM.WARRIOR YATCH RED VINEGAR)", "cat": "酱料调味", "uom": "BTL", "qty": 2.0, "amount": 28.0, "unit_cost": 14.0, "notes": "特制红醋 RM 14.00/瓶"}, {"code": "000059", "name": "云吞皮 (CH. WANTON SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 10.0, "amount": 26.0, "unit_cost": 2.6, "notes": "炸云吞/鲜肉云吞生皮 RM 2.60/包"}, {"code": "000060", "name": "水饺皮 (CH.DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 10.0, "amount": 60.0, "unit_cost": 6.0, "notes": "大水饺皮 RM 6.00/包"}, {"code": "000061", "name": "精选草果 50G (XS.BOLD CARDAMON)", "cat": "核心香料药膳", "uom": "kg", "qty": 6.4, "amount": 410.0, "unit_cost": 64.06, "notes": "RM 55.00 ~ 65.00/kg (螺蛳老汤灵魂熬制香料)"}, {"code": "000075", "name": "双龙台湾蒜味香肠 20条 (KW.TAIWAN SAUSAGE GARLIC)", "cat": "招牌加料", "uom": "pkt", "qty": 141.0, "amount": 3736.5, "unit_cost": 26.5, "notes": "RM 26.50/包 (每包含20条，折合每条进价 RM 1.33)"}, {"code": "000076", "name": "双龙台湾辣味香肠 20条 (KW.TAI SAUSAGE CHILLI)", "cat": "招牌加料", "uom": "pkt", "qty": 7.0, "amount": 185.5, "unit_cost": 26.5, "notes": "RM 26.50/包 (每包含20条，折合每条进价 RM 1.33)"}, {"code": "000096", "name": "蒜米 1KG (YX. GARLIC)", "cat": "生鲜调味", "uom": "1KG", "qty": 8.2, "amount": 113.0, "unit_cost": 13.78, "notes": "RM 10.00 ~ 15.00/kg (爆炒料底与自制蒜油)"}, {"code": "000189", "name": "食用油 1KG (OIL)", "cat": "食用油类", "uom": "pkt", "qty": 54.0, "amount": 135.0, "unit_cost": 2.5, "notes": "RM 2.50/包 (炸锅与炒粉基础油)"}, {"code": "000223", "name": "饺子皮 (CH.DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 54.0, "amount": 324.0, "unit_cost": 6.0, "notes": "RM 6.00/包"}, {"code": "000254", "name": "A级鸡爪/凤爪生料 (XK. CHICKEN FEET A)", "cat": "生鲜家禽", "uom": "pkt", "qty": 95.0, "amount": 1140.0, "unit_cost": 12.0, "notes": "RM 12.00/包 (用于慢炸虎皮卤鸡爪，全年价格稳定)"}, {"code": "000271", "name": "去皮大蒜头 1KG (KOPEK BAWANG PUTIH)", "cat": "生鲜调味", "uom": "kg", "qty": 16.0, "amount": 136.0, "unit_cost": 8.5, "notes": "RM 8.50/kg (人工剥皮鲜大蒜)"}, {"code": "000276", "name": "新鲜猪大肠 (SHH.BIG INTESTINE)", "cat": "生鲜肉类/内脏", "uom": "Kg", "qty": 260.0, "amount": 4590.0, "unit_cost": 17.65, "notes": "RM 17.00 ~ 18.00/kg (全店第2大肉类采购，用于招牌卤肥肠)"}, {"code": "000277", "name": "特级猪头肠 (SHH.HEAD INTESTINE)", "cat": "生鲜肉类/内脏", "uom": "Kg", "qty": 5.0, "amount": 125.0, "unit_cost": 25.0, "notes": "RM 25.00/kg"}, {"code": "000281", "name": "生鲜猪肉片 (SHH. SLICED MEAT)", "cat": "生鲜肉类", "uom": "kg", "qty": 10.0, "amount": 150.0, "unit_cost": 15.0, "notes": "RM 15.00/kg (现炒米粉肉丝原料)"}, {"code": "000282", "name": "精选肉碎 (SHH. MINCED MEAT)", "cat": "生鲜肉类", "uom": "pkt", "qty": 10.0, "amount": 260.0, "unit_cost": 26.0, "notes": "RM 26.00/包 (用于水饺与调味馅料)"}, {"code": "000289", "name": "砂拉越白胡椒粉 500G (HS. LADA SARAWAK)", "cat": "核心香辛料", "uom": "pkt", "qty": 192.0, "amount": 2808.0, "unit_cost": 14.63, "notes": "前期 RM 15.00/包，9月降至 RM 12.00/包 (用于底汤提香提鲜)"}, {"code": "000293", "name": "沙律香肠卷 (SS. SALAD ROLL / SAUSAGE ROLL)", "cat": "特色小吃", "uom": "pkt", "qty": 30.0, "amount": 270.0, "unit_cost": 9.0, "notes": "RM 9.00/包 (特色加料小吃)"}, {"code": "000319", "name": "熬汤猪大骨/筒骨 (GB.F.BONE)", "cat": "熬汤骨肉", "uom": "kg", "qty": 425.0, "amount": 3825.0, "unit_cost": 9.0, "notes": "RM 9.00/kg (全年累计425kg，螺蛳高汤浓郁灵魂)"}, {"code": "000328", "name": "带皮精选五花肉 (GB.BELLY SKIN)", "cat": "核心肉类", "uom": "kg", "qty": 361.16, "amount": 9751.32, "unit_cost": 27.0, "notes": "全店第1大支出！RM 27.00/kg (脆皮锅烧与五花肉核心)"}, {"code": "000379", "name": "秘制猪脚 5in (GB.PORK LEG 5in)", "cat": "核心肉类", "uom": "KG", "qty": 225.4, "amount": 2413.4, "unit_cost": 10.71, "notes": "前期 RM 12.00/kg，6月起降至 RM 10.00/kg (招牌猪脚螺蛳粉)"}, {"code": "000413", "name": "味之素味精 1KG (AJI.AJINOMOTO)", "cat": "调味干料", "uom": "pkt", "qty": 25.0, "amount": 370.0, "unit_cost": 14.8, "notes": "RM 14.80/包"}, {"code": "000418", "name": "味之素风味调味料 1KG (AJI.TUMIX)", "cat": "调味干料", "uom": "pkt", "qty": 30.0, "amount": 540.0, "unit_cost": 18.0, "notes": "RM 18.00/包"}, {"code": "000473", "name": "富驰广式腊肠 (H.FU CHI SAUSAGE)", "cat": "招牌加料", "uom": "pkt", "qty": 4.02, "amount": 211.56, "unit_cost": 52.63, "notes": "RM 61.00/包 (用于腊肠螺蛳粉加料)"}, {"code": "000477", "name": "特级生抽酱油 (KICAP CAIR SOYA MEWAH)", "cat": "酱料调味", "uom": "Btl", "qty": 1.0, "amount": 14.0, "unit_cost": 14.0, "notes": "RM 14.00/瓶"}, {"code": "000501", "name": "新鲜农场鸡蛋 (LB. EGG FRESH EGG)", "cat": "生鲜蛋品", "uom": "TRAY", "qty": 4.0, "amount": 62.0, "unit_cost": 15.5, "notes": "RM 15.50/托 (每托30粒，折合每粒 RM 0.52)"}, {"code": "000502", "name": "新鲜菜园土鸡蛋 (LB. KAMPUNG EGG)", "cat": "生鲜蛋品", "uom": "TRAY", "qty": 5.0, "amount": 90.0, "unit_cost": 18.0, "notes": "RM 18.00/托 (煎蛋与黄金炒饭原料)"}, {"code": "000516", "name": "陈妹香料卤料包 (CHAN SISTER. HERBA BAG)", "cat": "核心香料药膳", "uom": "box", "qty": 2.0, "amount": 10.0, "unit_cost": 5.0, "notes": "RM 5.00/盒 (老汤草本提香)"}, {"code": "000653", "name": "美极浓缩鸡粉/鸡汁 1.2KG (THH.MAGGI CHICKEN STOCK)", "cat": "核心调味", "uom": "pkt", "qty": 152.0, "amount": 2888.0, "unit_cost": 19.0, "notes": "RM 19.00/包 (全年采购152包，高汤鲜味底)"}, {"code": "000667", "name": "龙大黄米料理料酒 (LONG TA RICE COOKING WINE)", "cat": "酱料调味", "uom": "Btl", "qty": 1.0, "amount": 6.5, "unit_cost": 6.5, "notes": "RM 6.50/瓶"}, {"code": "000682", "name": "特级黑木耳 80G (TS. BLACK FUNGUS BIG)", "cat": "螺蛳粉配料", "uom": "pkt", "qty": 2.0, "amount": 38.0, "unit_cost": 19.0, "notes": "RM 19.00/包"}, {"code": "000699", "name": "特制五香香料粉 300G (TS. SERBUK REMPAH)", "cat": "核心香料药膳", "uom": "pkt", "qty": 1.0, "amount": 17.5, "unit_cost": 17.5, "notes": "RM 17.50/包"}, {"code": "000713", "name": "细精盐 500G (TS.SALT FINE)", "cat": "调味干料", "uom": "pkt", "qty": 36.0, "amount": 30.8, "unit_cost": 0.86, "notes": "RM 0.80 ~ 1.00/包"}, {"code": "000719", "name": "海天蚝油 4.75KG (TS. HTH OYSTER SAUCE)", "cat": "酱料调味", "uom": "Btl", "qty": 2.0, "amount": 34.0, "unit_cost": 17.0, "notes": "RM 17.00/大桶"}, {"code": "000731", "name": "爱家特级米粉 455G (AKK.AI BIHUN)", "cat": "米粉主食", "uom": "pkt", "qty": 53.0, "amount": 454.0, "unit_cost": 8.57, "notes": "RM 8.00 ~ 9.50/包 (N2-A1米粉与现炒米粉)"}, {"code": "000757", "name": "干香菇 100G (TS.DRIED MUSHROOM)", "cat": "干货配料", "uom": "100G", "qty": 6.0, "amount": 52.0, "unit_cost": 8.67, "notes": "RM 8.00 ~ 10.00/包"}, {"code": "000761", "name": "长城牌老陈醋 635G (TS.GREATWALL VINEGAR)", "cat": "核心酸醋", "uom": "BTL", "qty": 6.0, "amount": 45.0, "unit_cost": 7.5, "notes": "RM 7.50/瓶 (经典山西老陈醋)"}, {"code": "000783", "name": "特级料理大酒 640ML (CW.LIKEUR BESAR)", "cat": "酱料调味", "uom": "640ML", "qty": 2.0, "amount": 70.0, "unit_cost": 35.0, "notes": "RM 35.00/瓶"}, {"code": "000797", "name": "厨房专用洗洁精 (TE. DISWASH RED)", "cat": "清洁卫生耗材", "uom": "Btl", "qty": 34.0, "amount": 593.0, "unit_cost": 17.44, "notes": "前期 RM 16.50/瓶，5月后 RM 18.50/瓶 (后厨洗碗去油)"}, {"code": "000830", "name": "泰国天然红糖 500G (TS.THAILAND GULA MERAH)", "cat": "调味干料", "uom": "pkt", "qty": 1.0, "amount": 5.0, "unit_cost": 5.0, "notes": "RM 5.00/包"}, {"code": "000836", "name": "天然麦芽糖 350G (TS.MALTOSE)", "cat": "调味干料", "uom": "pkt", "qty": 2.0, "amount": 9.4, "unit_cost": 4.7, "notes": "RM 4.70/包 (烧腊挂皮脆色)"}, {"code": "000841", "name": "水果沙拉风味酱汁 250ML (LC DRSNG FRUIT SLD)", "cat": "酱料调味", "uom": "Btl", "qty": 1.0, "amount": 9.8, "unit_cost": 9.8, "notes": "RM 9.80/瓶"}, {"code": "000873", "name": "桂皮/肉桂 1KG (LFY.KAYU MANIS)", "cat": "核心香料药膳", "uom": "Kg", "qty": 5.7, "amount": 160.5, "unit_cost": 28.16, "notes": "前期 RM 35.00/kg，9月降至 RM 25.00/kg (卤汤香料)"}, {"code": "000933", "name": "高浓度消毒水/漂白水 (TE.CLOROX / DETTOL)", "cat": "清洁卫生耗材", "uom": "CAN/btl", "qty": 16.0, "amount": 433.0, "unit_cost": 27.06, "notes": "小瓶 RM 14.50~16.50，大桶 RM 28.00~35.00"}, {"code": "000950", "name": "精选干香菇 100G (DRY MUSHROOM)", "cat": "干货配料", "uom": "kg", "qty": 2.0, "amount": 20.0, "unit_cost": 10.0, "notes": "RM 10.00/kg"}, {"code": "000968", "name": "优质印度炸花生粒 25KG (YX.PENUAT INDIA)", "cat": "螺蛳粉配料", "uom": "KG", "qty": 250.0, "amount": 2750.0, "unit_cost": 11.0, "notes": "RM 11.00/kg (全店炸花生，单次进货25kg装 RM 275/包)"}, {"code": "001118", "name": "纯白糯米粉 1KG (XS.PUTIH PULUT)", "cat": "干货粉料", "uom": "KG", "qty": 1.0, "amount": 7.5, "unit_cost": 7.5, "notes": "RM 7.50/kg"}, {"code": "001120", "name": "烹调白米醋 4.5KG (SIGI.CUKA)", "cat": "核心酸醋", "uom": "BTL", "qty": 5.0, "amount": 64.0, "unit_cost": 12.8, "notes": "大桶装 RM 12.00 ~ 14.00/桶 (腌酸笋与酸豆角专用)"}, {"code": "001285", "name": "印度花生小包装 150G (YX.PENUAT INDIA)", "cat": "螺蛳粉配料", "uom": "150G", "qty": 25.0, "amount": 62.5, "unit_cost": 2.5, "notes": "RM 2.50/包"}, {"code": "001329", "name": "优质木薯粉/生粉 (PX.TEPUNG UBI)", "cat": "干货粉料", "uom": "PKT", "qty": 6.0, "amount": 15.0, "unit_cost": 2.5, "notes": "RM 2.50/包 (炸蛋蓬松与挂浆)"}, {"code": "001404", "name": "鲜甜虾滑肉丸 1KG (CS.PRAWN MEATBALL)", "cat": "招牌加料", "uom": "PKT", "qty": 15.0, "amount": 309.0, "unit_cost": 20.6, "notes": "RM 20.50 ~ 21.00/包"}, {"code": "001889", "name": "什锦冷冻杂菜 500G (FG.MIXED VEGETABLE)", "cat": "生鲜蔬菜", "uom": "500G", "qty": 3.0, "amount": 13.5, "unit_cost": 4.5, "notes": "RM 4.50/包 (炒饭配菜)"}, {"code": "002000", "name": "唯一面/快熟面 700G (MELODIES.VITS INS NOODLE)", "cat": "面食主食", "uom": "PKT", "qty": 61.0, "amount": 457.5, "unit_cost": 7.5, "notes": "RM 7.50/包 (N3-唯一面选粉)"}, {"code": "002086", "name": "文冬优质金黄豆卜 250G (BENTONG BEANCURD PUFF)", "cat": "螺蛳粉配料", "uom": "PKT", "qty": 98.0, "amount": 637.0, "unit_cost": 6.5, "notes": "RM 6.50/包 (炸豆腐吸汁配料，累计进货98包)"}, {"code": "002186", "name": "经济大桶装蚝油 5KG (YG.OYSTER SAUCE)", "cat": "酱料调味", "uom": "BTL", "qty": 6.0, "amount": 90.0, "unit_cost": 15.0, "notes": "RM 15.00/大桶 (现炒调味料底)"}, {"code": "002225", "name": "龙塔特级老黑醋 620ML (GC.DRAGON TOWER BLACK VINEGAR)", "cat": "核心酸醋", "uom": "btl", "qty": 12.0, "amount": 72.0, "unit_cost": 6.0, "notes": "RM 6.00/瓶"}, {"code": "002238", "name": "妈咪光面 10X72G (SEA.MAMEE PLAIN NOODLE)", "cat": "面食主食", "uom": "pkt", "qty": 10.0, "amount": 70.0, "unit_cost": 7.0, "notes": "RM 7.00/包"}, {"code": "00976", "name": "特选去泥老生姜 (HALIA)", "cat": "生鲜调味/去腥", "uom": "KG", "qty": 295.52, "amount": 3841.76, "unit_cost": 13.0, "notes": "全店核心调料第1大户！累计进货295.52kg，RM 13.00/kg (去腥熬汤)"}, {"code": "02264", "name": "袋装精选大蒜 500G (BM.TM GARLIC)", "cat": "生鲜调味", "uom": "PCK", "qty": 2.0, "amount": 10.0, "unit_cost": 5.0, "notes": "RM 5.00/包"}];
 
+
+    // -------------------------------------------------------------
+    // 全店 62 种核心食材原料来货成本价底库 (含历史基准与涨跌预警)
+    // -------------------------------------------------------------
+    const DEFAULT_MATERIALS_DATABASE = [{"code": "000008", "name": "白糖 (SMH.GULA PASIR)", "cat": "调味干料", "uom": "pkt", "latest_cost": 3.2, "base_cost": 3.2, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 81.0, "total_spend": 259.2, "notes": "白糖标准进价 RM 3.20/包 (用于汤底熬煮调和)"}, {"code": "000029", "name": "鲜虾水饺皮 (CH.SHRIMP DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "latest_cost": 5.5, "base_cost": 5.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 8.0, "total_spend": 44.0, "notes": "水饺专用生面皮 RM 5.50/包"}, {"code": "000035", "name": "猪板油/背脂油 (SHH.LOIN FAT 1KG)", "cat": "生鲜肉类/油脂", "uom": "pkt", "latest_cost": 18.0, "base_cost": 15.0, "diff": 3.0, "diff_pct": "+20.0%", "status": "涨价", "total_qty": 66.0, "total_spend": 1155.0, "notes": "🔺 5月起单价由 RM 15.00/包 微涨至 RM 17~18.50/包 (+20.0%)。"}, {"code": "000043", "name": "优质梅花肉/猪颈肉 (GB.PORK MEAT COLLAR)", "cat": "生鲜肉类", "uom": "pkt", "latest_cost": 25.0, "base_cost": 25.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 61.4, "total_spend": 1535.0, "notes": "生鲜梅花肉 RM 25.00/包 (用于现炒肉丝与鲜肉加料)"}, {"code": "000055", "name": "大红浙醋 650ML (BM.WARRIOR YATCH RED VINEGAR)", "cat": "酱料调味", "uom": "BTL", "latest_cost": 14.0, "base_cost": 14.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 28.0, "notes": "特制红醋 RM 14.00/瓶"}, {"code": "000059", "name": "云吞皮 (CH. WANTON SKIN)", "cat": "面点面皮", "uom": "pkt", "latest_cost": 2.6, "base_cost": 2.6, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 10.0, "total_spend": 26.0, "notes": "炸云吞/鲜肉云吞生皮 RM 2.60/包"}, {"code": "000060", "name": "水饺皮 (CH.DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "latest_cost": 6.0, "base_cost": 6.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 10.0, "total_spend": 60.0, "notes": "大水饺皮 RM 6.00/包"}, {"code": "000061", "name": "精选草果 50G (XS.BOLD CARDAMON)", "cat": "核心香料药膳", "uom": "kg", "latest_cost": 55.0, "base_cost": 65.0, "diff": -10.0, "diff_pct": "-15.4%", "status": "降价", "total_qty": 6.4, "total_spend": 410.0, "notes": "🔻 9月单价由 RM 65.00/kg 降至 RM 55.00/kg (-15.4%)。"}, {"code": "000075", "name": "双龙台湾蒜味香肠 20条 (KW.TAIWAN SAUSAGE GARLIC)", "cat": "招牌加料", "uom": "pkt", "latest_cost": 26.5, "base_cost": 26.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 141.0, "total_spend": 3736.5, "notes": "RM 26.50/包 (每包含20条，折合每条进价 RM 1.33)"}, {"code": "000076", "name": "双龙台湾辣味香肠 20条 (KW.TAI SAUSAGE CHILLI)", "cat": "招牌加料", "uom": "pkt", "latest_cost": 26.5, "base_cost": 26.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 7.0, "total_spend": 185.5, "notes": "RM 26.50/包 (每包含20条，折合每条进价 RM 1.33)"}, {"code": "000096", "name": "蒜米 1KG (YX. GARLIC)", "cat": "生鲜调味", "uom": "1KG", "latest_cost": 13.78, "base_cost": 13.78, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 8.2, "total_spend": 113.0, "notes": "RM 10.00 ~ 15.00/kg (爆炒料底与自制蒜油)"}, {"code": "000189", "name": "食用油 1KG (OIL)", "cat": "食用油类", "uom": "pkt", "latest_cost": 2.5, "base_cost": 2.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 54.0, "total_spend": 135.0, "notes": "RM 2.50/包 (炸锅与炒粉基础油)"}, {"code": "000223", "name": "饺子皮 (CH.DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "latest_cost": 6.0, "base_cost": 6.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 54.0, "total_spend": 324.0, "notes": "RM 6.00/包"}, {"code": "000254", "name": "A级鸡爪/凤爪生料 (XK. CHICKEN FEET A)", "cat": "生鲜家禽", "uom": "pkt", "latest_cost": 12.0, "base_cost": 12.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 95.0, "total_spend": 1140.0, "notes": "RM 12.00/包 (用于慢炸虎皮卤鸡爪，全年价格稳定)"}, {"code": "000271", "name": "去皮大蒜头 1KG (KOPEK BAWANG PUTIH)", "cat": "生鲜调味", "uom": "kg", "latest_cost": 8.5, "base_cost": 8.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 16.0, "total_spend": 136.0, "notes": "RM 8.50/kg (人工剥皮鲜大蒜)"}, {"code": "000276", "name": "新鲜猪大肠 (SHH.BIG INTESTINE)", "cat": "生鲜肉类/内脏", "uom": "Kg", "latest_cost": 17.0, "base_cost": 18.0, "diff": -1.0, "diff_pct": "-5.6%", "status": "降价", "total_qty": 260.0, "total_spend": 4590.0, "notes": "🔻 6月起单价由 RM 18.00/kg 降至 RM 17.00/kg (-5.6%)。"}, {"code": "000277", "name": "特级猪头肠 (SHH.HEAD INTESTINE)", "cat": "生鲜肉类/内脏", "uom": "Kg", "latest_cost": 25.0, "base_cost": 25.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 5.0, "total_spend": 125.0, "notes": "RM 25.00/kg"}, {"code": "000281", "name": "生鲜猪肉片 (SHH. SLICED MEAT)", "cat": "生鲜肉类", "uom": "kg", "latest_cost": 15.0, "base_cost": 15.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 10.0, "total_spend": 150.0, "notes": "RM 15.00/kg (现炒米粉肉丝原料)"}, {"code": "000282", "name": "精选肉碎 (SHH. MINCED MEAT)", "cat": "生鲜肉类", "uom": "pkt", "latest_cost": 26.0, "base_cost": 26.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 10.0, "total_spend": 260.0, "notes": "RM 26.00/包 (用于水饺与调味馅料)"}, {"code": "000289", "name": "砂拉越白胡椒粉 500G (HS. LADA SARAWAK)", "cat": "核心香辛料", "uom": "pkt", "latest_cost": 12.0, "base_cost": 15.0, "diff": -3.0, "diff_pct": "-20.0%", "status": "降价", "total_qty": 192.0, "total_spend": 2808.0, "notes": "🔻 9月单价由 RM 15.00/包 降至 RM 12.00/包 (-20.0%)，采购成本优化！"}, {"code": "000293", "name": "沙律香肠卷 (SS. SALAD ROLL / SAUSAGE ROLL)", "cat": "特色小吃", "uom": "pkt", "latest_cost": 9.0, "base_cost": 9.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 30.0, "total_spend": 270.0, "notes": "RM 9.00/包 (特色加料小吃)"}, {"code": "000319", "name": "熬汤猪大骨/筒骨 (GB.F.BONE)", "cat": "熬汤骨肉", "uom": "kg", "latest_cost": 9.0, "base_cost": 9.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 425.0, "total_spend": 3825.0, "notes": "RM 9.00/kg (全年累计425kg，螺蛳高汤浓郁灵魂)"}, {"code": "000328", "name": "带皮精选五花肉 (GB.BELLY SKIN)", "cat": "核心肉类", "uom": "kg", "latest_cost": 27.0, "base_cost": 27.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 361.16, "total_spend": 9751.32, "notes": "全店第1大支出！RM 27.00/kg (脆皮锅烧与五花肉核心)"}, {"code": "000379", "name": "秘制猪脚 5in (GB.PORK LEG 5in)", "cat": "核心肉类", "uom": "KG", "latest_cost": 10.0, "base_cost": 12.0, "diff": -2.0, "diff_pct": "-16.7%", "status": "降价", "total_qty": 225.4, "total_spend": 2413.4, "notes": "🔻 6月起单价从 RM 12.00/kg 降至 RM 10.00/kg (-16.7%)，招牌猪脚毛利上升！"}, {"code": "000413", "name": "味之素味精 1KG (AJI.AJINOMOTO)", "cat": "调味干料", "uom": "pkt", "latest_cost": 14.8, "base_cost": 14.8, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 25.0, "total_spend": 370.0, "notes": "RM 14.80/包"}, {"code": "000418", "name": "味之素风味调味料 1KG (AJI.TUMIX)", "cat": "调味干料", "uom": "pkt", "latest_cost": 18.0, "base_cost": 18.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 30.0, "total_spend": 540.0, "notes": "RM 18.00/包"}, {"code": "000473", "name": "富驰广式腊肠 (H.FU CHI SAUSAGE)", "cat": "招牌加料", "uom": "pkt", "latest_cost": 52.63, "base_cost": 52.63, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 4.02, "total_spend": 211.56, "notes": "RM 61.00/包 (用于腊肠螺蛳粉加料)"}, {"code": "000477", "name": "特级生抽酱油 (KICAP CAIR SOYA MEWAH)", "cat": "酱料调味", "uom": "Btl", "latest_cost": 14.0, "base_cost": 14.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 1.0, "total_spend": 14.0, "notes": "RM 14.00/瓶"}, {"code": "000501", "name": "新鲜农场鸡蛋 (LB. EGG FRESH EGG)", "cat": "生鲜蛋品", "uom": "TRAY", "latest_cost": 15.5, "base_cost": 15.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 4.0, "total_spend": 62.0, "notes": "RM 15.50/托 (每托30粒，折合每粒 RM 0.52)"}, {"code": "000502", "name": "新鲜菜园土鸡蛋 (LB. KAMPUNG EGG)", "cat": "生鲜蛋品", "uom": "TRAY", "latest_cost": 18.0, "base_cost": 18.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 5.0, "total_spend": 90.0, "notes": "RM 18.00/托 (煎蛋与黄金炒饭原料)"}, {"code": "000516", "name": "陈妹香料卤料包 (CHAN SISTER. HERBA BAG)", "cat": "核心香料药膳", "uom": "box", "latest_cost": 5.0, "base_cost": 5.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 10.0, "notes": "RM 5.00/盒 (老汤草本提香)"}, {"code": "000653", "name": "美极浓缩鸡粉/鸡汁 1.2KG (THH.MAGGI CHICKEN STOCK)", "cat": "核心调味", "uom": "pkt", "latest_cost": 19.0, "base_cost": 19.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 152.0, "total_spend": 2888.0, "notes": "RM 19.00/包 (全年采购152包，高汤鲜味底)"}, {"code": "000667", "name": "龙大黄米料理料酒 (LONG TA RICE COOKING WINE)", "cat": "酱料调味", "uom": "Btl", "latest_cost": 6.5, "base_cost": 6.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 1.0, "total_spend": 6.5, "notes": "RM 6.50/瓶"}, {"code": "000682", "name": "特级黑木耳 80G (TS. BLACK FUNGUS BIG)", "cat": "螺蛳粉配料", "uom": "pkt", "latest_cost": 19.0, "base_cost": 19.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 38.0, "notes": "RM 19.00/包"}, {"code": "000699", "name": "特制五香香料粉 300G (TS. SERBUK REMPAH)", "cat": "核心香料药膳", "uom": "pkt", "latest_cost": 17.5, "base_cost": 17.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 1.0, "total_spend": 17.5, "notes": "RM 17.50/包"}, {"code": "000713", "name": "细精盐 500G (TS.SALT FINE)", "cat": "调味干料", "uom": "pkt", "latest_cost": 0.86, "base_cost": 0.86, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 36.0, "total_spend": 30.8, "notes": "RM 0.80 ~ 1.00/包"}, {"code": "000719", "name": "海天蚝油 4.75KG (TS. HTH OYSTER SAUCE)", "cat": "酱料调味", "uom": "Btl", "latest_cost": 17.0, "base_cost": 17.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 34.0, "notes": "RM 17.00/大桶"}, {"code": "000731", "name": "爱家特级米粉 455G (AKK.AI BIHUN)", "cat": "米粉主食", "uom": "pkt", "latest_cost": 9.5, "base_cost": 8.0, "diff": 1.5, "diff_pct": "+18.8%", "status": "涨价", "total_qty": 53.0, "total_spend": 454.0, "notes": "🔺 4月起单价由 RM 8.00/包 上涨至 RM 9.50/包 (+18.8%)。"}, {"code": "000757", "name": "干香菇 100G (TS.DRIED MUSHROOM)", "cat": "干货配料", "uom": "100G", "latest_cost": 8.67, "base_cost": 8.67, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 6.0, "total_spend": 52.0, "notes": "RM 8.00 ~ 10.00/包"}, {"code": "000761", "name": "长城牌老陈醋 635G (TS.GREATWALL VINEGAR)", "cat": "核心酸醋", "uom": "BTL", "latest_cost": 7.5, "base_cost": 7.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 6.0, "total_spend": 45.0, "notes": "RM 7.50/瓶 (经典山西老陈醋)"}, {"code": "000783", "name": "特级料理大酒 640ML (CW.LIKEUR BESAR)", "cat": "酱料调味", "uom": "640ML", "latest_cost": 35.0, "base_cost": 35.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 70.0, "notes": "RM 35.00/瓶"}, {"code": "000797", "name": "厨房专用洗洁精 (TE. DISWASH RED)", "cat": "清洁卫生耗材", "uom": "Btl", "latest_cost": 18.5, "base_cost": 16.5, "diff": 2.0, "diff_pct": "+12.1%", "status": "涨价", "total_qty": 34.0, "total_spend": 593.0, "notes": "🔺 5月起单价由 RM 16.50/瓶 涨至 RM 18.50/瓶 (+12.1%)。"}, {"code": "000830", "name": "泰国天然红糖 500G (TS.THAILAND GULA MERAH)", "cat": "调味干料", "uom": "pkt", "latest_cost": 5.0, "base_cost": 5.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 1.0, "total_spend": 5.0, "notes": "RM 5.00/包"}, {"code": "000836", "name": "天然麦芽糖 350G (TS.MALTOSE)", "cat": "调味干料", "uom": "pkt", "latest_cost": 4.7, "base_cost": 4.7, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 9.4, "notes": "RM 4.70/包 (烧腊挂皮脆色)"}, {"code": "000841", "name": "水果沙拉风味酱汁 250ML (LC DRSNG FRUIT SLD)", "cat": "酱料调味", "uom": "Btl", "latest_cost": 9.8, "base_cost": 9.8, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 1.0, "total_spend": 9.8, "notes": "RM 9.80/瓶"}, {"code": "000873", "name": "桂皮/肉桂 1KG (LFY.KAYU MANIS)", "cat": "核心香料药膳", "uom": "Kg", "latest_cost": 25.0, "base_cost": 35.0, "diff": -10.0, "diff_pct": "-28.6%", "status": "降价", "total_qty": 5.7, "total_spend": 160.5, "notes": "🔻 9月单价由 RM 35.00/kg 降至 RM 25.00/kg (-28.6%)。"}, {"code": "000933", "name": "高浓度消毒水/漂白水 (TE.CLOROX / DETTOL)", "cat": "清洁卫生耗材", "uom": "CAN/btl", "latest_cost": 35.0, "base_cost": 28.0, "diff": 7.0, "diff_pct": "+25.0%", "status": "涨价", "total_qty": 16.0, "total_spend": 433.0, "notes": "🔺 大桶装由 RM 28.00/桶 涨至 RM 35.00/桶 (+25.0%)。"}, {"code": "000950", "name": "精选干香菇 100G (DRY MUSHROOM)", "cat": "干货配料", "uom": "kg", "latest_cost": 10.0, "base_cost": 10.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 20.0, "notes": "RM 10.00/kg"}, {"code": "000968", "name": "优质印度炸花生粒 25KG (YX.PENUAT INDIA)", "cat": "螺蛳粉配料", "uom": "KG", "latest_cost": 11.0, "base_cost": 11.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 250.0, "total_spend": 2750.0, "notes": "RM 11.00/kg (全店炸花生，单次进货25kg装 RM 275/包)"}, {"code": "001118", "name": "纯白糯米粉 1KG (XS.PUTIH PULUT)", "cat": "干货粉料", "uom": "KG", "latest_cost": 7.5, "base_cost": 7.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 1.0, "total_spend": 7.5, "notes": "RM 7.50/kg"}, {"code": "001120", "name": "烹调白米醋 4.5KG (SIGI.CUKA)", "cat": "核心酸醋", "uom": "BTL", "latest_cost": 12.8, "base_cost": 12.8, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 5.0, "total_spend": 64.0, "notes": "大桶装 RM 12.00 ~ 14.00/桶 (腌酸笋与酸豆角专用)"}, {"code": "001285", "name": "印度花生小包装 150G (YX.PENUAT INDIA)", "cat": "螺蛳粉配料", "uom": "150G", "latest_cost": 2.5, "base_cost": 2.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 25.0, "total_spend": 62.5, "notes": "RM 2.50/包"}, {"code": "001329", "name": "优质木薯粉/生粉 (PX.TEPUNG UBI)", "cat": "干货粉料", "uom": "PKT", "latest_cost": 2.5, "base_cost": 2.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 6.0, "total_spend": 15.0, "notes": "RM 2.50/包 (炸蛋蓬松与挂浆)"}, {"code": "001404", "name": "鲜甜虾滑肉丸 1KG (CS.PRAWN MEATBALL)", "cat": "招牌加料", "uom": "PKT", "latest_cost": 20.6, "base_cost": 20.6, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 15.0, "total_spend": 309.0, "notes": "RM 20.50 ~ 21.00/包"}, {"code": "001889", "name": "什锦冷冻杂菜 500G (FG.MIXED VEGETABLE)", "cat": "生鲜蔬菜", "uom": "500G", "latest_cost": 4.5, "base_cost": 4.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 3.0, "total_spend": 13.5, "notes": "RM 4.50/包 (炒饭配菜)"}, {"code": "002000", "name": "唯一面/快熟面 700G (MELODIES.VITS INS NOODLE)", "cat": "面食主食", "uom": "PKT", "latest_cost": 7.5, "base_cost": 7.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 61.0, "total_spend": 457.5, "notes": "RM 7.50/包 (N3-唯一面选粉)"}, {"code": "002086", "name": "文冬优质金黄豆卜 250G (BENTONG BEANCURD PUFF)", "cat": "螺蛳粉配料", "uom": "PKT", "latest_cost": 6.5, "base_cost": 6.5, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 98.0, "total_spend": 637.0, "notes": "RM 6.50/包 (炸豆腐吸汁配料，累计进货98包)"}, {"code": "002186", "name": "经济大桶装蚝油 5KG (YG.OYSTER SAUCE)", "cat": "酱料调味", "uom": "BTL", "latest_cost": 15.0, "base_cost": 15.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 6.0, "total_spend": 90.0, "notes": "RM 15.00/大桶 (现炒调味料底)"}, {"code": "002225", "name": "龙塔特级老黑醋 620ML (GC.DRAGON TOWER BLACK VINEGAR)", "cat": "核心酸醋", "uom": "btl", "latest_cost": 6.0, "base_cost": 6.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 12.0, "total_spend": 72.0, "notes": "RM 6.00/瓶"}, {"code": "002238", "name": "妈咪光面 10X72G (SEA.MAMEE PLAIN NOODLE)", "cat": "面食主食", "uom": "pkt", "latest_cost": 7.0, "base_cost": 7.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 10.0, "total_spend": 70.0, "notes": "RM 7.00/包"}, {"code": "00976", "name": "特选去泥老生姜 (HALIA)", "cat": "生鲜调味/去腥", "uom": "KG", "latest_cost": 13.0, "base_cost": 13.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 295.52, "total_spend": 3841.76, "notes": "全店核心调料第1大户！累计进货295.52kg，RM 13.00/kg (去腥熬汤)"}, {"code": "02264", "name": "袋装精选大蒜 500G (BM.TM GARLIC)", "cat": "生鲜调味", "uom": "PCK", "latest_cost": 5.0, "base_cost": 5.0, "diff": 0.0, "diff_pct": "0.0%", "status": "稳定", "total_qty": 2.0, "total_spend": 10.0, "notes": "RM 5.00/包"}];
+    let materialsList = [];
+    let curMatCat = 'ALL';
+    let curMatStatus = 'ALL';
+    let curMatKeyword = '';
+
+    function loadMaterialsFromStorage() {
+      const localMat = localStorage.getItem('laiwan_material_costs_v1');
+      if (localMat) {
+        try { materialsList = JSON.parse(localMat); } catch(e) { materialsList = DEFAULT_MATERIALS_DATABASE; }
+      } else {
+        materialsList = DEFAULT_MATERIALS_DATABASE;
+        saveMaterialsToStorage();
+      }
+    }
+
+    function saveMaterialsToStorage() {
+      localStorage.setItem('laiwan_material_costs_v1', JSON.stringify(materialsList));
+    }
+
+    function renderMaterialCostsView() {
+      const tbody = document.getElementById('tbody-material-costs');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const kw = curMatKeyword.trim().toLowerCase();
+      const filtered = materialsList.filter(item => {
+        // Category filter
+        if (curMatCat !== 'ALL') {
+          if (curMatCat === '主食/面食') {
+            if (!item.cat.includes('米粉') && !item.cat.includes('面') && !item.cat.includes('主食')) return false;
+          } else if (!item.cat.includes(curMatCat)) {
+            return false;
+          }
+        }
+
+        // Status filter
+        if (curMatStatus !== 'ALL' && item.status !== curMatStatus) return false;
+
+        // Keyword filter
+        if (kw) {
+          const matchCode = item.code.toLowerCase().includes(kw);
+          const matchName = item.name.toLowerCase().includes(kw);
+          const matchNotes = (item.notes || '').toLowerCase().includes(kw);
+          if (!matchCode && !matchName && !matchNotes) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="py-8 text-center text-xs" style="color:var(--text-muted);">未找到符合条件的材料记录</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(m => {
+        let statusBadge = '<span class="text-xs px-2.5 py-0.5 rounded-full font-medium" style="background:var(--bg-card-subtle); color:var(--text-muted);">➖ 稳定</span>';
+        if (m.status === '降价') {
+          statusBadge = `<span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">🔻 降价 (${m.diff_pct})</span>`;
+        } else if (m.status === '涨价') {
+          statusBadge = `<span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400">🔺 涨价 (${m.diff_pct})</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
+        tr.innerHTML = `
+          <td class="py-3 px-3 mono font-bold text-xs" style="color: var(--text-muted);">${m.code}</td>
+          <td class="py-3 px-3 font-bold text-current">${m.name}</td>
+          <td class="py-3 px-3 text-xs"><span class="px-2 py-0.5 rounded-md font-medium" style="background:var(--bg-card-subtle);">${m.cat}</span></td>
+          <td class="py-3 px-3 mono text-xs">${m.uom}</td>
+          <td class="py-3 px-3 mono font-black text-emerald-600 dark:text-emerald-400 text-sm">RM ${m.latest_cost.toFixed(2)}</td>
+          <td class="py-3 px-3 mono text-xs" style="color: var(--text-muted);">RM ${m.base_cost.toFixed(2)}</td>
+          <td class="py-3 px-3">${statusBadge}</td>
+          <td class="py-3 px-3 mono text-xs font-semibold">${m.total_qty.toLocaleString()} ${m.uom}</td>
+          <td class="py-3 px-3 mono font-bold text-current text-xs">RM ${m.total_spend.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+          <td class="py-3 px-3 text-xs" style="color: var(--text-secondary); max-width: 260px;">${m.notes || '-'}</td>
+          <td class="py-3 px-3 text-right whitespace-nowrap">
+            <button onclick="editMaterialCost('${m.code}')" class="text-xs px-2.5 py-1 rounded-lg border font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition">
+              调价
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function filterMatCat(cat) {
+      curMatCat = cat;
+      document.querySelectorAll('.mat-cat-btn').forEach(b => {
+        if (b.dataset.cat === cat) {
+          b.classList.add('active', 'bg-emerald-600', 'text-white');
+          b.classList.remove('bg-transparent');
+        } else {
+          b.classList.remove('active', 'bg-emerald-600', 'text-white');
+        }
+      });
+      renderMaterialCostsView();
+    }
+
+    function onMatStatusChange(val) {
+      curMatStatus = val;
+      renderMaterialCostsView();
+    }
+
+    function onMatSearch(val) {
+      curMatKeyword = val;
+      renderMaterialCostsView();
+    }
+
+    function editMaterialCost(code) {
+      const item = materialsList.find(x => x.code === code);
+      if (!item) return;
+      const newPriceStr = prompt(`【修改材料成本价】\n\n材料: ${item.name}\n当前成本价: RM ${item.latest_cost.toFixed(2)} / ${item.uom}\n基准成本价: RM ${item.base_cost.toFixed(2)} / ${item.uom}\n\n请输入该材料最新的来货单价 (RM):`, item.latest_cost.toFixed(2));
+      if (newPriceStr === null) return;
+      const newPrice = parseFloat(newPriceStr);
+      if (isNaN(newPrice) || newPrice <= 0) {
+        alert("请输入有效的成本价格数字！");
+        return;
+      }
+
+      const diff = +(newPrice - item.base_cost).toFixed(2);
+      const diffPct = item.base_cost > 0 ? ((diff / item.base_cost) * 100).toFixed(1) + '%' : '0.0%';
+      let status = '稳定';
+      if (diff > 0) status = '涨价';
+      else if (diff < 0) status = '降价';
+
+      item.latest_cost = newPrice;
+      item.diff = diff;
+      item.diff_pct = diff > 0 ? '+' + diffPct : diffPct;
+      item.status = status;
+      item.notes = `手动调价: 由 RM ${item.base_cost.toFixed(2)} 调整至 RM ${newPrice.toFixed(2)} (${item.diff_pct})`;
+
+      saveMaterialsToStorage();
+      renderMaterialCostsView();
+      alert(`✅ 材料【${item.name}】成本价已成功更新为 RM ${newPrice.toFixed(2)} / ${item.uom}！`);
+    }
+
+    function openAddMaterialModal() {
+      const code = prompt("请输入新材料物料编码 (例如 009999):");
+      if (!code) return;
+      const name = prompt("请输入材料名称与规格 (例如 新鲜牛肉粒 1KG):");
+      if (!name) return;
+      const priceStr = prompt("请输入来货成本单价 (RM):", "10.00");
+      if (!priceStr) return;
+      const price = parseFloat(priceStr) || 0;
+      const uom = prompt("请输入计量单位 (例如 kg, 包, 瓶):", "kg") || "kg";
+      const cat = prompt("请输入材料品类 (核心肉类, 生鲜调味, 核心香料药膳, 清洁耗材):", "核心肉类") || "核心肉类";
+
+      const newMat = {
+        code, name, cat, uom,
+        latest_cost: price,
+        base_cost: price,
+        diff: 0.0,
+        diff_pct: "0.0%",
+        status: "稳定",
+        total_qty: 0,
+        total_spend: 0,
+        notes: "店主手动新增监控材料"
+      };
+
+      materialsList.unshift(newMat);
+      saveMaterialsToStorage();
+      renderMaterialCostsView();
+      alert(`✅ 新材料【${name}】已加入成本监控库！`);
+    }
+
+    function exportMaterialCostsCsv() {
+      let csv = "\uFEFF物料代码,材料名称与详细规格,分类,单位,最新成本价 (RM),基准成本价 (RM),价格变动状态,变动幅度,1-9月累计采购量,累计总支出 (RM),成本走势与主要用途说明\n";
+      materialsList.forEach(m => {
+        csv += `"${m.code}","${m.name}","${m.cat}","${m.uom}",${m.latest_cost.toFixed(2)},${m.base_cost.toFixed(2)},"${m.status}","${m.diff_pct}",${m.total_qty.toFixed(2)},${m.total_spend.toFixed(2)},"${(m.notes || '').replace(/"/g, '""')}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `来碗螺蛳粉_核心食材物料成本单价库_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
 function loadDataFromStorage() {
+      loadMaterialsFromStorage();
       // 自动清除旧版本浏览器缓存，强行载入最新真实的 房租(7000/7500) 与 员工薪资(10300) 数据
       ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12','laiwan_finance_expenses_v13','laiwan_finance_expenses_v14','laiwan_finance_expenses_v15','laiwan_finance_expenses_v16','laiwan_finance_expenses_v17','laiwan_finance_expenses_v18','laiwan_finance_expenses_v19','laiwan_finance_expenses_v20','laiwan_finance_expenses_v21'].forEach(k => localStorage.removeItem(k));
       ['laiwan_finance_suppliers_v1','laiwan_finance_suppliers_v2'].forEach(k => localStorage.removeItem(k));
@@ -3377,7 +3729,7 @@ function renderSuppliersTable() {
 
     // 选项卡切换
     function switchTab(tabId) {
-      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'delivery', 'dishes', 'pnl', 'settings', 'menu-manager'];
+      const tabs = ['overview', 'expenses', 'revenue', 'suppliers', 'material-costs', 'delivery', 'dishes', 'pnl', 'settings', 'menu-manager'];
       tabs.forEach(t => {
         const btn = document.getElementById(`nav-btn-${t}`);
         const content = document.getElementById(`tab-content-${t}`);
@@ -3387,6 +3739,7 @@ function renderSuppliersTable() {
             content.classList.remove('hidden');
             if (t === 'menu-manager') initMenuManager();
             if (t === 'delivery') renderDeliveryTable();
+            if (t === 'material-costs') renderMaterialCostsView();
             if (t === 'settings') {
               const savedWebhook = localStorage.getItem('laiwan_finance_webhook') || '';
               const inp = document.getElementById('cfg-webhook-url');
