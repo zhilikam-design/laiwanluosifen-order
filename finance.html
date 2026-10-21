@@ -707,6 +707,43 @@
         </div>
       </div>
 
+      <!-- 核心原料来货成本与单价追踪库卡片 -->
+      <div class="fin-card rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b" style="border-color: var(--border-subtle);">
+          <div>
+            <h3 class="text-base font-bold text-current flex items-center gap-2">
+              <i data-lucide="package-search" class="w-5 h-5 text-amber-500"></i>
+              <span>📦 核心食材与辅料来货单价追踪库 (Perniagaan Huei hong 62种物料实际进价)</span>
+            </h3>
+            <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+              生鲜肉类、大骨、五花肉、香肠、生姜、胡椒粉、鸡粉等 62 种核心原料的进货单价、累计用量与价格走势
+            </p>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="text" id="filter-ingredient-input" oninput="onIngredientFilter()" placeholder="搜索原料名称或物料编码..." class="text-xs border rounded-xl px-3.5 py-2 w-full sm:w-64 focus:outline-none focus:ring-1 focus:ring-amber-500" style="background-color: var(--bg-card-subtle); border-color: var(--border-subtle); color: var(--text-primary);">
+          </div>
+        </div>
+
+        <div class="overflow-x-auto mt-4 max-h-[500px] overflow-y-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="sticky top-0 z-10 backdrop-blur-md uppercase text-[11px] tracking-wider border-b" style="background-color: var(--bg-header); border-color: var(--border-subtle); color: var(--text-muted);">
+              <tr>
+                <th class="py-3 px-4">物料编码</th>
+                <th class="py-3 px-4 font-bold text-current">原料名称与规格</th>
+                <th class="py-3 px-4">物料分类</th>
+                <th class="py-3 px-4">单位</th>
+                <th class="py-3 px-4 font-bold text-amber-600 dark:text-amber-400">来货单价 (RM/单位)</th>
+                <th class="py-3 px-4 mono font-semibold">1-9月累计进货总量</th>
+                <th class="py-3 px-4 mono font-bold text-current">累计采购总额 (RM)</th>
+                <th class="py-3 px-4">价格走势与主要用途</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-ingredients" class="divide-y" style="border-color: var(--border-subtle);">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
     <!-- ============================================================ -->
@@ -1746,11 +1783,18 @@ function doPost(e) {
     }
 
     // 数据载入：开支、备忘、供应商对账
-        function loadDataFromStorage() {
+        
+    // 汇丰贸易 2026年 1-9月 54 张真实全量采购发票
+    const DEFAULT_SUPPLIERS = [{"id": "sup_I_2601_00114", "date": "2026-01-05", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2601-00114", "amount": 1494.0, "status": "已结清", "receiptNo": "OR-20260105", "items": "大骨(10kg), 五花肉皮(9kg), 猪大肠(10kg), 食用油(51包), 草果(0.6kg), 猪脚(10kg), 生姜(7kg), 蒜味香肠(3包), 胡椒粉(24包), 白醋(1瓶), 美极鸡粉(8包)"}, {"id": "sup_I_2601_00115", "date": "2026-01-09", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2601-00115", "amount": 926.1, "status": "已结清", "receiptNo": "OR-20260109", "items": "梅花肉(3包), 猪板油(6包), 饺子皮(10包), 米粉(5包), 蒜头(2kg), 唯一面(6包), 洗洁精(2瓶), 鸡爪(5包), 豆卜(5包), 五花肉(7.5kg), 生姜(6.2kg), 大骨(10kg), 蒜味香肠(3包), 杂菜(3包), 油(3包)"}, {"id": "sup_I_2601_00116", "date": "2026-01-15", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2601-00116", "amount": 870.4, "status": "已结清", "receiptNo": "OR-20260115", "items": "大蚝油(1瓶), 猪大肠(10kg), 生姜(6kg), 蒜味香肠(3包), 虾肉丸(2包), 大骨(10kg), 美极鸡粉(8包), 五花肉(8.7kg)"}, {"id": "sup_I_2601_00117", "date": "2026-01-21", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2601-00117", "amount": 873.0, "status": "已结清", "receiptNo": "OR-20260121", "items": "生姜(6.2kg), 猪脚(10.2kg), 五花肉(9.5kg), 洗洁精(2瓶), 消毒水(1桶), 米粉(8包), 蒜味香肠(3包), 豆卜(6包), 大骨(10kg), 梅花肉(3.2包)"}, {"id": "sup_I_2601_00118", "date": "2026-01-23", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2601-00118", "amount": 1403.4, "status": "已结清", "receiptNo": "OR-20260123", "items": "猪大肠(10kg), 鸡爪(5包), 洗洁精(2瓶), 消毒水(1瓶), 五花肉(9.2kg), 肉桂(1kg), 黑木耳(2包), 蒜味香肠(6包), 印度花生(25kg), 生姜(3.5kg), 沙律卷(5包), 大骨(10kg), 猪板油(10包)"}, {"id": "sup_I_2601_00119", "date": "2026-01-30", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2601-00119", "amount": 910.6, "status": "已结清", "receiptNo": "OR-20260130", "items": "生姜(7kg), 白糖(6包), 饺子皮(7包), 梅花肉(2.7包), 猪大肠(10kg), 五花肉(10.7kg), 妈咪面(10包), 美极鸡粉(8包)"}, {"id": "sup_I_2602_00120", "date": "2026-02-03", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2602-00120", "amount": 907.5, "status": "已结清", "receiptNo": "OR-20260203", "items": "生姜(6kg), 草果(0.6kg), 大蚝油(1瓶), 大骨(15kg), 五花肉(11kg), 蒜味香肠(5包), 洗洁精(2瓶), 消毒水(1桶), 梅花肉(5.4包), 木薯粉(6包)"}, {"id": "sup_I_2602_00122", "date": "2026-02-09", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2602-00122", "amount": 1563.0, "status": "已结清", "receiptNo": "OR-20260209", "items": "生姜(6.5kg), 猪大肠(10kg), 美极鸡粉(8包), 鸡爪(6包), 豆卜(5包), 胡椒粉(24包), 猪脚(10kg), 五花肉(10kg), 蒜头(2kg), 印度花生(25kg)"}, {"id": "sup_I_2602_00124", "date": "2026-02-22", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2602-00124", "amount": 1295.9, "status": "已结清", "receiptNo": "OR-20260222", "items": "白糖(7包), 米粉(10包), 洗洁精(2瓶), 消毒水(1桶), 美极鸡粉(8包), 大骨(15kg), 猪脚(15kg), 五花肉(10kg), 消毒液(1瓶), 生姜(6kg), 蒜味香肠(4包), 蒜头(2kg), 猪大肠(10kg)"}, {"id": "sup_I_2602_00125", "date": "2026-02-25", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2602-00125", "amount": 313.5, "status": "已结清", "receiptNo": "OR-20260225", "items": "蒜味香肠(3包), 生姜(8kg), 大骨(10kg), 糯米粉(1kg), 豆卜(5包)"}, {"id": "sup_I_2603_00126", "date": "2026-03-03", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2603-00126", "amount": 594.0, "status": "已结清", "receiptNo": "OR-20260303", "items": "生姜(5kg), 洗洁精(2瓶), 猪大肠(10kg), 蒜味香肠(4包), 梅花肉(3包), 五花肉(5kg)"}, {"id": "sup_I_2603_00127", "date": "2026-03-06", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2603-00127", "amount": 1276.14, "status": "已结清", "receiptNo": "OR-20260306", "items": "印度花生(25kg), 大骨(15kg), 五花肉(15.82kg), 腊肠(1包), 鸡爪(6包), 美极鸡粉(8包), 生姜(10kg), 白醋(2瓶)"}, {"id": "sup_I_2603_00128", "date": "2026-03-10", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2603-00128", "amount": 294.2, "status": "已结清", "receiptNo": "OR-20260310", "items": "蒜味香肠(2包), 饺子皮(7包), 大蚝油(1瓶), 肉桂(1kg), 草果(1kg), 白糖(6包), 细盐(10包), 虾肉丸(2包), 生抽(1瓶)"}, {"id": "sup_I_2603_00129", "date": "2026-03-13", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2603-00129", "amount": 1325.5, "status": "已结清", "receiptNo": "OR-20260313", "items": "梅花肉(5.2包), 沙律卷(5包), 蒜味香肠(5包), 豆卜(20包), 美极鸡粉(8包), 猪大肠(10kg), 洗洁精(2瓶), 消毒水(1桶), 胡椒粉(24包), 大骨(15kg)"}, {"id": "sup_I_2603_00130", "date": "2026-03-14", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2603-00130", "amount": 1790.0, "status": "已结清", "receiptNo": "OR-20260314", "items": "五花肉(26kg), 大骨(15kg), 蒜味香肠(4包), 猪大肠(10kg), 美极鸡粉(8包), 印度花生(25kg), 猪脚(15kg), 鸡爪(5包)"}, {"id": "sup_I_2603_00131", "date": "2026-03-30", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2603-00131", "amount": 559.5, "status": "已结清", "receiptNo": "OR-20260330", "items": "蒜味香肠(5包), 生姜(13kg), 唯一面(6包), 蒜头(2kg), 大骨(15kg), 洗洁精(2瓶), 消毒水(1桶)"}, {"id": "sup_I_2604_00132", "date": "2026-04-02", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2604-00132", "amount": 383.0, "status": "已结清", "receiptNo": "OR-20260402", "items": "蒜味香肠(4包), 梅花肉(2.6包), 猪大肠(10kg), 白糖(10包)"}, {"id": "sup_I_2604_00133", "date": "2026-04-06", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2604-00133", "amount": 1206.75, "status": "已结清", "receiptNo": "OR-20260406", "items": "猪板油(10包), 生姜(4.1kg), 云吞皮(10包), 饺子皮(10包), 米粉(6包), 虾肉丸(3包), 肉桂(1包), 草果(1kg), 唯一面(1包), 鸡粉(8包), 五花肉(16.35kg), 蒜味香肠(4包)"}, {"id": "sup_I_2604_00134", "date": "2026-04-10", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2604-00134", "amount": 588.0, "status": "已结清", "receiptNo": "OR-20260410", "items": "生姜(16kg), 洗洁精(2瓶), 米粉(4包), 猪大肠(10kg), 大骨(15kg)"}, {"id": "sup_I_2604_00135", "date": "2026-04-16", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2604-00135", "amount": 988.0, "status": "已结清", "receiptNo": "OR-20260416", "items": "鸡爪(6包), 蒜味香肠(2包), 蚝油(1瓶), 胡椒粉(24包), 鸡粉(8包), 蒜头(2kg), 印度花生(25kg), 鲜虾水饺皮(8包)"}, {"id": "sup_I_2604_00137", "date": "2026-04-25", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2604-00137", "amount": 673.2, "status": "已结清", "receiptNo": "OR-20260425", "items": "米粉(10包), 生姜(3kg), 蒜味香肠(5包), 大骨(10kg), 五花肉(6.1kg), 美极鸡粉(8包)"}, {"id": "sup_I_2604_00138", "date": "2026-04-29", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2604-00138", "amount": 465.3, "status": "已结清", "receiptNo": "OR-20260429", "items": "生姜(5.4kg), 五花肉(5.3kg), 猪大肠(10kg), 鸡爪(6包)"}, {"id": "sup_I_2605_00139", "date": "2026-05-01", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00139", "amount": 364.0, "status": "已结清", "receiptNo": "OR-20260501", "items": "蒜味香肠(3包), 梅花肉(2.4包), 消毒水(1桶), 消毒水(1瓶), 大骨(20kg)"}, {"id": "sup_I_2605_00140", "date": "2026-05-04", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00140", "amount": 574.1, "status": "已结清", "receiptNo": "OR-20260504", "items": "洗洁精(2瓶), 生姜(2.3kg), 唯一面(6包), 豆卜(5包), 蒜头(2kg), 白糖(10包), 猪脚(9kg), 五花肉(10.1kg)"}, {"id": "sup_I_2605_00141", "date": "2026-05-13", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00141", "amount": 1256.5, "status": "已结清", "receiptNo": "OR-20260513", "items": "五花肉(6kg), 梅花肉(5.2包), 肉碎(10包), 印度花生(25kg), 洗洁精(2瓶), 消毒水(1桶), 生姜(6kg), 蒜味香肠(3包), 沙律卷(3包), 猪大肠(10kg)"}, {"id": "sup_I_2605_00142", "date": "2026-05-15", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00142", "amount": 264.4, "status": "已结清", "receiptNo": "OR-20260515", "items": "大骨(10kg), 蒜味香肠(4包), 五香粉(1包), 麦芽糖(2包), 料理酒(1瓶), 黄酒料酒(1瓶)"}, {"id": "sup_I_2605_00143", "date": "2026-05-17", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00143", "amount": 452.6, "status": "已结清", "receiptNo": "OR-20260517", "items": "五花肉(10.3kg), 大骨(10kg), 生姜(6.5kg)"}, {"id": "sup_I_2605_00144", "date": "2026-05-21", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00144", "amount": 1350.1, "status": "已结清", "receiptNo": "OR-20260521", "items": "虾肉丸(3包), 生姜(5.2kg), 蒜味香肠(4包), 鸡爪(10包), 沙律卷(5包), 味之素TUMIX(10包), 胡椒粉(24包), 豆卜(10包), 草果(0.6kg), 猪大肠(10kg), 猪脚(10.5kg)"}, {"id": "sup_I_2605_00145", "date": "2026-05-26", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00145", "amount": 603.2, "status": "已结清", "receiptNo": "OR-20260526", "items": "五花肉(5.4kg), 唯一面(6包), 蚝油(1瓶), 猪板油(10包), 生姜(6.3kg), 大骨(10kg), 蒜头(1kg), 白糖(10包), 长城陈醋(2瓶)"}, {"id": "sup_I_2605_00146", "date": "2026-05-29", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2605-00146", "amount": 839.36, "status": "已结清", "receiptNo": "OR-20260529", "items": "腊肠(1.02kg), 蒜味香肠(5包), 洗洁精(2瓶), 猪大肠(10kg), 梅花肉(2.7包), 五花肉(4.4kg), 印度花生(25kg)"}, {"id": "sup_I_2606_00147", "date": "2026-06-01", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2606-00147", "amount": 570.4, "status": "已结清", "receiptNo": "OR-20260601", "items": "生姜(7.6kg), 大骨(10kg), 五花肉(10.3kg), 米粉(10包), 蒜头(1kg)"}, {"id": "sup_I_2606_00148", "date": "2026-06-06", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2606-00148", "amount": 423.66, "status": "已结清", "receiptNo": "OR-20260606", "items": "生姜(5.82kg), 蒜味香肠(4包), 大骨(10kg), 新鲜鸡蛋(4托), 菜园蛋(5托)"}, {"id": "sup_I_2606_00149", "date": "2026-06-11", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2606-00149", "amount": 1150.33, "status": "已结清", "receiptNo": "OR-20260611", "items": "猪大肠(10kg), 大骨(10kg), 五花肉(10.39kg), 生姜(6.6kg), 肉桂(1kg), 草果(1kg), 豆卜(6包), 唯一面(6包), 猪脚(15kg), 味之素TUMIX(10包)"}, {"id": "sup_I_2606_00150", "date": "2026-06-17", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2606-00150", "amount": 607.2, "status": "已结清", "receiptNo": "OR-20260617", "items": "生姜(6.7kg), 蒜味香肠(4包), 梅花肉(2.7包), 猪大肠(10kg), 细盐(26包), 五花肉(5.4kg)"}, {"id": "sup_I_2606_00151", "date": "2026-06-20", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2606-00151", "amount": 717.1, "status": "已结清", "receiptNo": "OR-20260620", "items": "大红浙醋(1瓶), 头肠(5kg), 蒜味香肠(3包), 五花肉(5.3kg), 鸡爪(6包), 大骨(10kg), 消毒水(1桶), 生姜(6kg), 洗洁精(2瓶), 蒜头(1kg), 料理酒(1瓶)"}, {"id": "sup_I_2606_00152", "date": "2026-06-27", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2606-00152", "amount": 1661.3, "status": "已结清", "receiptNo": "OR-20260627", "items": "五花肉(8kg), 梅花肉(2.8包), 猪脚(10.7kg), 腊肠(1包), 生姜(8.1kg), 辣味香肠(4包), 猪大肠(10kg), 豆卜(6包), 猪板油(10包), 鸡粉(8包), 胡椒粉(24包), 大骨(10kg)"}, {"id": "sup_I_2607_00153", "date": "2026-07-01", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2607-00153", "amount": 610.6, "status": "已结清", "receiptNo": "OR-20260701", "items": "沙律卷(3包), 大红浙醋(1瓶), 蚝油(1瓶), 五花肉(8.3kg), 白糖(10包), 白醋(1瓶), 蒜味香肠(5包), 饺子皮(10包), 大骨(10kg)"}, {"id": "sup_I_2607_00154", "date": "2026-07-06", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2607-00154", "amount": 1209.9, "status": "已结清", "receiptNo": "OR-20260706", "items": "生姜(12.5kg), 鸡粉(8包), 印度花生(25kg), 唯一面(6包), 陈醋(1瓶), 梅花肉(2.8包), 蒜味香肠(3包), 鸡爪(6包), 消毒水(1桶), 大骨(10kg), 五花肉(8.2kg)"}, {"id": "sup_I_2607_00155", "date": "2026-07-14", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2607-00155", "amount": 744.7, "status": "已结清", "receiptNo": "OR-20260714", "items": "五花肉(8.3kg), 香菇(2包), 卤料包(2盒), 猪大肠(10kg), 大骨(10kg), 生姜(6.2kg), 猪脚(15kg)"}, {"id": "sup_I_2607_00156", "date": "2026-07-20", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2607-00156", "amount": 549.3, "status": "已结清", "receiptNo": "OR-20260720", "items": "梅花肉(2.3包), 五花肉(8.2kg), 豆卜(5包), 蒜味香肠(3包), 白糖(2包), 鸡粉(8包)"}, {"id": "sup_I_2607_00157", "date": "2026-07-23", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2607-00157", "amount": 611.4, "status": "已结清", "receiptNo": "OR-20260723", "items": "生姜(7.1kg), 猪大肠(10kg), 大骨(10kg), 辣味香肠(3包), 味精(2包), 猪脚(15kg)"}, {"id": "sup_I_2607_00158", "date": "2026-07-27", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2607-00158", "amount": 689.8, "status": "已结清", "receiptNo": "OR-20260727", "items": "肉桂(0.7kg), 生姜(7.2kg), 蒜头(1kg), 草果(1kg), 鸡爪(6包), 洗洁精(2瓶), 大骨(10kg), 沙律卷(5包), 花生(25包), 五花肉(7.1kg)"}, {"id": "sup_I_2607_00159", "date": "2026-07-29", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2607-00159", "amount": 1429.4, "status": "已结清", "receiptNo": "OR-20260729", "items": "陈醋(2瓶), 蒜味香肠(4包), 胡椒粉(24包), 鸡粉(8包), 猪大肠(10kg), 大骨(15kg), 五花肉(8.2kg), 梅花肉(4.8包), 猪脚(15kg)"}, {"id": "sup_I_2608_00160", "date": "2026-08-07", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2608-00160", "amount": 792.4, "status": "已结清", "receiptNo": "OR-20260807", "items": "陈醋(1瓶), 生姜(6.5kg), 蒜头(2包), 蚝油(1瓶), 白糖(2包), 唯一面(6包), 五花肉(9kg), 蒜味香肠(4包), 香菇(2包), 洗洁精(1瓶), 鸡粉(8包), 生姜(6.5kg)"}, {"id": "sup_I_2608_00161", "date": "2026-08-13", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2608-00161", "amount": 1092.6, "status": "已结清", "receiptNo": "OR-20260813", "items": "猪大肠(10kg), 鸡爪(6包), 大骨(10kg), 猪脚(15kg), 猪板油(10包), 生姜(5.4kg), 龙塔黑醋(12瓶), 消毒水(1桶), 白糖(3包), 五花肉(9.4kg)"}, {"id": "sup_I_2608_00162", "date": "2026-08-17", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2608-00162", "amount": 233.0, "status": "已结清", "receiptNo": "OR-20260817", "items": "豆卜(6包), 蒜味香肠(4包), 生姜(5.5kg), 蒜米(1.1kg)"}, {"id": "sup_I_2608_00163", "date": "2026-08-21", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2608-00163", "amount": 978.9, "status": "已结清", "receiptNo": "OR-20260821", "items": "猪大肠(10kg), 鸡爪(6包), 饺子皮(10包), 大骨(15kg), 五花肉(7.7kg), 白糖(3包), 味精(3包), 洗洁精(2瓶), 鸡粉(8包), 生姜(7kg)"}, {"id": "sup_I_2608_00164", "date": "2026-08-25", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2608-00164", "amount": 645.0, "status": "已结清", "receiptNo": "OR-20260825", "items": "梅花肉(5包), 腊肠(1包), 蒜米(1.6kg), 虾肉丸(2包), 五花肉(9kg), 唯一面(6包), 蒜味香肠(4包)"}, {"id": "sup_I_2608_00165", "date": "2026-08-28", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2608-00165", "amount": 792.8, "status": "已结清", "receiptNo": "OR-20260828", "items": "生姜(7.5kg), 味之素TUMIX(10包), 白糖(4包), 猪脚(15kg), 大骨(15kg), 蒜味香肠(6包), 豆卜(9包)"}, {"id": "sup_I_2609_00166", "date": "2026-09-04", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2609-00166", "amount": 1076.5, "status": "已结清", "receiptNo": "OR-20260904", "items": "五花肉(8kg), 大骨(15kg), 猪大肠(10kg), 鸡爪(6包), 蚝油(1瓶), 生姜(8kg), 消毒水(1桶), 印度花生(25kg), 蒜米(3.5kg)"}, {"id": "sup_I_2609_00167", "date": "2026-09-11", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2609-00167", "amount": 972.0, "status": "已结清", "receiptNo": "OR-20260911", "items": "白糖(4包), 蒜味香肠(5包), 猪脚(15kg), 五花肉(9kg), 胡椒粉(24包), 生姜(5.9kg), 洗洁精(2瓶), 冬菇(4包)"}, {"id": "sup_I_2609_00168", "date": "2026-09-14", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2609-00168", "amount": 1595.8, "status": "已结清", "receiptNo": "OR-20260914", "items": "五花肉(9.4kg), 肉桂(1kg), 草果(0.6kg), 鸡爪(10包), 猪大肠(10kg), 鸡粉(8包), 饺子皮(10包), 梅花肉(5.6包), 猪脚(15kg), 唯一面(12包), 大骨(15kg), 肉片(10kg), 生姜(9kg)"}, {"id": "sup_I_2609_00169", "date": "2026-09-22", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2609-00169", "amount": 1893.3, "status": "已结清", "receiptNo": "OR-20260922", "items": "蒜味香肠(4包), 五花肉(8.6kg), 沙律卷(4包), 猪板油(10包), 蒜米(2kg), 红糖(1包), 印度花生(25kg), 味精(20包), 生姜(8kg), 白糖(4包), 消毒水(1瓶), 消毒水(1桶), 鸡粉(8包), 豆卜(10包), 大骨(15kg), 猪脚(15kg), 沙拉酱(1瓶), 虾肉丸(3包)"}, {"id": "sup_I_2609_00170", "date": "2026-09-29", "supplier": "Perniagaan Huei hong (汇丰贸易)", "category": "生鲜猪肉与食材辅料", "invNo": "I-2609-00170", "amount": 591.1, "status": "已结清", "receiptNo": "OR-20260929", "items": "五花肉(7kg), 蒜味香肠(4包), 猪大肠(10kg), 生姜(7.2kg), 白醋(1瓶), 洗洁精(1瓶)"}];
+
+    // 核心食材物料来货成本与单价追踪库 (62种原料)
+    const INGREDIENTS_COST_DATABASE = [{"code": "000008", "name": "白糖 (SMH.GULA PASIR)", "cat": "调味干料", "uom": "pkt", "qty": 81.0, "amount": 259.2, "unit_cost": 3.2, "notes": "白糖标准进价 RM 3.20/包 (用于汤底熬煮调和)"}, {"code": "000029", "name": "鲜虾水饺皮 (CH.SHRIMP DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 8.0, "amount": 44.0, "unit_cost": 5.5, "notes": "水饺专用生面皮 RM 5.50/包"}, {"code": "000035", "name": "猪板油/背脂油 (SHH.LOIN FAT 1KG)", "cat": "生鲜肉类/油脂", "uom": "pkt", "qty": 66.0, "amount": 1155.0, "unit_cost": 17.5, "notes": "RM 15.00 ~ 18.50/包 (用于炼制招牌红油与料油)"}, {"code": "000043", "name": "优质梅花肉/猪颈肉 (GB.PORK MEAT COLLAR)", "cat": "生鲜肉类", "uom": "pkt", "qty": 61.4, "amount": 1535.0, "unit_cost": 25.0, "notes": "生鲜梅花肉 RM 25.00/包 (用于现炒肉丝与鲜肉加料)"}, {"code": "000055", "name": "大红浙醋 650ML (BM.WARRIOR YATCH RED VINEGAR)", "cat": "酱料调味", "uom": "BTL", "qty": 2.0, "amount": 28.0, "unit_cost": 14.0, "notes": "特制红醋 RM 14.00/瓶"}, {"code": "000059", "name": "云吞皮 (CH. WANTON SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 10.0, "amount": 26.0, "unit_cost": 2.6, "notes": "炸云吞/鲜肉云吞生皮 RM 2.60/包"}, {"code": "000060", "name": "水饺皮 (CH.DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 10.0, "amount": 60.0, "unit_cost": 6.0, "notes": "大水饺皮 RM 6.00/包"}, {"code": "000061", "name": "精选草果 50G (XS.BOLD CARDAMON)", "cat": "核心香料药膳", "uom": "kg", "qty": 6.4, "amount": 410.0, "unit_cost": 64.06, "notes": "RM 55.00 ~ 65.00/kg (螺蛳老汤灵魂熬制香料)"}, {"code": "000075", "name": "双龙台湾蒜味香肠 20条 (KW.TAIWAN SAUSAGE GARLIC)", "cat": "招牌加料", "uom": "pkt", "qty": 141.0, "amount": 3736.5, "unit_cost": 26.5, "notes": "RM 26.50/包 (每包含20条，折合每条进价 RM 1.33)"}, {"code": "000076", "name": "双龙台湾辣味香肠 20条 (KW.TAI SAUSAGE CHILLI)", "cat": "招牌加料", "uom": "pkt", "qty": 7.0, "amount": 185.5, "unit_cost": 26.5, "notes": "RM 26.50/包 (每包含20条，折合每条进价 RM 1.33)"}, {"code": "000096", "name": "蒜米 1KG (YX. GARLIC)", "cat": "生鲜调味", "uom": "1KG", "qty": 8.2, "amount": 113.0, "unit_cost": 13.78, "notes": "RM 10.00 ~ 15.00/kg (爆炒料底与自制蒜油)"}, {"code": "000189", "name": "食用油 1KG (OIL)", "cat": "食用油类", "uom": "pkt", "qty": 54.0, "amount": 135.0, "unit_cost": 2.5, "notes": "RM 2.50/包 (炸锅与炒粉基础油)"}, {"code": "000223", "name": "饺子皮 (CH.DUMPLING SKIN)", "cat": "面点面皮", "uom": "pkt", "qty": 54.0, "amount": 324.0, "unit_cost": 6.0, "notes": "RM 6.00/包"}, {"code": "000254", "name": "A级鸡爪/凤爪生料 (XK. CHICKEN FEET A)", "cat": "生鲜家禽", "uom": "pkt", "qty": 95.0, "amount": 1140.0, "unit_cost": 12.0, "notes": "RM 12.00/包 (用于慢炸虎皮卤鸡爪，全年价格稳定)"}, {"code": "000271", "name": "去皮大蒜头 1KG (KOPEK BAWANG PUTIH)", "cat": "生鲜调味", "uom": "kg", "qty": 16.0, "amount": 136.0, "unit_cost": 8.5, "notes": "RM 8.50/kg (人工剥皮鲜大蒜)"}, {"code": "000276", "name": "新鲜猪大肠 (SHH.BIG INTESTINE)", "cat": "生鲜肉类/内脏", "uom": "Kg", "qty": 260.0, "amount": 4590.0, "unit_cost": 17.65, "notes": "RM 17.00 ~ 18.00/kg (全店第2大肉类采购，用于招牌卤肥肠)"}, {"code": "000277", "name": "特级猪头肠 (SHH.HEAD INTESTINE)", "cat": "生鲜肉类/内脏", "uom": "Kg", "qty": 5.0, "amount": 125.0, "unit_cost": 25.0, "notes": "RM 25.00/kg"}, {"code": "000281", "name": "生鲜猪肉片 (SHH. SLICED MEAT)", "cat": "生鲜肉类", "uom": "kg", "qty": 10.0, "amount": 150.0, "unit_cost": 15.0, "notes": "RM 15.00/kg (现炒米粉肉丝原料)"}, {"code": "000282", "name": "精选肉碎 (SHH. MINCED MEAT)", "cat": "生鲜肉类", "uom": "pkt", "qty": 10.0, "amount": 260.0, "unit_cost": 26.0, "notes": "RM 26.00/包 (用于水饺与调味馅料)"}, {"code": "000289", "name": "砂拉越白胡椒粉 500G (HS. LADA SARAWAK)", "cat": "核心香辛料", "uom": "pkt", "qty": 192.0, "amount": 2808.0, "unit_cost": 14.63, "notes": "前期 RM 15.00/包，9月降至 RM 12.00/包 (用于底汤提香提鲜)"}, {"code": "000293", "name": "沙律香肠卷 (SS. SALAD ROLL / SAUSAGE ROLL)", "cat": "特色小吃", "uom": "pkt", "qty": 30.0, "amount": 270.0, "unit_cost": 9.0, "notes": "RM 9.00/包 (特色加料小吃)"}, {"code": "000319", "name": "熬汤猪大骨/筒骨 (GB.F.BONE)", "cat": "熬汤骨肉", "uom": "kg", "qty": 425.0, "amount": 3825.0, "unit_cost": 9.0, "notes": "RM 9.00/kg (全年累计425kg，螺蛳高汤浓郁灵魂)"}, {"code": "000328", "name": "带皮精选五花肉 (GB.BELLY SKIN)", "cat": "核心肉类", "uom": "kg", "qty": 361.16, "amount": 9751.32, "unit_cost": 27.0, "notes": "全店第1大支出！RM 27.00/kg (脆皮锅烧与五花肉核心)"}, {"code": "000379", "name": "秘制猪脚 5in (GB.PORK LEG 5in)", "cat": "核心肉类", "uom": "KG", "qty": 225.4, "amount": 2413.4, "unit_cost": 10.71, "notes": "前期 RM 12.00/kg，6月起降至 RM 10.00/kg (招牌猪脚螺蛳粉)"}, {"code": "000413", "name": "味之素味精 1KG (AJI.AJINOMOTO)", "cat": "调味干料", "uom": "pkt", "qty": 25.0, "amount": 370.0, "unit_cost": 14.8, "notes": "RM 14.80/包"}, {"code": "000418", "name": "味之素风味调味料 1KG (AJI.TUMIX)", "cat": "调味干料", "uom": "pkt", "qty": 30.0, "amount": 540.0, "unit_cost": 18.0, "notes": "RM 18.00/包"}, {"code": "000473", "name": "富驰广式腊肠 (H.FU CHI SAUSAGE)", "cat": "招牌加料", "uom": "pkt", "qty": 4.02, "amount": 211.56, "unit_cost": 52.63, "notes": "RM 61.00/包 (用于腊肠螺蛳粉加料)"}, {"code": "000477", "name": "特级生抽酱油 (KICAP CAIR SOYA MEWAH)", "cat": "酱料调味", "uom": "Btl", "qty": 1.0, "amount": 14.0, "unit_cost": 14.0, "notes": "RM 14.00/瓶"}, {"code": "000501", "name": "新鲜农场鸡蛋 (LB. EGG FRESH EGG)", "cat": "生鲜蛋品", "uom": "TRAY", "qty": 4.0, "amount": 62.0, "unit_cost": 15.5, "notes": "RM 15.50/托 (每托30粒，折合每粒 RM 0.52)"}, {"code": "000502", "name": "新鲜菜园土鸡蛋 (LB. KAMPUNG EGG)", "cat": "生鲜蛋品", "uom": "TRAY", "qty": 5.0, "amount": 90.0, "unit_cost": 18.0, "notes": "RM 18.00/托 (煎蛋与黄金炒饭原料)"}, {"code": "000516", "name": "陈妹香料卤料包 (CHAN SISTER. HERBA BAG)", "cat": "核心香料药膳", "uom": "box", "qty": 2.0, "amount": 10.0, "unit_cost": 5.0, "notes": "RM 5.00/盒 (老汤草本提香)"}, {"code": "000653", "name": "美极浓缩鸡粉/鸡汁 1.2KG (THH.MAGGI CHICKEN STOCK)", "cat": "核心调味", "uom": "pkt", "qty": 152.0, "amount": 2888.0, "unit_cost": 19.0, "notes": "RM 19.00/包 (全年采购152包，高汤鲜味底)"}, {"code": "000667", "name": "龙大黄米料理料酒 (LONG TA RICE COOKING WINE)", "cat": "酱料调味", "uom": "Btl", "qty": 1.0, "amount": 6.5, "unit_cost": 6.5, "notes": "RM 6.50/瓶"}, {"code": "000682", "name": "特级黑木耳 80G (TS. BLACK FUNGUS BIG)", "cat": "螺蛳粉配料", "uom": "pkt", "qty": 2.0, "amount": 38.0, "unit_cost": 19.0, "notes": "RM 19.00/包"}, {"code": "000699", "name": "特制五香香料粉 300G (TS. SERBUK REMPAH)", "cat": "核心香料药膳", "uom": "pkt", "qty": 1.0, "amount": 17.5, "unit_cost": 17.5, "notes": "RM 17.50/包"}, {"code": "000713", "name": "细精盐 500G (TS.SALT FINE)", "cat": "调味干料", "uom": "pkt", "qty": 36.0, "amount": 30.8, "unit_cost": 0.86, "notes": "RM 0.80 ~ 1.00/包"}, {"code": "000719", "name": "海天蚝油 4.75KG (TS. HTH OYSTER SAUCE)", "cat": "酱料调味", "uom": "Btl", "qty": 2.0, "amount": 34.0, "unit_cost": 17.0, "notes": "RM 17.00/大桶"}, {"code": "000731", "name": "爱家特级米粉 455G (AKK.AI BIHUN)", "cat": "米粉主食", "uom": "pkt", "qty": 53.0, "amount": 454.0, "unit_cost": 8.57, "notes": "RM 8.00 ~ 9.50/包 (N2-A1米粉与现炒米粉)"}, {"code": "000757", "name": "干香菇 100G (TS.DRIED MUSHROOM)", "cat": "干货配料", "uom": "100G", "qty": 6.0, "amount": 52.0, "unit_cost": 8.67, "notes": "RM 8.00 ~ 10.00/包"}, {"code": "000761", "name": "长城牌老陈醋 635G (TS.GREATWALL VINEGAR)", "cat": "核心酸醋", "uom": "BTL", "qty": 6.0, "amount": 45.0, "unit_cost": 7.5, "notes": "RM 7.50/瓶 (经典山西老陈醋)"}, {"code": "000783", "name": "特级料理大酒 640ML (CW.LIKEUR BESAR)", "cat": "酱料调味", "uom": "640ML", "qty": 2.0, "amount": 70.0, "unit_cost": 35.0, "notes": "RM 35.00/瓶"}, {"code": "000797", "name": "厨房专用洗洁精 (TE. DISWASH RED)", "cat": "清洁卫生耗材", "uom": "Btl", "qty": 34.0, "amount": 593.0, "unit_cost": 17.44, "notes": "前期 RM 16.50/瓶，5月后 RM 18.50/瓶 (后厨洗碗去油)"}, {"code": "000830", "name": "泰国天然红糖 500G (TS.THAILAND GULA MERAH)", "cat": "调味干料", "uom": "pkt", "qty": 1.0, "amount": 5.0, "unit_cost": 5.0, "notes": "RM 5.00/包"}, {"code": "000836", "name": "天然麦芽糖 350G (TS.MALTOSE)", "cat": "调味干料", "uom": "pkt", "qty": 2.0, "amount": 9.4, "unit_cost": 4.7, "notes": "RM 4.70/包 (烧腊挂皮脆色)"}, {"code": "000841", "name": "水果沙拉风味酱汁 250ML (LC DRSNG FRUIT SLD)", "cat": "酱料调味", "uom": "Btl", "qty": 1.0, "amount": 9.8, "unit_cost": 9.8, "notes": "RM 9.80/瓶"}, {"code": "000873", "name": "桂皮/肉桂 1KG (LFY.KAYU MANIS)", "cat": "核心香料药膳", "uom": "Kg", "qty": 5.7, "amount": 160.5, "unit_cost": 28.16, "notes": "前期 RM 35.00/kg，9月降至 RM 25.00/kg (卤汤香料)"}, {"code": "000933", "name": "高浓度消毒水/漂白水 (TE.CLOROX / DETTOL)", "cat": "清洁卫生耗材", "uom": "CAN/btl", "qty": 16.0, "amount": 433.0, "unit_cost": 27.06, "notes": "小瓶 RM 14.50~16.50，大桶 RM 28.00~35.00"}, {"code": "000950", "name": "精选干香菇 100G (DRY MUSHROOM)", "cat": "干货配料", "uom": "kg", "qty": 2.0, "amount": 20.0, "unit_cost": 10.0, "notes": "RM 10.00/kg"}, {"code": "000968", "name": "优质印度炸花生粒 25KG (YX.PENUAT INDIA)", "cat": "螺蛳粉配料", "uom": "KG", "qty": 250.0, "amount": 2750.0, "unit_cost": 11.0, "notes": "RM 11.00/kg (全店炸花生，单次进货25kg装 RM 275/包)"}, {"code": "001118", "name": "纯白糯米粉 1KG (XS.PUTIH PULUT)", "cat": "干货粉料", "uom": "KG", "qty": 1.0, "amount": 7.5, "unit_cost": 7.5, "notes": "RM 7.50/kg"}, {"code": "001120", "name": "烹调白米醋 4.5KG (SIGI.CUKA)", "cat": "核心酸醋", "uom": "BTL", "qty": 5.0, "amount": 64.0, "unit_cost": 12.8, "notes": "大桶装 RM 12.00 ~ 14.00/桶 (腌酸笋与酸豆角专用)"}, {"code": "001285", "name": "印度花生小包装 150G (YX.PENUAT INDIA)", "cat": "螺蛳粉配料", "uom": "150G", "qty": 25.0, "amount": 62.5, "unit_cost": 2.5, "notes": "RM 2.50/包"}, {"code": "001329", "name": "优质木薯粉/生粉 (PX.TEPUNG UBI)", "cat": "干货粉料", "uom": "PKT", "qty": 6.0, "amount": 15.0, "unit_cost": 2.5, "notes": "RM 2.50/包 (炸蛋蓬松与挂浆)"}, {"code": "001404", "name": "鲜甜虾滑肉丸 1KG (CS.PRAWN MEATBALL)", "cat": "招牌加料", "uom": "PKT", "qty": 15.0, "amount": 309.0, "unit_cost": 20.6, "notes": "RM 20.50 ~ 21.00/包"}, {"code": "001889", "name": "什锦冷冻杂菜 500G (FG.MIXED VEGETABLE)", "cat": "生鲜蔬菜", "uom": "500G", "qty": 3.0, "amount": 13.5, "unit_cost": 4.5, "notes": "RM 4.50/包 (炒饭配菜)"}, {"code": "002000", "name": "唯一面/快熟面 700G (MELODIES.VITS INS NOODLE)", "cat": "面食主食", "uom": "PKT", "qty": 61.0, "amount": 457.5, "unit_cost": 7.5, "notes": "RM 7.50/包 (N3-唯一面选粉)"}, {"code": "002086", "name": "文冬优质金黄豆卜 250G (BENTONG BEANCURD PUFF)", "cat": "螺蛳粉配料", "uom": "PKT", "qty": 98.0, "amount": 637.0, "unit_cost": 6.5, "notes": "RM 6.50/包 (炸豆腐吸汁配料，累计进货98包)"}, {"code": "002186", "name": "经济大桶装蚝油 5KG (YG.OYSTER SAUCE)", "cat": "酱料调味", "uom": "BTL", "qty": 6.0, "amount": 90.0, "unit_cost": 15.0, "notes": "RM 15.00/大桶 (现炒调味料底)"}, {"code": "002225", "name": "龙塔特级老黑醋 620ML (GC.DRAGON TOWER BLACK VINEGAR)", "cat": "核心酸醋", "uom": "btl", "qty": 12.0, "amount": 72.0, "unit_cost": 6.0, "notes": "RM 6.00/瓶"}, {"code": "002238", "name": "妈咪光面 10X72G (SEA.MAMEE PLAIN NOODLE)", "cat": "面食主食", "uom": "pkt", "qty": 10.0, "amount": 70.0, "unit_cost": 7.0, "notes": "RM 7.00/包"}, {"code": "00976", "name": "特选去泥老生姜 (HALIA)", "cat": "生鲜调味/去腥", "uom": "KG", "qty": 295.52, "amount": 3841.76, "unit_cost": 13.0, "notes": "全店核心调料第1大户！累计进货295.52kg，RM 13.00/kg (去腥熬汤)"}, {"code": "02264", "name": "袋装精选大蒜 500G (BM.TM GARLIC)", "cat": "生鲜调味", "uom": "PCK", "qty": 2.0, "amount": 10.0, "unit_cost": 5.0, "notes": "RM 5.00/包"}];
+
+function loadDataFromStorage() {
       // 自动清除旧版本浏览器缓存，强行载入最新真实的 房租(7000/7500) 与 员工薪资(10300) 数据
-      ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12','laiwan_finance_expenses_v13','laiwan_finance_expenses_v14','laiwan_finance_expenses_v15','laiwan_finance_expenses_v16','laiwan_finance_expenses_v17','laiwan_finance_expenses_v18','laiwan_finance_expenses_v19','laiwan_finance_expenses_v20','laiwan_finance_expenses_v21','laiwan_finance_expenses_v22'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12','laiwan_finance_expenses_v13','laiwan_finance_expenses_v14','laiwan_finance_expenses_v15','laiwan_finance_expenses_v16','laiwan_finance_expenses_v17','laiwan_finance_expenses_v18','laiwan_finance_expenses_v19','laiwan_finance_expenses_v20','laiwan_finance_expenses_v21'].forEach(k => localStorage.removeItem(k));
       ['laiwan_finance_suppliers_v1','laiwan_finance_suppliers_v2'].forEach(k => localStorage.removeItem(k));
-      ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8','laiwan_finance_delivery_v11','laiwan_finance_delivery_v12','laiwan_finance_delivery_v13','laiwan_finance_delivery_v14','laiwan_finance_delivery_v15','laiwan_finance_delivery_v16','laiwan_finance_delivery_v17','laiwan_finance_delivery_v18','laiwan_finance_delivery_v19','laiwan_finance_delivery_v20'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8','laiwan_finance_delivery_v11','laiwan_finance_delivery_v12','laiwan_finance_delivery_v13','laiwan_finance_delivery_v14','laiwan_finance_delivery_v15','laiwan_finance_delivery_v16','laiwan_finance_delivery_v17','laiwan_finance_delivery_v18','laiwan_finance_delivery_v19'].forEach(k => localStorage.removeItem(k));
 
             // 0. POS 销售数据浏览器缓存 (保持一键同步的最新数据)
       const cachedPos = localStorage.getItem('laiwan_pos_sales_cache');
@@ -1764,7 +1808,7 @@ function doPost(e) {
       }
 
       // 1. 杂支
-      const localExp = localStorage.getItem('laiwan_finance_expenses_v23');
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v22');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
@@ -1862,15 +1906,13 @@ function doPost(e) {
           { id: 'exp_grab_mktg_202608', date: '2026-08-31', category: '杂项维修与维护', name: '8月份 GrabFood 商家自付折扣与营销扣款', amount: 1547.95, payment: '平台账单扣除', ref: 'GF-MKTG-202608', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM1,181.39 + 营销成功费RM339.75 + HotDeals广告RM26.81' },
           { id: 'exp_fp-comm-202608', date: '2026-08-31', category: '外卖平台佣金抽成', name: '8月份 Foodpanda 平台 30% 佣金扣款', amount: 1848.73, payment: '平台账单扣除', ref: 'FP-COMM-202608', handled: 'Foodpanda', notes: 'Foodpanda 31天共288单平台佣金结算' },
           { id: 'exp_fp-mktg-202608', date: '2026-08-31', category: '杂项维修与维护', name: '8月份 Foodpanda 折扣与营销扣款', amount: 3139.23, payment: '平台账单扣除', ref: 'FP-MKTG-202608', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣、优惠券与广告营销扣款' },
-          { id: 'exp_fp-comm-09', date: '2026-09-30', category: '外卖平台佣金抽成', name: '9月份 Foodpanda 平台 30% 佣金扣款', amount: 1733.33, payment: '平台账单扣除', ref: 'FP-COMM-09', handled: 'Foodpanda', notes: 'Foodpanda 30天共298单平台 30% 基础佣金结算 (RM1,733.33)' },
-          { id: 'exp_fp-mktg-09', date: '2026-09-30', category: '打包与外卖耗材', name: '9月份 Foodpanda 平台曝光营销与广告费', amount: 1133.68, payment: '平台账单扣除', ref: 'FP-MKTG-09', handled: 'Foodpanda', notes: 'Foodpanda 首页曝光、搜索优先与活动营销扣款' },
-          { id: 'exp_fp-disc-09', date: '2026-09-30', category: '杂项维修与维护', name: '9月份 Foodpanda 商家自付折价券补贴', amount: 1711.18, payment: '平台账单扣除', ref: 'FP-DISC-09', handled: 'Foodpanda', notes: 'Foodpanda 平台内店铺自营满减折价券与折扣' },
+          { id: 'exp_fp-comm-09', date: '2026-09-29', category: '外卖平台佣金抽成', name: '9月份 Foodpanda 平台 30% 佣金扣款', amount: 1694.69, payment: '平台账单扣除', ref: 'FP-COMM-09', handled: 'Foodpanda', notes: 'Foodpanda 292 单平台 30% 基础佣金结算' },
+          { id: 'exp_fp-mktg-09', date: '2026-09-29', category: '打包与外卖耗材', name: '9月份 Foodpanda 平台曝光营销与广告费', amount: 1113.81, payment: '平台账单扣除', ref: 'FP-MKTG-09', handled: 'Foodpanda', notes: 'Foodpanda 首页曝光、搜索优先与活动营销扣款' },
+          { id: 'exp_fp-disc-09', date: '2026-09-29', category: '杂项维修与维护', name: '9月份 Foodpanda 商家自付折价券补贴', amount: 1679.34, payment: '平台账单扣除', ref: 'FP-DISC-09', handled: 'Foodpanda', notes: 'Foodpanda 平台内店铺自营满减折价券' },
           { id: 'exp_grab_comm_202609', date: '2026-09-30', category: '外卖平台佣金抽成', name: '9月份 GrabFood 平台佣金扣款', amount: 3767.57, payment: '平台账单扣除', ref: 'GF-COMM-202609', handled: 'Grab', notes: 'GrabFood 全月共341单平台佣金结算 (RM3,767.57)' },
           { id: 'exp_grab_mktg_202609', date: '2026-09-30', category: '杂项维修与维护', name: '9月份 GrabFood 商家自付折扣与营销扣款', amount: 1056.91, payment: '平台账单扣除', ref: 'GF-MKTG-202609', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM800.69 + 营销成功费RM238.58 + HotDeals广告RM17.64' },
-          { id: 'exp_grab_comm_202610', date: '2026-10-11', category: '外卖平台佣金抽成', name: '10月份(1~11日) GrabFood 平台佣金扣款', amount: 1049.66, payment: '平台账单扣除', ref: 'GF-COMM-202610', handled: 'Grab', notes: 'GrabFood 10/01-10/11共102单平台佣金结算 (RM1,049.66)' },
-          { id: 'exp_grab_mktg_202610', date: '2026-10-11', category: '杂项维修与维护', name: '10月份(1~11日) GrabFood 商家自付折扣与营销扣款', amount: 369.65, payment: '平台账单扣除', ref: 'GF-MKTG-202610', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM279.41 + 营销成功费RM84.56 + 广告RM5.68' },
-          { id: 'exp_fp_comm_202610', date: '2026-10-17', category: '外卖平台佣金抽成', name: '10月份(1~17日) Foodpanda 平台佣金扣款', amount: 985.33, payment: '平台账单扣除', ref: 'FP-COMM-202610', handled: 'Foodpanda', notes: 'Foodpanda 10/01-10/17共167单平台佣金结算 (RM985.33)' },
-          { id: 'exp_fp_mktg_202610', date: '2026-10-17', category: '打包与外卖耗材', name: '10月份(1~17日) Foodpanda 商家自付折扣与营销扣款', amount: 1593.29, payment: '平台账单扣除', ref: 'FP-MKTG-202610', handled: 'Foodpanda', notes: 'Foodpanda 商家折扣RM454.19 + 优惠券RM553.47 + 营销费RM585.63' }
+          { id: 'exp_grab_comm_202610', date: '2026-10-04', category: '外卖平台佣金抽成', name: '10月份(前4天) GrabFood 平台佣金扣款', amount: 380.51, payment: '平台账单扣除', ref: 'GF-COMM-202610', handled: 'Grab', notes: 'GrabFood 01/10-04/10共38单平台佣金结算 (RM380.51)' },
+          { id: 'exp_grab_mktg_202610', date: '2026-10-04', category: '杂项维修与维护', name: '10月份(前4天) GrabFood 商家自付折扣与营销扣款', amount: 170.32, payment: '平台账单扣除', ref: 'GF-MKTG-202610', handled: 'Grab', notes: 'GrabFood 商家自付折扣RM127.48 + 营销成功费RM40.77 + HotDeals广告RM2.07' }
         ];
         saveExpensesToStorage();
       }
@@ -1887,17 +1929,18 @@ function doPost(e) {
         try { customRevenueList = JSON.parse(localCustomRev); } catch(e) {}
       }
 
-      // 4. 供应商进货账单 (真实记账模式：初始为空，绝不插入任何模拟 sample 数据，刷新绝不反弹)
-      const localSupp = localStorage.getItem('laiwan_finance_suppliers_v3');
+      // 4. 供应商进货账单 (汇丰贸易 2026年 1-9月 54 笔真实采购账单，总额 RM 48,043.74)
+      const localSupp = localStorage.getItem('laiwan_finance_suppliers_v4');
       if (localSupp !== null) {
-        try { suppliersList = JSON.parse(localSupp); } catch(e) { suppliersList = []; }
-      } else {
-        suppliersList = [];
+        try { suppliersList = JSON.parse(localSupp); } catch(e) { suppliersList = DEFAULT_SUPPLIERS; }
+      }
+      if (!suppliersList || suppliersList.length === 0) {
+        suppliersList = DEFAULT_SUPPLIERS;
         saveSuppliersToStorage();
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v21');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v20');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -2145,43 +2188,30 @@ function doPost(e) {
             id: 'del_fp_202609',
             month: '2026-09',
             platform: 'Foodpanda',
-            gross: 9029.60,
-            commission: 1733.33,
-            adsPromo: 3064.44,
-            adjustments: 1.44,
-            net: 4233.27,
-            orders: 298,
-            rate: '53.1%',
+            gross: 8839.90,
+            commission: 1694.69,
+            adsPromo: 3012.73,
+            adjustments: 6.12,
+            net: 4138.60,
+            orders: 292,
+            rate: '53.2%',
             ref: 'FP-STMT-202609',
-            notes: 'Foodpanda 9月官方发票全量核销 (含9/30补录全月全量30天共298单 | 账面RM9,029.60 | 抽佣RM1,733.33 | 折扣营销与SST RM3,064.44 | 净打款RM4,233.27)'
+            notes: 'Foodpanda 9月官方发票全量核销 (29天共292单 | 账面RM8,839.90 | 抽佣RM1,694.69 | 折扣券营销与SST RM3,012.73 | 补差+RM6.12 | 净打款RM4,138.60)'
           },
+
           {
-            id: 'del_grab_202610',
+            id: 'del_grab_202610_early',
             month: '2026-10',
             platform: 'GrabFood',
-            gross: 3680.00,
-            commission: 1049.66,
-            adsPromo: 369.65,
-            adjustments: 16.98,
-            net: 2277.67,
-            orders: 102,
-            rate: '38.1%',
-            ref: 'GF-STMT-202610-W1-W2',
-            notes: 'GrabFood 10月官方周结单 (10/01-10/11共102单 | 账面约RM3,680.00 | 抽佣RM1,049.66 | 营销扣款RM369.65 | 净打款RM2,277.67)'
-          },
-          {
-            id: 'del_fp_202610',
-            month: '2026-10',
-            platform: 'Foodpanda',
-            gross: 5112.30,
-            commission: 985.33,
-            adsPromo: 1593.29,
-            adjustments: -128.34,
-            net: 2405.34,
-            orders: 167,
-            rate: '52.9%',
-            ref: 'FP-STMT-202610-17DAYS',
-            notes: 'Foodpanda 10月官方发票核销 (10/01-10/17共17天全量167单 | 账面RM5,112.30 | 抽佣RM985.33 | 折扣券与营销RM1,593.29 | 净打款RM2,405.34)'
+            gross: 1317.60,
+            commission: 380.51,
+            adsPromo: 170.32,
+            adjustments: 14.25,
+            net: 781.02,
+            orders: 38,
+            rate: '40.7%',
+            ref: 'GF-STMT-202610-EARLY',
+            notes: 'GrabFood 10月前4天官方周报结单 (01/10-04/10共38单 | 账面RM1,317.60 | 抽佣RM380.51 | 折扣与营销RM170.32 | 补偿+RM14.25 | 净打款RM781.02)'
           }
         ];
         saveDeliveryToStorage();
@@ -2191,8 +2221,8 @@ function doPost(e) {
     
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租与员工薪资台账（10月起已剔除员工A薪资RM1900，薪资总额为RM8400）吗？")) {
-        localStorage.removeItem('laiwan_finance_expenses_v23');
-        localStorage.removeItem('laiwan_finance_delivery_v21');
+        localStorage.removeItem('laiwan_finance_expenses_v22');
+        localStorage.removeItem('laiwan_finance_delivery_v20');
         localStorage.removeItem('laiwan_finance_suppliers_v3');
         expensesList = [];
         deliveryList = [];
@@ -2203,19 +2233,19 @@ function doPost(e) {
     }
 
 function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v23', JSON.stringify(expensesList));
+      localStorage.setItem('laiwan_finance_expenses_v22', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
     }
     function saveSuppliersToStorage() {
-      localStorage.setItem('laiwan_finance_suppliers_v3', JSON.stringify(suppliersList));
+      localStorage.setItem('laiwan_finance_suppliers_v4', JSON.stringify(suppliersList));
     }
     function saveCustomRevToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v21', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v20', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
@@ -2224,6 +2254,7 @@ function saveExpensesToStorage() {
       renderExpensesTable();
       renderRevenueTable();
       renderSuppliersTable();
+      renderIngredientsTable();
       renderDeliveryTable();
       renderDishesTable();
       renderPnLStatement();
@@ -2645,7 +2676,52 @@ function saveExpensesToStorage() {
     // -------------------------------------------------------------
     // TAB 4: 供应商账单对账
     // -------------------------------------------------------------
-    function renderSuppliersTable() {
+    
+    // 渲染食材物料来货单价追踪库
+    function renderIngredientsTable(filterKeyword = '') {
+      const tbody = document.getElementById('tbody-ingredients');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const kw = filterKeyword.trim().toLowerCase();
+      const list = INGREDIENTS_COST_DATABASE.filter(item => {
+        if (!kw) return true;
+        return item.name.toLowerCase().includes(kw) || 
+               item.code.toLowerCase().includes(kw) || 
+               item.cat.toLowerCase().includes(kw) ||
+               (item.notes && item.notes.toLowerCase().includes(kw));
+      });
+
+      if (list.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="8" class="py-6 text-center text-xs" style="color: var(--text-muted);">未找到匹配的原料记录</td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+
+      list.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "transition hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs sm:text-sm";
+        tr.innerHTML = `
+          <td class="py-3 px-4 mono font-bold text-xs" style="color: var(--text-muted);">${item.code}</td>
+          <td class="py-3 px-4 font-bold text-current">${item.name}</td>
+          <td class="py-3 px-4 text-xs"><span class="px-2 py-0.5 rounded-full font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400">${item.cat}</span></td>
+          <td class="py-3 px-4 mono text-xs">${item.uom}</td>
+          <td class="py-3 px-4 mono font-bold text-amber-600 dark:text-amber-400">RM ${item.unit_cost.toFixed(2)}</td>
+          <td class="py-3 px-4 mono font-semibold">${item.qty.toLocaleString()} ${item.uom}</td>
+          <td class="py-3 px-4 mono font-bold text-current">RM ${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-xs" style="color: var(--text-secondary);">${item.notes || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function onIngredientFilter() {
+      const kw = document.getElementById('filter-ingredient-input')?.value || '';
+      renderIngredientsTable(kw);
+    }
+
+function renderSuppliersTable() {
       const tbody = document.getElementById('tbody-suppliers');
       tbody.innerHTML = '';
       let total = 0, unpaid = 0, paid = 0;
