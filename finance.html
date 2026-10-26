@@ -2292,7 +2292,7 @@ function loadDataFromStorage() {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v21');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v25');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
@@ -2714,7 +2714,7 @@ function loadDataFromStorage() {
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租与员工薪资台账（10月起已剔除员工A薪资RM1900，薪资总额为RM8400）吗？")) {
         localStorage.removeItem('laiwan_finance_expenses_v22');
-        localStorage.removeItem('laiwan_finance_delivery_v21');
+        localStorage.removeItem('laiwan_finance_delivery_v25');
         localStorage.removeItem('laiwan_finance_suppliers_v3');
         expensesList = [];
         deliveryList = [];
@@ -2737,7 +2737,7 @@ function saveExpensesToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v21', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v25', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
