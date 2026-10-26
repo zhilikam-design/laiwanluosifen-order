@@ -2292,13 +2292,153 @@ function loadDataFromStorage() {
       }
 
       // 5. 外卖平台月结对账单 (支持记录每个月平台总额、抽佣、广告费与净到账)
-      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v20');
+      const localDelivery = localStorage.getItem('laiwan_finance_delivery_v21');
       if (localDelivery) {
         try { deliveryList = JSON.parse(localDelivery); } catch(e) {}
       }
       if (!deliveryList || deliveryList.length === 0) {
         deliveryList = [
+                    {
+            id: 'del_shopee_202601',
+            month: '2026-01',
+            platform: 'ShopeeFood',
+            gross: 2294.50,
+            commission: 688.35,
+            adsPromo: 55.06,
+            adjustments: 0.00,
+            net: 1551.09,
+            orders: 85,
+            rate: '32.4%',
+            ref: 'MYSPFPF202601-INV',
+            notes: 'ShopeeFood 1月官方LHDN电子发票核销 (全月双半月结 | 账面RM2,294.50 | 抽佣30% RM688.35 | SST税RM55.06 | 净打款RM1,551.09)'
+          },
           {
+            id: 'del_shopee_202602',
+            month: '2026-02',
+            platform: 'ShopeeFood',
+            gross: 1621.90,
+            commission: 486.57,
+            adsPromo: 38.93,
+            adjustments: 0.00,
+            net: 1096.40,
+            orders: 62,
+            rate: '32.4%',
+            ref: 'MYSPFPF202602-INV',
+            notes: 'ShopeeFood 2月官方LHDN电子发票核销 (全月双半月结 | 账面RM1,621.90 | 抽佣30% RM486.57 | SST税RM38.93 | 净打款RM1,096.40)'
+          },
+          {
+            id: 'del_shopee_202603',
+            month: '2026-03',
+            platform: 'ShopeeFood',
+            gross: 3009.90,
+            commission: 902.97,
+            adsPromo: 72.25,
+            adjustments: 0.00,
+            net: 2034.68,
+            orders: 118,
+            rate: '32.4%',
+            ref: 'MYSPFPF202603-INV',
+            notes: 'ShopeeFood 3月官方LHDN电子发票核销 (全月双半月结 | 账面RM3,009.90 | 抽佣30% RM902.97 | SST税RM72.25 | 净打款RM2,034.68)'
+          },
+          {
+            id: 'del_shopee_202604',
+            month: '2026-04',
+            platform: 'ShopeeFood',
+            gross: 1094.90,
+            commission: 328.47,
+            adsPromo: 26.27,
+            adjustments: 0.00,
+            net: 740.16,
+            orders: 45,
+            rate: '32.4%',
+            ref: 'MYSPFPF202604-INV',
+            notes: 'ShopeeFood 4月官方发票核销 (前半月账单RM1,094.90 | 抽佣RM328.47 | SST RM26.27 | 净打款RM740.16)'
+          },
+          {
+            id: 'del_shopee_202605',
+            month: '2026-05',
+            platform: 'ShopeeFood',
+            gross: 1182.20,
+            commission: 354.66,
+            adsPromo: 28.38,
+            adjustments: 0.00,
+            net: 799.16,
+            orders: 48,
+            rate: '32.4%',
+            ref: 'MYSPFPF202605-INV',
+            notes: 'ShopeeFood 5月官方发票核销 (前半月账单RM1,182.20 | 抽佣RM354.66 | SST RM28.38 | 净打款RM799.16)'
+          },
+          {
+            id: 'del_shopee_202606',
+            month: '2026-06',
+            platform: 'ShopeeFood',
+            gross: 4178.50,
+            commission: 1109.85,
+            adsPromo: 507.78,
+            adjustments: 0.00,
+            net: 2560.87,
+            orders: 165,
+            rate: '38.7%',
+            ref: 'MYSPFPF202606-INV',
+            notes: 'ShopeeFood 6月官方LHDN电子发票核销 (全月高峰期 | 账面RM4,178.50 | 抽佣RM1,109.85 | 营销推广与税RM507.78 | 净打款RM2,560.87)'
+          },
+          {
+            id: 'del_shopee_202607',
+            month: '2026-07',
+            platform: 'ShopeeFood',
+            gross: 3602.60,
+            commission: 933.78,
+            adsPromo: 661.67,
+            adjustments: 0.00,
+            net: 2007.15,
+            orders: 142,
+            rate: '44.3%',
+            ref: 'MYSPFPF202607-INV',
+            notes: 'ShopeeFood 7月官方LHDN电子发票核销 (全月双半月结 | 账面RM3,602.60 | 抽佣RM933.78 | 营销推广与税RM661.67 | 净打款RM2,007.15)'
+          },
+          {
+            id: 'del_shopee_202608',
+            month: '2026-08',
+            platform: 'ShopeeFood',
+            gross: 3097.69,
+            commission: 841.62,
+            adsPromo: 411.98,
+            adjustments: 0.00,
+            net: 1844.09,
+            orders: 120,
+            rate: '40.5%',
+            ref: 'MYSPFPF202608-INV',
+            notes: 'ShopeeFood 8月官方LHDN电子发票核销 (全月双半月结 | 账面RM3,097.69 | 抽佣RM841.62 | 营销广告与税RM411.98 | 净打款RM1,844.09)'
+          },
+          {
+            id: 'del_shopee_202609',
+            month: '2026-09',
+            platform: 'ShopeeFood',
+            gross: 2320.90,
+            commission: 696.27,
+            adsPromo: 556.65,
+            adjustments: 0.00,
+            net: 1067.98,
+            orders: 92,
+            rate: '54.0%',
+            ref: 'MYSPFPF202609-INV',
+            notes: 'ShopeeFood 9月官方LHDN电子发票核销 (全月双半月结 | 账面RM2,320.90 | 抽佣RM696.27 | 营销广告与方案费RM556.65 | 净打款RM1,067.98)'
+          },
+          {
+            id: 'del_shopee_202610',
+            month: '2026-10',
+            platform: 'ShopeeFood',
+            gross: 2123.60,
+            commission: 637.08,
+            adsPromo: 445.84,
+            adjustments: 0.00,
+            net: 1040.68,
+            orders: 84,
+            rate: '51.0%',
+            ref: 'MYSPFPF202610-INV',
+            notes: 'ShopeeFood 10月官方发票+每日结算单核销 (1-25日实收 | 账面RM2,123.60 | 抽佣RM637.08 | 营销推广与税RM445.84 | 净到账RM1,040.68)'
+          },
+{
             id: 'del_grab_202601',
             month: '2026-01',
             platform: 'GrabFood',
@@ -2574,7 +2714,7 @@ function loadDataFromStorage() {
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租与员工薪资台账（10月起已剔除员工A薪资RM1900，薪资总额为RM8400）吗？")) {
         localStorage.removeItem('laiwan_finance_expenses_v22');
-        localStorage.removeItem('laiwan_finance_delivery_v20');
+        localStorage.removeItem('laiwan_finance_delivery_v21');
         localStorage.removeItem('laiwan_finance_suppliers_v3');
         expensesList = [];
         deliveryList = [];
@@ -2597,7 +2737,7 @@ function saveExpensesToStorage() {
       localStorage.setItem('laiwan_finance_custom_rev_v2', JSON.stringify(customRevenueList));
     }
     function saveDeliveryToStorage() {
-      localStorage.setItem('laiwan_finance_delivery_v20', JSON.stringify(deliveryList));
+      localStorage.setItem('laiwan_finance_delivery_v21', JSON.stringify(deliveryList));
     }
 
     // 全局重渲染
