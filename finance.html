@@ -234,14 +234,14 @@
         <div>
           <div class="flex items-center gap-2">
             <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
-              <span id="overview-period-title">2026年 9月 经营动态盘点</span>
+              <span id="overview-period-title">2026年 11月 经营动态盘点</span>
             </h2>
             <span id="period-status-tag" class="text-xs px-2.5 py-0.5 rounded-full font-semibold" style="background: rgba(245,158,11,0.15); color: var(--accent-amber);">
-              当月记账进行中 (实时动态计算)
+              当月记账进行中 (POS已记1天 · 实时同步)
             </span>
           </div>
           <p class="text-xs mt-1" style="color: var(--text-muted);">
-            💡 说明：9月账目正处在实时录入阶段，当前看板金额为您已实际记录的真实流水累加，不使用死板假想数据。
+            💡 说明：11月账目正处在实时直连录入阶段，当前看板金额与 Optimy POS 官方系统每日流水自动同步。
           </p>
         </div>
 
@@ -586,7 +586,7 @@
         <div>
           <h2 class="text-base sm:text-lg font-bold text-current flex items-center gap-2">
             <i data-lucide="banknote" class="w-5 h-5 text-emerald-500"></i>
-            <span>每日营业实收流水 (POS 系统实时直连 · 1~9月全量明细)</span>
+            <span>每日营业实收流水 (POS 系统实时直连 · 1~11月全量明细)</span>
           </h2>
           <p class="text-xs mt-0.5" style="color: var(--text-muted);">
             自动直连 Optimy POS 门店收银系统。每笔包含实收额、单量、客单价与服务费，支持随时补充交班备注。
@@ -2009,6 +2009,7 @@ function doPost(e) {
         console.warn('Dynamic month auto-detect error:', e);
       }
 
+      onMonthChange(activeMonth);
       renderAllViews();
       initCharts();
       lucide.createIcons();
