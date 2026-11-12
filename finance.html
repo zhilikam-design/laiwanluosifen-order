@@ -2272,7 +2272,7 @@ function doPost(e) {
 function loadDataFromStorage() {
       loadMaterialsFromStorage();
       // 自动清除旧版本浏览器缓存，强行载入最新真实的 房租(7000/7500) 与 员工薪资(10300) 数据
-      ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12','laiwan_finance_expenses_v13','laiwan_finance_expenses_v14','laiwan_finance_expenses_v15','laiwan_finance_expenses_v16','laiwan_finance_expenses_v17','laiwan_finance_expenses_v18','laiwan_finance_expenses_v19','laiwan_finance_expenses_v20','laiwan_finance_expenses_v21','laiwan_finance_expenses_v29'].forEach(k => localStorage.removeItem(k));
+      ['laiwan_finance_expenses_v1','laiwan_finance_expenses_v2','laiwan_finance_expenses_v3','laiwan_finance_expenses_v4','laiwan_finance_expenses_v5','laiwan_finance_expenses_v6','laiwan_finance_expenses_v7','laiwan_finance_expenses_v8','laiwan_finance_expenses_v11','laiwan_finance_expenses_v12','laiwan_finance_expenses_v13','laiwan_finance_expenses_v14','laiwan_finance_expenses_v15','laiwan_finance_expenses_v16','laiwan_finance_expenses_v17','laiwan_finance_expenses_v18','laiwan_finance_expenses_v19','laiwan_finance_expenses_v20','laiwan_finance_expenses_v21','laiwan_finance_expenses_v30'].forEach(k => localStorage.removeItem(k));
       ['laiwan_finance_suppliers_v1','laiwan_finance_suppliers_v2'].forEach(k => localStorage.removeItem(k));
       ['laiwan_finance_delivery_v1','laiwan_finance_delivery_v2','laiwan_finance_delivery_v3','laiwan_finance_delivery_v4','laiwan_finance_delivery_v5','laiwan_finance_delivery_v6','laiwan_finance_delivery_v7','laiwan_finance_delivery_v8','laiwan_finance_delivery_v11','laiwan_finance_delivery_v12','laiwan_finance_delivery_v13','laiwan_finance_delivery_v14','laiwan_finance_delivery_v15','laiwan_finance_delivery_v16','laiwan_finance_delivery_v17','laiwan_finance_delivery_v18','laiwan_finance_delivery_v19','laiwan_finance_delivery_v27'].forEach(k => localStorage.removeItem(k));
 
@@ -2288,7 +2288,7 @@ function loadDataFromStorage() {
       }
 
       // 1. 杂支
-      const localExp = localStorage.getItem('laiwan_finance_expenses_v29');
+      const localExp = localStorage.getItem('laiwan_finance_expenses_v30');
       if (localExp) {
         try { expensesList = JSON.parse(localExp); } catch(e) {}
       }
@@ -2386,7 +2386,12 @@ function loadDataFromStorage() {
           { id: 'exp_sal_c_2026-09', date: '2026-09-28', category: '员工薪资与福利', name: '2026年09月员工C薪资', amount: 2400.0, payment: '银行转账', ref: 'PAY-EMPC-2026-09', handled: '店长', notes: '固定月薪 RM 2,400' },
           { id: 'exp_sal_head_2026-10', date: '2026-10-28', category: '员工薪资与福利', name: '2026年10月头手薪资', amount: 4000.0, payment: '银行转账', ref: 'PAY-HEAD-2026-10', handled: '老板', notes: '人民币 6,000 (约RM3,700) + RM 300 贴补' },
           { id: 'exp_sal_b_2026-10', date: '2026-10-28', category: '员工薪资与福利', name: '2026年10月员工B薪资', amount: 2000.0, payment: '银行转账', ref: 'PAY-EMPB-2026-10', handled: '店长', notes: '固定月薪 RM 2,000' },
-          { id: 'exp_sal_c_2026-10', date: '2026-10-28', category: '员工薪资与福利', name: '2026年10月员工C薪资', amount: 2400.0, payment: '银行转账', ref: 'PAY-EMPC-2026-10', handled: '店长', notes: '固定月薪 RM 2,400' },
+                    { id: 'exp_sal_c_2026-10', date: '2026-10-28', category: '员工薪资与福利', name: '2026年10月员工C薪资', amount: 2400.0, payment: '银行转账', ref: 'PAY-EMPC-2026-10', handled: '店长', notes: '固定月薪 RM 2,400' },
+          // 2026年11月固定运营杂支 (OPEX 预提与基准)
+          { id: 'exp_rent_2026-11', date: '2026-11-01', category: '店铺租金', name: '2026年11月门市租金', amount: 7500.0, payment: 'Maybank', ref: 'RENT-2026-11', handled: '老板', notes: 'Austin Heights 门市租金 (新租金 RM7,500)' },
+          { id: 'exp_sal_head_2026-11', date: '2026-11-28', category: '员工薪资与福利', name: '2026年11月头手薪资', amount: 4000.0, payment: '银行转账', ref: 'PAY-HEAD-2026-11', handled: '老板', notes: '人民币 6,000 (约RM3,700) + RM 300 贴补' },
+          { id: 'exp_sal_b_2026-11', date: '2026-11-28', category: '员工薪资与福利', name: '2026年11月员工B薪资', amount: 2000.0, payment: '银行转账', ref: 'PAY-EMPB-2026-11', handled: '店长', notes: '固定月薪 RM 2,000' },
+          { id: 'exp_sal_c_2026-11', date: '2026-11-28', category: '员工薪资与福利', name: '2026年11月员工C薪资', amount: 2400.0, payment: '银行转账', ref: 'PAY-EMPC-2026-11', handled: '店长', notes: '固定月薪 RM 2,400' },
           { id: 'exp_fp-comm-202601', date: '2026-01-31', category: '外卖平台佣金抽成', name: '1月份 Foodpanda 平台 30% 佣金扣款', amount: 1994.25, payment: '平台账单扣除', ref: 'FP-COMM-202601', handled: 'Foodpanda', notes: 'Foodpanda 325 单平台佣金结算' },
           { id: 'exp_fp-mktg-202601', date: '2026-01-31', category: '杂项维修与维护', name: '1月份 Foodpanda 折扣与营销扣款', amount: 3644.93, payment: '平台账单扣除', ref: 'FP-MKTG-202601', handled: 'Foodpanda', notes: 'Foodpanda 商家自付折扣券补贴、营销广告与SST扣款' },
                     { id: 'exp_grab_comm_202602', date: '2026-02-28', category: '外卖平台佣金抽成', name: '2月份 GrabFood 平台佣金扣款', amount: 3257.92, payment: '平台账单扣除', ref: 'GF-COMM-202602', handled: 'Grab', notes: 'GrabFood 4周共315单平台佣金结算 (RM3,257.92)' },
@@ -2429,6 +2434,8 @@ function loadDataFromStorage() {
           { id: 'exp_grab_comm_202610', date: '2026-10-25', category: '外卖平台佣金抽成', name: '10月份 GrabFood 平台佣金扣款 (283单)', amount: 3067.26, payment: '从外卖流水扣除', ref: 'GF-COMM-202610', handled: 'Grab', notes: 'GrabFood 4周官方结单佣金结算' },
           { id: 'exp_grab_mktg_202610', date: '2026-10-25', category: '杂项维修与维护', name: '10月份 GrabFood 商家自付折扣与营销广告扣款', amount: 907.39, payment: '从外卖流水扣除', ref: 'GF-MKTG-202610', handled: 'Grab', notes: 'GrabFood 商家自付折扣与广告营销费' }
         ];
+        
+        ensureFixedMonthlyOpex('2026-11');
         saveExpensesToStorage();
       }
 
@@ -2890,7 +2897,7 @@ function loadDataFromStorage() {
     
     function resetDefaultExpensesToLatest() {
       if (confirm("确定重置载入最新的房租与员工薪资台账（10月起已剔除员工A薪资RM1900，薪资总额为RM8400）吗？")) {
-        localStorage.removeItem('laiwan_finance_expenses_v29');
+        localStorage.removeItem('laiwan_finance_expenses_v30');
         localStorage.removeItem('laiwan_finance_delivery_v27');
         localStorage.removeItem('laiwan_finance_suppliers_v6');
         expensesList = [];
@@ -2902,7 +2909,7 @@ function loadDataFromStorage() {
     }
 
 function saveExpensesToStorage() {
-      localStorage.setItem('laiwan_finance_expenses_v29', JSON.stringify(expensesList));
+      localStorage.setItem('laiwan_finance_expenses_v30', JSON.stringify(expensesList));
     }
     function saveDayNotesToStorage() {
       localStorage.setItem('laiwan_finance_day_notes_v2', JSON.stringify(dayNotesMap));
@@ -2948,7 +2955,64 @@ function saveExpensesToStorage() {
     }
 
     // 月份切换控制
-    function onMonthChange(val) {
+    
+      // 【智能自动补齐当月固定开销】：若当前选定月份为11月或未来月份，自动补齐当月固定门市租金(RM7,500)与固定薪水(RM8,400)
+      function ensureFixedMonthlyOpex(mKey) {
+        if (!mKey || mKey < '2026-11' || mKey === 'ALL') return;
+        const hasRent = expensesList.some(e => e.date && e.date.startsWith(mKey) && e.category === '店铺租金');
+        if (!hasRent) {
+          expensesList.push({
+            id: `exp_rent_${mKey}`,
+            date: `${mKey}-01`,
+            category: '店铺租金',
+            name: `${mKey.replace('-', '年')}月门市租金`,
+            amount: 7500.0,
+            payment: 'Maybank',
+            ref: `RENT-${mKey}`,
+            handled: '老板',
+            notes: 'Austin Heights 门市租金 (固定基准 RM7,500)'
+          });
+        }
+        const hasSalHead = expensesList.some(e => e.date && e.date.startsWith(mKey) && e.id === `exp_sal_head_${mKey}`);
+        if (!hasSalHead) {
+          expensesList.push({
+            id: `exp_sal_head_${mKey}`,
+            date: `${mKey}-28`,
+            category: '员工薪资与福利',
+            name: `${mKey.replace('-', '年')}月头手薪资`,
+            amount: 4000.0,
+            payment: '银行转账',
+            ref: `PAY-HEAD-${mKey}`,
+            handled: '老板',
+            notes: '人民币 6,000 + RM 300 贴补'
+          });
+          expensesList.push({
+            id: `exp_sal_b_${mKey}`,
+            date: `${mKey}-28`,
+            category: '员工薪资与福利',
+            name: `${mKey.replace('-', '年')}月员工B薪资`,
+            amount: 2000.0,
+            payment: '银行转账',
+            ref: `PAY-EMPB-${mKey}`,
+            handled: '店长',
+            notes: '固定月薪 RM 2,000'
+          });
+          expensesList.push({
+            id: `exp_sal_c_${mKey}`,
+            date: `${mKey}-28`,
+            category: '员工薪资与福利',
+            name: `${mKey.replace('-', '年')}月员工C薪资`,
+            amount: 2400.0,
+            payment: '银行转账',
+            ref: `PAY-EMPC-${mKey}`,
+            handled: '店长',
+            notes: '固定月薪 RM 2,400'
+          });
+        }
+      }
+
+function onMonthChange(val) {
+      ensureFixedMonthlyOpex(val);
       activeMonth = val;
       const statusTag = document.getElementById('period-status-tag');
       const titleElem = document.getElementById('overview-period-title');
